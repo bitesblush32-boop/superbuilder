@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cd \"C:\\\\Users\\\\Ravi Desai\\\\Downloads\\\\SuperBuilders\\\\super-builders\" && pnpm add drizzle-orm pg @clerk/nextjs framer-motion three lottie-react canvas-confetti react-hook-form @hookform/resolvers zod zustand @tanstack/react-query razorpay resend @upstash/redis 2>&1)",
+      "Bash(cd \"C:\\\\Users\\\\Ravi Desai\\\\Downloads\\\\SuperBuilders\\\\super-builders\" && pnpm add -D drizzle-kit @types/pg @types/three tsx 2>&1)",
+      "Bash(cd \"C:\\\\Users\\\\Ravi Desai\\\\Downloads\\\\SuperBuilders\\\\super-builders\" && pnpm dlx shadcn@latest init -y 2>&1)",
+      "Bash(cd \"C:\\\\Users\\\\Ravi Desai\\\\Downloads\\\\SuperBuilders\\\\super-builders\" && echo \"y\" | pnpm dlx shadcn@latest init -y 2>&1)",
+      "Bash(cd \"C:\\\\Users\\\\Ravi Desai\\\\Downloads\\\\SuperBuilders\\\\super-builders\" && printf \"y\\\\ny\\\\n\" | pnpm dlx shadcn@latest init -y 2>&1)",
+      "Bash(cd \"C:\\\\Users\\\\Ravi Desai\\\\Downloads\\\\SuperBuilders\\\\super-builders\" && pnpm add class-variance-authority clsx tailwind-merge lucide-react 2>&1)",
+      "Bash(mkdir -p \"C:\\\\Users\\\\Ravi Desai\\\\Downloads\\\\SuperBuilders\\\\super-builders\\\\lib\" && mkdir -p \"C:\\\\Users\\\\Ravi Desai\\\\Downloads\\\\SuperBuilders\\\\super-builders\\\\components\\\\ui\" && mkdir -p \"C:\\\\Users\\\\Ravi Desai\\\\Downloads\\\\SuperBuilders\\\\super-builders\\\\hooks\")",
+      "Bash(cd \"C:\\\\Users\\\\Ravi Desai\\\\Downloads\\\\SuperBuilders\\\\super-builders\" && pnpm dlx shadcn@latest add button card badge progress dialog sheet accordion tabs toast --overwrite 2>&1)",
+      "Bash(cd \"C:\\\\Users\\\\Ravi Desai\\\\Downloads\\\\SuperBuilders\\\\super-builders\" && pnpm dlx shadcn@latest add button card badge progress dialog sheet accordion tabs sonner --overwrite 2>&1)",
+      "Bash(cd \"C:\\\\Users\\\\Ravi Desai\\\\Downloads\\\\SuperBuilders\\\\super-builders\" && pnpm type-check 2>&1)"
+    ]
+  }
+}
