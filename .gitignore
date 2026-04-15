@@ -19,7 +19,8 @@
 
 # production
 /build
-
+/design_system
+/documentation
 # misc
 .DS_Store
 *.pem
