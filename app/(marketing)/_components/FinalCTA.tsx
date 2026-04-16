@@ -23,11 +23,11 @@ const fadeUpVariants: Variants = {
 function CountdownUnit({ value, label }: { value: number; label: string }) {
   const display = String(value).padStart(2, '0')
   return (
-    <div className="flex flex-col items-center gap-1.5">
+    <div className="flex flex-col items-center gap-1">
       <div
-        className="relative w-16 sm:w-20 h-14 sm:h-16 rounded-[4px] border flex items-center justify-center font-display leading-none"
+        className="relative w-[46px] sm:w-[64px] h-[40px] sm:h-[56px] rounded-[4px] border flex items-center justify-center font-display leading-none"
         style={{
-          fontSize:    'clamp(28px, 4vw, 40px)',
+          fontSize:    'clamp(20px, 5vw, 40px)',
           background:  'rgba(255,184,0,0.06)',
           borderColor: 'rgba(255,184,0,0.25)',
           color:       'var(--text-brand)',
@@ -43,7 +43,7 @@ function CountdownUnit({ value, label }: { value: number; label: string }) {
         />
       </div>
       <span
-        className="font-mono text-[9px] tracking-[0.22em] uppercase"
+        className="font-mono text-[8px] sm:text-[9px] tracking-[0.18em] uppercase"
         style={{ color: 'var(--text-4)' }}
       >
         {label}
@@ -166,34 +166,34 @@ export function FinalCTA() {
             </p>
           ) : (
             <div
-              className="flex items-end gap-3 sm:gap-4"
+              className="flex items-end gap-2 sm:gap-3"
               aria-label={`Registration closes in ${days} days ${hours} hours ${mins} minutes ${secs} seconds`}
             >
               <CountdownUnit value={days}  label="Days"    />
               <span
-                className="font-display leading-none pb-7 sm:pb-8"
-                style={{ fontSize: 'clamp(24px, 3vw, 32px)', color: 'rgba(255,184,0,0.4)' }}
+                className="font-display leading-none pb-[28px] sm:pb-[32px] text-[20px] sm:text-[28px]"
+                style={{ color: 'rgba(255,184,0,0.4)' }}
                 aria-hidden="true"
               >
                 :
               </span>
               <CountdownUnit value={hours} label="Hours"   />
               <span
-                className="font-display leading-none pb-7 sm:pb-8"
-                style={{ fontSize: 'clamp(24px, 3vw, 32px)', color: 'rgba(255,184,0,0.4)' }}
+                className="font-display leading-none pb-[28px] sm:pb-[32px] text-[20px] sm:text-[28px]"
+                style={{ color: 'rgba(255,184,0,0.4)' }}
                 aria-hidden="true"
               >
                 :
               </span>
-              <CountdownUnit value={mins}  label="Minutes" />
+              <CountdownUnit value={mins}  label="Mins" />
               <span
-                className="font-display leading-none pb-7 sm:pb-8"
-                style={{ fontSize: 'clamp(24px, 3vw, 32px)', color: 'rgba(255,184,0,0.4)' }}
+                className="font-display leading-none pb-[28px] sm:pb-[32px] text-[20px] sm:text-[28px]"
+                style={{ color: 'rgba(255,184,0,0.4)' }}
                 aria-hidden="true"
               >
                 :
               </span>
-              <CountdownUnit value={secs}  label="Seconds" />
+              <CountdownUnit value={secs}  label="Secs" />
             </div>
           )}
         </motion.div>

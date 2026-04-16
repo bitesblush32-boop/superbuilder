@@ -70,13 +70,15 @@
 }
 
 @keyframes glow-pulse {
-  0%, 100% { opacity: 1; filter: drop-shadow(0 0 12px rgba(255, 184, 0, 0.4)); }
-  50%       { opacity: 0.7; filter: drop-shadow(0 0 32px rgba(255, 184, 0, 0.8)); }
+  /* opacity-only — filter:drop-shadow triggers paint on every frame */
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.55; }
 }
 
 @keyframes xp-fill {
-  from { width: var(--xp-from, 0%); }
-  to   { width: var(--xp-to, 100%); }
+  /* scaleX instead of width — GPU composited, no layout */
+  from { transform: scaleX(var(--xp-from, 0)); transform-origin: left; }
+  to   { transform: scaleX(var(--xp-to, 1));   transform-origin: left; }
 }
 
 @keyframes orbit {
@@ -236,5 +238,19 @@
   }
   ::-webkit-scrollbar-thumb:hover {
     background: var(--border-soft);
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Reduced motion — respect user OS preference
+   Sets near-instant durations so animations complete immediately instead of
+   jumping, which is less jarring than removing motion entirely.
+───────────────────────────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration:        0.01ms !important;
+    animation-iteration-count: 1      !important;
+    transition-duration:       0.01ms !important;
+    scroll-behavior:           auto   !important;
   }
 }

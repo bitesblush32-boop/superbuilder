@@ -1,10 +1,17 @@
 'use client'
 
 import Link from 'next/link'
+import dynamic from 'next/dynamic'
 import { motion, type Variants } from 'framer-motion'
-import { HeroBadge } from '@/components/three/HeroBadge'
 import { useCountdown } from '@/hooks/useCountdown'
 import { HACKATHON_START, REG_DEADLINE } from '@/lib/content/programme'
+
+/* Three.js — lazy loaded with ssr:false so it never runs during SSR and
+   gets code-split into its own chunk, keeping the landing page bundle small. */
+const HeroBadge = dynamic<{ className?: string }>(
+  () => import('@/components/three/HeroBadge').then((m) => ({ default: m.HeroBadge })),
+  { ssr: false },
+)
 
 /* ═══════════════════════════════════════════════════════════════════════════
    Motion variants — total entrance: ~800ms

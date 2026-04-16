@@ -117,7 +117,7 @@ function BadgeCard({
       {/* Label */}
       <div className="text-center">
         <p
-          className="font-heading font-semibold text-[11px] sm:text-[12px] leading-tight"
+          className="font-heading font-semibold text-[10px] sm:text-[12px] leading-tight text-center w-full truncate px-1"
           style={{ color: unlocked ? 'var(--text-2)' : 'var(--text-4)' }}
         >
           {badge.id.replace(/_/g, ' ').toUpperCase()}
@@ -159,16 +159,18 @@ function XPBar() {
         className="relative h-2 rounded-full overflow-hidden"
         style={{ background: 'var(--bg-raised)', border: '1px solid var(--border-faint)' }}
       >
-        {/* Fill */}
+        {/* Fill — scaleX instead of width: GPU composited, no layout thrash */}
         <motion.div
-          className="absolute inset-y-0 left-0 rounded-full"
+          className="absolute inset-y-0 left-0 rounded-full w-full"
           style={{
             background:
               'linear-gradient(90deg, var(--brand-dim) 0%, var(--brand) 60%, var(--brand-bright) 100%)',
-            boxShadow: '0 0 8px rgba(255,184,0,0.5)',
+            boxShadow:       '0 0 8px rgba(255,184,0,0.5)',
+            transformOrigin: 'left center',
+            willChange:      'transform',
           }}
-          initial={{ width: '0%' }}
-          whileInView={{ width: `${DEMO_FILL_PCT}%` }}
+          initial={{ scaleX: 0 }}
+          whileInView={{ scaleX: DEMO_FILL_PCT / 100 }}
           viewport={{ once: true }}
           transition={{ duration: 1.2, ease: EASE_OUT, delay: 0.5 }}
         />
@@ -254,7 +256,7 @@ export function BadgeWall() {
 
         {/* ── Badge grid ── */}
         <motion.div
-          className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-x-6 gap-y-10 place-items-center"
+          className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-x-4 sm:gap-x-6 gap-y-8 sm:gap-y-10 place-items-center"
           variants={gridVariants}
           initial="hidden"
           whileInView="show"

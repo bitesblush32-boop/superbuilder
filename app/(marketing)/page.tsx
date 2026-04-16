@@ -77,7 +77,7 @@ export default function LandingPage() {
       {/* 1 — Sticky nav */}
       <Navbar />
 
-      <main>
+      <main className="pb-20 md:pb-0">
         {/* 2 — Hero */}
         <HeroSection />
 

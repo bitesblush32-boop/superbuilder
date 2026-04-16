@@ -293,9 +293,9 @@ function WorkshopCard({
         aria-hidden="true"
       />
 
-      {/* Ghost workshop number — background */}
+      {/* Ghost workshop number — hidden on mobile to prevent layout pressure */}
       <div
-        className="absolute right-4 top-0 font-display leading-none select-none pointer-events-none"
+        className="hidden sm:block absolute right-4 top-0 font-display leading-none select-none pointer-events-none"
         style={{
           fontSize:  'clamp(72px, 10vw, 110px)',
           color:     accent,

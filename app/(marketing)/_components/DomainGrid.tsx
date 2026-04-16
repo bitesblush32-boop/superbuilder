@@ -155,7 +155,7 @@ function DomainCard({ domain }: { domain: typeof DOMAINS[number] }) {
       {/* Domain pill */}
       <div className="mt-auto">
         <span
-          className="inline-flex items-center h-5 px-2.5 rounded-full font-mono text-[9px] tracking-wider uppercase border"
+          className="inline-flex items-center h-5 px-2.5 rounded-full font-mono text-[9px] tracking-wider uppercase border max-w-full truncate"
           style={{
             color:       domain.color,
             borderColor: `${domain.color}35`,

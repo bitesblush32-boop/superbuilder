@@ -370,7 +370,7 @@ function ThreeHeroBadge({
     <div
       ref={mountRef}
       className={className}
-      style={{ touchAction: 'none' }}
+      style={{ touchAction: 'none', willChange: 'transform' }}
     />
   )
 }

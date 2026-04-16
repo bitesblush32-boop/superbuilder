@@ -163,7 +163,7 @@ export function JudgingCriteria() {
               <motion.div key={criterion.criterion} variants={itemVariants}>
                 <button
                   onClick={() => toggle(i)}
-                  className="w-full flex items-center gap-4 py-4 text-left group"
+                  className="w-full flex items-center gap-4 py-4 text-left group min-h-[44px] active:opacity-70"
                   style={{ borderColor: 'var(--border-faint)' }}
                   aria-expanded={isActive}
                 >
@@ -204,10 +204,10 @@ export function JudgingCriteria() {
                     aria-hidden="true"
                   >
                     <motion.div
-                      className="absolute inset-y-0 left-0 rounded-full"
-                      style={{ background: color }}
-                      initial={{ width: '0%' }}
-                      whileInView={{ width: `${criterion.weight}%` }}
+                      className="absolute inset-y-0 left-0 rounded-full w-full"
+                      style={{ background: color, transformOrigin: 'left center', willChange: 'transform' }}
+                      initial={{ scaleX: 0 }}
+                      whileInView={{ scaleX: criterion.weight / 100 }}
                       viewport={{ once: true }}
                       transition={{ duration: 0.7, ease: EASE_OUT, delay: i * 0.08 + 0.3 }}
                     />

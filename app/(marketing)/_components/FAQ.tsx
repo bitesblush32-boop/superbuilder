@@ -170,14 +170,14 @@ export function FAQ() {
                   <AccordionItem
                     key={i}
                     value={`student-${i}`}
-                    className="rounded-[6px] border px-5 overflow-hidden"
+                    className="rounded-[6px] border px-4 overflow-hidden"
                     style={{
                       background:  'var(--bg-card)',
                       borderColor: 'var(--border-faint)',
                     }}
                   >
                     <AccordionTrigger
-                      className="py-4 font-heading font-semibold text-[14px] leading-snug text-left hover:no-underline [&>svg]:text-[var(--text-4)] [&>svg]:flex-shrink-0"
+                      className="min-h-[44px] py-3 font-heading font-semibold text-[14px] leading-snug text-left hover:no-underline active:opacity-70 [&>svg]:text-[var(--text-4)] [&>svg]:flex-shrink-0"
                       style={{ color: 'var(--text-1)' }}
                     >
                       {faq.q}
@@ -200,14 +200,14 @@ export function FAQ() {
                   <AccordionItem
                     key={i}
                     value={`parent-${i}`}
-                    className="rounded-[6px] border px-5 overflow-hidden"
+                    className="rounded-[6px] border px-4 overflow-hidden"
                     style={{
                       background:  'var(--bg-card)',
                       borderColor: 'var(--border-faint)',
                     }}
                   >
                     <AccordionTrigger
-                      className="py-4 font-heading font-semibold text-[14px] leading-snug text-left hover:no-underline [&>svg]:text-[var(--text-4)] [&>svg]:flex-shrink-0"
+                      className="min-h-[44px] py-3 font-heading font-semibold text-[14px] leading-snug text-left hover:no-underline active:opacity-70 [&>svg]:text-[var(--text-4)] [&>svg]:flex-shrink-0"
                       style={{ color: 'var(--text-1)' }}
                     >
                       {faq.q}
