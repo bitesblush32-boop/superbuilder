@@ -188,7 +188,7 @@ export function HeroSection() {
             ease: [0.34, 1.56, 0.64, 1], // spring
           }}
         >
-          <HeroBadge className="w-[230px] h-[230px] sm:w-[300px] sm:h-[300px] md:w-[420px] md:h-[420px] lg:w-[480px] lg:h-[480px]" />
+          <HeroBadge className="w-[230px] h-[230px] sm:w-[300px] sm:h-[300px] md:w-[420px] md:h-[420px] lg:w-[500px] lg:h-[500px]" />
         </motion.div>
 
         {/* ── Text column — bottom on mobile, left on desktop ── */}

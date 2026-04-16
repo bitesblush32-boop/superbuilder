@@ -100,6 +100,28 @@
    CSS custom properties — available everywhere via var()
    These mirror the Tailwind tokens and are used in arbitrary CSS / inline styles
 ───────────────────────────────────────────────────────────────────────────── */
+@keyframes navbar-sheet-up {
+  from {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes navbar-sheet-down {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+}
+
 @layer base {
   :root {
     /* Brand */
@@ -253,4 +275,12 @@
     transition-duration:       0.01ms !important;
     scroll-behavior:           auto   !important;
   }
+}
+
+.navbar-mobile-sheet[data-state='open'] {
+  animation: navbar-sheet-up 520ms var(--ease-out) both;
+}
+
+.navbar-mobile-sheet[data-state='closed'] {
+  animation: navbar-sheet-down 260ms ease-in both;
 }

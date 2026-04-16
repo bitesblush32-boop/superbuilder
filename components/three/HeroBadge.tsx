@@ -79,12 +79,12 @@ function CSSHexBadge({ className }: { className?: string }) {
       <div
         className="relative z-10 flex items-center justify-center"
         style={{
-          width: '52%',
-          height: '52%',
+          width: '50%',
+          height: '50%',
           clipPath: 'polygon(50% 0%, 93.3% 25%, 93.3% 75%, 50% 100%, 6.7% 75%, 6.7% 25%)',
           background: 'linear-gradient(145deg, #FFCF40 0%, #FFB800 45%, #CC9400 100%)',
           boxShadow: '0 0 48px rgba(255,184,0,0.45), inset 0 1px 0 rgba(255,255,255,0.2)',
-          animation: 'float-y 3.2s ease-in-out infinite',
+          animation: 'badge-float-y 3.2s ease-in-out infinite',
         }}
       >
         <span
@@ -95,6 +95,17 @@ function CSSHexBadge({ className }: { className?: string }) {
           ★
         </span>
       </div>
+
+      <style jsx>{`
+        @keyframes badge-float-y {
+          0%, 100% {
+            transform: translateY(-8px);
+          }
+          50% {
+            transform: translateY(-20px);
+          }
+        }
+      `}</style>
 
       {/* corner particle dots */}
       {[
@@ -146,6 +157,9 @@ function ThreeHeroBadge({
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, tier === 'high' ? 2 : 1.5))
     renderer.setClearColor(0x000000, 0)
     renderer.setSize(mount.clientWidth, mount.clientHeight)
+    renderer.domElement.style.display = 'block'
+    renderer.domElement.style.width = '100%'
+    renderer.domElement.style.height = '100%'
     mount.appendChild(renderer.domElement)
 
     /* ── Scene ────────────────────────────────────────────────────────────── */
@@ -158,8 +172,21 @@ function ThreeHeroBadge({
       0.1,
       100,
     )
-    camera.position.set(0, 0.4, 5.0)
-    camera.lookAt(0, 0, 0)
+    const FRAME_RADIUS = 2.38
+
+    function frameCamera(width: number, height: number) {
+      const aspect = width / Math.max(height, 1)
+      const halfFov = THREE.MathUtils.degToRad(camera.fov) / 2
+      const distanceForHeight = FRAME_RADIUS / Math.tan(halfFov)
+      const distanceForWidth = FRAME_RADIUS / (Math.tan(halfFov) * Math.max(aspect, 0.1))
+
+      camera.aspect = aspect
+      camera.position.set(0, 0.25, Math.max(distanceForHeight, distanceForWidth))
+      camera.lookAt(0, 0, 0)
+      camera.updateProjectionMatrix()
+    }
+
+    frameCamera(mount.clientWidth, mount.clientHeight)
 
     /* ── Lights ───────────────────────────────────────────────────────────── */
     scene.add(new THREE.AmbientLight(0xffffff, 0.12))
@@ -298,8 +325,7 @@ function ThreeHeroBadge({
       if (!mount || isDestroyed) return
       const w = mount.clientWidth
       const h = mount.clientHeight
-      camera.aspect = w / h
-      camera.updateProjectionMatrix()
+      frameCamera(w, h)
       renderer.setSize(w, h)
     }
     const ro = new ResizeObserver(onResize)
@@ -324,7 +350,7 @@ function ThreeHeroBadge({
 
       // Badge: slow Y rotation + subtle vertical float
       badgeGroup.rotation.y += 0.006
-      badgeGroup.position.y = Math.sin(t * 0.75) * 0.07
+      badgeGroup.position.y = 0.16 + Math.sin(t * 0.75) * 0.07
 
       // Orbit ring: independent Z spin
       orbitGroup.rotation.z += 0.0075

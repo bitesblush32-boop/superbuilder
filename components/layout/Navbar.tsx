@@ -7,6 +7,7 @@ import { Menu, Zap, ChevronRight } from 'lucide-react'
 import {
   Sheet,
   SheetContent,
+  SheetDescription,
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet'
@@ -108,7 +109,7 @@ export function Navbar() {
         {/* ── Left: Logo ── */}
         <Link
           href="/"
-          className="flex shrink-0 items-center min-h-[44px] select-none"
+          className="flex shrink-0 items-center gap-2 sm:gap-3 min-h-[44px] select-none"
           aria-label="Super Builders — home"
         >
           <Image
@@ -119,6 +120,12 @@ export function Navbar() {
             className="h-8 md:h-10 w-auto object-contain"
             priority
           />
+          <span
+            className="flex items-center font-heading font-extrabold text-[12px] md:text-[14px] tracking-[0.08em] uppercase leading-none whitespace-nowrap"
+            style={{ color: 'var(--text-brand)' }}
+          >
+            x Super Builders
+          </span>
         </Link>
 
         {/* ── Center: Desktop nav links ── */}
@@ -210,7 +217,7 @@ export function Navbar() {
             */}
             <SheetContent
               side="bottom"
-              className="flex flex-col p-0 rounded-t-2xl max-h-[75vh] border-t [&>button]:hidden"
+              className="navbar-mobile-sheet flex flex-col p-0 rounded-t-2xl max-h-[75vh] border-t [&>button]:hidden"
               style={{
                 background:  'var(--bg-base)',
                 borderColor: 'var(--border-subtle)',
@@ -218,6 +225,9 @@ export function Navbar() {
             >
               {/* a11y title — sr-only */}
               <SheetTitle className="sr-only">Navigation</SheetTitle>
+              <SheetDescription className="sr-only">
+                Main site navigation links and registration action.
+              </SheetDescription>
 
               {/* ── Drag handle pill ── */}
               <div className="flex justify-center pt-3 pb-2 shrink-0" aria-hidden="true">
@@ -239,6 +249,12 @@ export function Navbar() {
                   height={34}
                   className="h-7 w-auto object-contain"
                 />
+                <span
+                  className="font-heading font-extrabold text-[12px] tracking-[0.08em] uppercase leading-none"
+                  style={{ color: 'var(--text-brand)' }}
+                >
+                  x Super Builders
+                </span>
               </div>
 
               {/* ── Nav links — min-h-[52px] per link ── */}
@@ -275,7 +291,7 @@ export function Navbar() {
                       el.style.background = 'transparent'
                     }}
                   >
-                    <span className="font-body font-semibold text-[11px] md: tracking-wide uppercase">
+                    <span className="font-body font-semibold text-[11px] tracking-wide uppercase">
                       {link.label}
                     </span>
                     <ChevronRight
