@@ -94,7 +94,7 @@ export function Navbar() {
 
   return (
     <header
-      className="fixed top-0 left-0 right-0 z-50 h-[52px] flex items-center border-b transition-all duration-300 ease-out"
+      className="fixed top-0 left-0 right-0 z-50 h-[52px] md:h-[72px] flex items-center border-b transition-all duration-300 ease-out"
       style={{
         borderColor:          scrolled ? 'var(--border-faint)' : 'transparent',
         background:           scrolled ? 'rgba(0,0,0,0.88)'    : 'transparent',
@@ -102,17 +102,17 @@ export function Navbar() {
         WebkitBackdropFilter: scrolled ? 'blur(20px)'           : 'none',
       }}
     >
-      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between gap-4">
+      <div className="h-full w-full max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between gap-4">
 
         {/* ── Left: Logo ── */}
         <Link
           href="/"
-          className="flex items-center gap-2 min-h-[44px] select-none"
+          className="flex shrink-0 items-center gap-2 min-h-[44px] select-none"
           aria-label="Super Builders — home"
         >
           <Zer0Mark size={26} />
           <span
-            className="font-heading font-extrabold text-[13px] tracking-[0.1em] uppercase leading-none"
+            className="font-heading font-extrabold text-[13px] md:text-lg tracking-[0.1em] uppercase leading-none"
             style={{ color: 'var(--text-brand)' }}
           >
             SUPER BUILDERS
@@ -120,13 +120,13 @@ export function Navbar() {
         </Link>
 
         {/* ── Center: Desktop nav links ── */}
-        <nav className="hidden md:flex items-center gap-5" aria-label="Main navigation">
+        <nav className="hidden lg:flex h-full min-w-0 items-center gap-3 xl:gap-5" aria-label="Main navigation">
           {NAV_LINKS.map((link) => (
             <Link
               key={link.href}
               href={link.href}
               className={cn(
-                'relative font-heading font-semibold text-[11px] tracking-[0.08em] uppercase',
+                'relative inline-flex h-11 shrink-0 items-center font-body font-semibold text-[12px] xl:text-[13px] leading-none tracking-[0.08em] uppercase',
                 'transition-colors duration-150',
                 'after:absolute after:bottom-[-2px] after:left-0 after:h-[1px] after:w-0',
                 'after:bg-[var(--brand)] after:transition-all after:duration-200',
@@ -146,7 +146,7 @@ export function Navbar() {
         </nav>
 
         {/* ── Right: Countdown + CTA + Hamburger ── */}
-        <div className="flex items-center gap-2.5">
+        <div className="flex shrink-0 items-center gap-2.5">
           <CountdownPill />
 
           {/* Register Now — desktop/tablet only */}
@@ -155,7 +155,7 @@ export function Navbar() {
             className={cn(
               'hidden sm:inline-flex items-center justify-center gap-1.5',
               'h-[34px] px-4 rounded-[3px]',
-              'font-heading font-bold text-[11px] tracking-[0.12em] uppercase',
+              'font-heading font-bold text-[11px] md:text-[14px]  tracking-[0.12em] uppercase',
               'transition-all duration-150',
             )}
             style={{
@@ -186,7 +186,7 @@ export function Navbar() {
           <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
             <SheetTrigger asChild>
               <button
-                className="md:hidden w-11 h-11 flex items-center justify-center rounded-md transition-all duration-150 active:scale-90"
+                className="lg:hidden w-11 h-11 flex items-center justify-center rounded-md transition-all duration-150 active:scale-90"
                 style={{ color: 'var(--text-2)' }}
                 aria-label="Open navigation menu"
                 onMouseEnter={(e) =>
@@ -273,7 +273,7 @@ export function Navbar() {
                       el.style.background = 'transparent'
                     }}
                   >
-                    <span className="font-heading font-semibold text-[14px] tracking-wide">
+                    <span className="font-body font-semibold text-[11px] md: tracking-wide uppercase">
                       {link.label}
                     </span>
                     <ChevronRight

@@ -166,7 +166,7 @@ export function HeroSection() {
 
       {/* ── Thin gold horizon line ── */}
       <div
-        className="pointer-events-none absolute top-[52px] inset-x-0 h-px"
+        className="pointer-events-none absolute top-[72px] inset-x-0 h-px"
         style={{
           background:
             'linear-gradient(90deg, transparent 0%, rgba(255,184,0,0.25) 30%, rgba(255,184,0,0.25) 70%, transparent 100%)',
