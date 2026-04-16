@@ -48,6 +48,7 @@ export default function RootLayout({
     <html
       lang="en"
       className={`${bebasNeue.variable} ${exo2.variable} ${plusJakarta.variable} ${jetbrains.variable} h-full antialiased`}
+      data-scroll-behavior="smooth"
     >
       <body className="min-h-full flex flex-col">{children}</body>
     </html>

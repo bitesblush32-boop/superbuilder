@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { useState, useEffect } from 'react'
 import { Menu, Zap, ChevronRight } from 'lucide-react'
 import {
@@ -107,16 +108,17 @@ export function Navbar() {
         {/* ── Left: Logo ── */}
         <Link
           href="/"
-          className="flex shrink-0 items-center gap-2 min-h-[44px] select-none"
+          className="flex shrink-0 items-center min-h-[44px] select-none"
           aria-label="Super Builders — home"
         >
-          <Zer0Mark size={26} />
-          <span
-            className="font-heading font-extrabold text-[13px] md:text-lg tracking-[0.1em] uppercase leading-none"
-            style={{ color: 'var(--text-brand)' }}
-          >
-            SUPER BUILDERS
-          </span>
+          <Image
+            src="/logo.png"
+            alt="Super Builders"
+            width={140}
+            height={40}
+            className="h-8 md:h-10 w-auto object-contain"
+            priority
+          />
         </Link>
 
         {/* ── Center: Desktop nav links ── */}
@@ -230,13 +232,13 @@ export function Navbar() {
                 className="flex items-center gap-2 px-5 h-[48px] border-b shrink-0"
                 style={{ borderColor: 'var(--border-faint)' }}
               >
-                <Zer0Mark size={22} />
-                <span
-                  className="font-heading font-extrabold text-[12px] tracking-[0.1em] uppercase"
-                  style={{ color: 'var(--text-brand)' }}
-                >
-                  SUPER BUILDERS
-                </span>
+                <Image
+                  src="/logo.png"
+                  alt="Super Builders"
+                  width={120}
+                  height={34}
+                  className="h-7 w-auto object-contain"
+                />
               </div>
 
               {/* ── Nav links — min-h-[52px] per link ── */}
