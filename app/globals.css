@@ -199,6 +199,12 @@
     min-height: 44px;
   }
 
+  /* Mobile tap — eliminate blue flash, remove 300ms double-tap zoom delay */
+  button, [role="button"], a, input, select, textarea {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+
   /* Inputs — 16px minimum to prevent iOS zoom on focus */
   input, select, textarea {
     font-size: max(16px, 1rem);

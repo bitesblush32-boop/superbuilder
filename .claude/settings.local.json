@@ -10,7 +10,23 @@
       "Bash(mkdir -p \"C:\\\\Users\\\\Ravi Desai\\\\Downloads\\\\SuperBuilders\\\\super-builders\\\\lib\" && mkdir -p \"C:\\\\Users\\\\Ravi Desai\\\\Downloads\\\\SuperBuilders\\\\super-builders\\\\components\\\\ui\" && mkdir -p \"C:\\\\Users\\\\Ravi Desai\\\\Downloads\\\\SuperBuilders\\\\super-builders\\\\hooks\")",
       "Bash(cd \"C:\\\\Users\\\\Ravi Desai\\\\Downloads\\\\SuperBuilders\\\\super-builders\" && pnpm dlx shadcn@latest add button card badge progress dialog sheet accordion tabs toast --overwrite 2>&1)",
       "Bash(cd \"C:\\\\Users\\\\Ravi Desai\\\\Downloads\\\\SuperBuilders\\\\super-builders\" && pnpm dlx shadcn@latest add button card badge progress dialog sheet accordion tabs sonner --overwrite 2>&1)",
-      "Bash(cd \"C:\\\\Users\\\\Ravi Desai\\\\Downloads\\\\SuperBuilders\\\\super-builders\" && pnpm type-check 2>&1)"
+      "Bash(cd \"C:\\\\Users\\\\Ravi Desai\\\\Downloads\\\\SuperBuilders\\\\super-builders\" && pnpm type-check 2>&1)",
+      "Bash(cd \"C:\\\\Users\\\\Ravi Desai\\\\Downloads\\\\SuperBuilders\\\\super-builders\" && npx tsc --noEmit --pretty 2>&1 | head -60)",
+      "Bash(cd \"C:\\\\Users\\\\Ravi Desai\\\\Downloads\\\\SuperBuilders\\\\super-builders\" && npx tsc --noEmit 2>&1)",
+      "Bash(cd \"C:\\\\Users\\\\Ravi Desai\\\\Downloads\\\\SuperBuilders\\\\super-builders\" && pnpm build 2>&1)",
+      "Bash(sleep 5 && curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000/ 2>&1)",
+      "Bash(curl -s http://localhost:3000/ 2>&1 | head -40)",
+      "Bash(sleep 3 && curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000/ 2>&1)",
+      "Bash(curl -s http://localhost:3000/ 2>&1 | grep -o 'Super Builders\\\\|SUPER BUILDERS\\\\|HeroSection\\\\|StatsBar\\\\|Register Before\\\\|REGISTER BEFORE\\\\|data-id=\"super-builders\"' | head -10)",
+      "Bash(curl -s http://localhost:3000/ 2>&1 | grep -oP '\\(SUPER BUILDERS|ZER0\\\\.PRO|REGISTER BEFORE|FAQ|JUDGING|For Parents|ForParents|Choose Your Path|Your Journey|EVERY STEP\\)' | sort -u)",
+      "Bash(curl -s http://localhost:3000/ 2>&1 | python3 -c \"import sys; content = sys.stdin.read\\(\\); markers = ['SUPER', 'BUILDERS', 'Choose Your Path', 'Every Step', 'For Parents', 'JUDGING', 'FAQ', 'REGISTER BEFORE', 'Prize Pool', 'Registered']; [print\\(m, '✓'\\) for m in markers if m.lower\\(\\) in content.lower\\(\\)]\")",
+      "Bash(curl -s http://localhost:3000/ 2>&1 | grep -ic \"Choose Your Path\\\\|prize pool\\\\|registered\\\\|for parents\\\\|your journey\\\\|how projects are judged\")",
+      "Bash(curl -s http://localhost:3000/ 2>&1 | grep -c \"script\\\\|div\\\\|section\" && curl -s http://localhost:3000/ 2>&1 | grep -oi \"title>.*</title\" | head -3)",
+      "Bash(cd \"C:\\\\Users\\\\Ravi Desai\\\\Downloads\\\\SuperBuilders\\\\super-builders\" && pnpm build 2>&1 | tail -20)",
+      "Bash(cd \"C:\\\\Users\\\\Ravi Desai\\\\Downloads\\\\SuperBuilders\\\\super-builders\" && pnpm build 2>&1 | grep -E \"\\(error|Error|Type error|✓|○ /|Failed\\)\" | head -20)",
+      "Bash(cd \"C:\\\\Users\\\\Ravi Desai\\\\Downloads\\\\SuperBuilders\\\\super-builders\" && pnpm build 2>&1 | grep -A5 \"error\\\\|Error\" | head -30)",
+      "Bash(cd \"C:\\\\Users\\\\Ravi Desai\\\\Downloads\\\\SuperBuilders\\\\super-builders\" && pnpm build 2>&1 | grep -E \"\\(error|Error|Type error|✓ |○ /|Failed|successfully\\)\" | head -20)",
+      "Bash(cd \"C:\\\\Users\\\\Ravi Desai\\\\Downloads\\\\SuperBuilders\\\\super-builders\" && pnpm build 2>&1 | grep -E \"\\(error|Error|Type error|✓ Compiled|○ /|Failed|successfully|Generating static\\)\" | head -20)"
     ]
   }
 }

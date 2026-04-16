@@ -1,6 +1,6 @@
-// Marketing layout — wraps all public-facing marketing pages
-// Applied to: landing page (app/page.tsx lives here conceptually)
-// Provides: Navbar + Footer shell, ISR-compatible (no auth dependency)
+// Marketing layout — public-facing pages only
+// No auth sidebar, no dashboard shell
+// ISR-compatible: this layout has no server-side auth dependency
 
 export default function MarketingLayout({
   children,

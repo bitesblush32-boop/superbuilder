@@ -86,6 +86,92 @@ Progress always visible — "Step 2 of 5" or progress bar — never lost.
 - Refund policy prominent
 - WhatsApp group for parents — reduces anxiety
 
+### Mobile-first implementation rules (Tailwind + React)
+
+**Tailwind class order mandate:** Every class written without a breakpoint prefix IS the mobile style. Only use `md:` / `lg:` to progressively enhance for larger screens. Never write desktop layout first and override for mobile.
+// WRONG — desktop-first
+className="grid grid-cols-3 sm:grid-cols-1"
+// CORRECT — mobile-first
+className="grid grid-cols-1 md:grid-cols-3"
+
+**Touch states — always include `active:` since hover doesn't exist on phones:**
+```tsx
+// Every interactive element needs active: scale feedback
+className="... hover:bg-brand-bright active:scale-95 active:opacity-80 transition-all"
+```
+
+**Remove tap flash on all touchable elements:**
+```css
+/* Add to globals.css */
+* { -webkit-tap-highlight-color: transparent; }
+button, a, [role="button"] { touch-action: manipulation; }
+```
+
+**Safe area insets — required for iPhone notch + home bar:**
+```css
+/* Add to globals.css */
+.safe-top    { padding-top: env(safe-area-inset-top); }
+.safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
+```
+```tsx
+// Mobile sticky bar must use safe-bottom class
+// Navbar must use safe-top on the inner container
+```
+
+**Input `inputMode` and `autoComplete` — required on all form fields:**
+```tsx
+// Phone number field
+<input inputMode="numeric" autoComplete="tel" />
+// Email
+<input inputMode="email" autoComplete="email" />
+// Name
+<input inputMode="text" autoComplete="name" autoCapitalize="words" />
+// Short answer (quiz)
+<textarea inputMode="text" autoCapitalize="sentences" />
+```
+
+**Scroll containers:**
+```tsx
+// Horizontal scroll (timeline, card carousels)
+className="flex overflow-x-auto snap-x snap-mandatory scrollbar-none gap-4 pb-4"
+// Each child
+className="snap-start flex-shrink-0"
+// Never use overflow-hidden on a parent of a scroll container
+```
+
+**Mobile overlays — Sheet from bottom, not side:**
+```tsx
+// On mobile (<md), ALL Sheets and drawers should be side="bottom"
+// On desktop (md:), can be side="right"
+// Use this pattern:
+const isMobile = useMediaQuery('(max-width: 768px)')
+<Sheet>
+  <SheetContent side={isMobile ? 'bottom' : 'right'} className="md:max-w-sm">
+```
+
+**Dashboard bottom navigation (mobile only):**
+```tsx
+// On mobile the dashboard should use a bottom tab bar, not a sidebar
+// Bottom nav: fixed bottom-0, safe-bottom padding, 5 tabs max
+// Each tab: 44px minimum height, icon + label, active = text-brand
+// Sidebar: hidden on mobile (hidden md:block)
+```
+
+**Loading skeletons for slow connections (not spinners):**
+```tsx
+// Use shadcn Skeleton component for all async content
+// Skeleton bg should be bg-float animate-pulse
+// Show skeleton immediately, replace when data arrives
+// Never block render on data — always skeleton first
+```
+
+**Minimum sizes checklist — enforce in every component:**
+- Buttons: `min-h-[44px] min-w-[44px]`
+- Nav links (mobile): `min-h-[48px]` with full-width tap area
+- Form inputs: `min-h-[48px]` 
+- Accordion triggers: `min-h-[52px]`
+- Badge cards: `min-h-[80px]`
+
 ---
 
 ## 3. TECH STACK
