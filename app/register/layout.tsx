@@ -1,6 +1,8 @@
 // Registration layout — stage progress bar header + gated shell
 // Wraps all /register/* routes. Server component — reads student stage from DB.
 
+export const dynamic = 'force-dynamic'
+
 export default function RegisterLayout({
   children,
 }: {
