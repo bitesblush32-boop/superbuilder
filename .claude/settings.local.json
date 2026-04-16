@@ -36,7 +36,9 @@
       "Bash(cd \"C:\\\\Users\\\\Ravi Desai\\\\Downloads\\\\SuperBuilders\\\\super-builders\" && node -e \"const fs=require\\('fs'\\);const files=fs.readdirSync\\('.next'\\).filter\\(f=>f.includes\\('manifest'\\)\\);console.log\\(files\\)\")",
       "Bash(cd \"C:\\\\Users\\\\Ravi Desai\\\\Downloads\\\\SuperBuilders\\\\super-builders\" && node -e \"\nconst fs=require\\('fs'\\);\nconst m=JSON.parse\\(fs.readFileSync\\('.next/build-manifest.json','utf8'\\)\\);\nconsole.log\\('Keys with /:', Object.keys\\(m\\).join\\(', '\\)\\);\nconsole.log\\('pages keys:', Object.keys\\(m.pages||{}\\).join\\(', '\\)\\);\n\")",
       "Bash(cd \"C:\\\\Users\\\\Ravi Desai\\\\Downloads\\\\SuperBuilders\\\\super-builders\" && node -e \"\nconst fs=require\\('fs'\\),path=require\\('path'\\),zlib=require\\('zlib'\\);\n// Sum up all chunks needed by the landing page client\n// Check how many KB the Three.js chunk is gzipped vs other chunks\nconst dir='.next/static/chunks';\nconst chunks=fs.readdirSync\\(dir\\).filter\\(f=>f.endsWith\\('.js'\\)\\);\nlet total=0;\nchunks.forEach\\(f=>{\n  const buf=fs.readFileSync\\(path.join\\(dir,f\\)\\);\n  const gz=zlib.gzipSync\\(buf\\).length;\n  total+=gz;\n}\\);\nconsole.log\\('Total gzipped JS chunks:', Math.round\\(total/1024\\)+'KB'\\);\nconsole.log\\('Chunk count:', chunks.length\\);\n// Biggest chunk \\(likely Three.js\\)\nconst biggest=chunks.map\\(f=>{\n  const buf=fs.readFileSync\\(path.join\\(dir,f\\)\\);\n  return {name:f,gz:zlib.gzipSync\\(buf\\).length};\n}\\).sort\\(\\(a,b\\)=>b.gz-a.gz\\)[0];\nconsole.log\\('Largest chunk:', biggest.name, Math.round\\(biggest.gz/1024\\)+'KB gz'\\);\n\")",
-      "Bash(cd \"C:\\\\Users\\\\Ravi Desai\\\\Downloads\\\\SuperBuilders\\\\super-builders\" && pnpm install 2>&1 | tail -5)"
+      "Bash(cd \"C:\\\\Users\\\\Ravi Desai\\\\Downloads\\\\SuperBuilders\\\\super-builders\" && pnpm install 2>&1 | tail -5)",
+      "Bash(ls -t \"C:\\\\Users\\\\Ravi Desai\\\\Downloads\\\\SuperBuilders\\\\super-builders\"/logs.*.log 2>/dev/null | head -5)",
+      "Bash(ls \"C:/Users/Ravi Desai/Downloads/SuperBuilders/super-builders/\"logs.*.log 2>/dev/null || echo \"no logs found\")"
     ]
   }
 }

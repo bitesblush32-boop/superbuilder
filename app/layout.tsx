@@ -33,6 +33,7 @@ const jetbrains = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://superbuilders.zer0.pro"),
   title: "Super Builders — AI Hackathon for School Students | zer0.pro",
   description:
     "India's #1 AI programme for Class 8–12 students. 3-week online programme + 24-hour hackathon. ₹1,00,000+ prizes. Register before May 25.",
