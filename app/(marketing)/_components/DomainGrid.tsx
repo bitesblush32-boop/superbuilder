@@ -198,7 +198,7 @@ export function DomainGrid() {
           viewport={{ once: true, margin: '-60px' }}
         >
           <p
-            className="font-mono text-[10px] tracking-[0.28em] uppercase mb-3"
+            className="font-mono text-[12px] tracking-[0.28em] uppercase mb-3"
             style={{ color: 'var(--text-brand)' }}
           >
             Build In Any Domain
@@ -233,7 +233,7 @@ export function DomainGrid() {
 
         {/* ── Footer note ── */}
         <motion.p
-          className="mt-8 font-mono text-[10px] tracking-wide text-center"
+          className="mt-8 font-mono text-[12px] tracking-wide text-center"
           style={{ color: 'var(--text-4)' }}
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}

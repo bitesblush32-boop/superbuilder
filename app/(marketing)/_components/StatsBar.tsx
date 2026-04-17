@@ -179,7 +179,7 @@ export function StatsBar() {
 
             {/* Label */}
             <p
-              className="font-mono text-[10px] tracking-[0.2em] uppercase"
+              className="font-mono text-[12px] tracking-[0.2em] uppercase"
               style={{ color: 'var(--text-3)' }}
             >
               {stat.label}

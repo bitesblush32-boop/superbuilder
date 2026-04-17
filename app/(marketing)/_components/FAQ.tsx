@@ -114,7 +114,7 @@ export function FAQ() {
           viewport={{ once: true, margin: '-60px' }}
         >
           <p
-            className="font-mono text-[10px] tracking-[0.28em] uppercase mb-3"
+            className="font-mono text-[12px] tracking-[0.28em] uppercase mb-3"
             style={{ color: 'var(--text-brand)' }}
           >
             FAQ

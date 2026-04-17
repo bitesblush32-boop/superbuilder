@@ -74,7 +74,7 @@ export function MobileStickyBar() {
               {/* Left: countdown */}
               <div className="flex flex-col gap-0.5 min-w-0">
                 <span
-                  className="font-mono text-[10px] tracking-[0.18em] uppercase leading-none"
+                  className="font-mono text-[12px] tracking-[0.18em] uppercase leading-none"
                   style={{ color: 'var(--text-4)' }}
                 >
                   Registration

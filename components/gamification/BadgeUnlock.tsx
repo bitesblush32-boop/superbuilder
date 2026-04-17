@@ -160,7 +160,7 @@ export function BadgeUnlock({ badge, onDismiss }: BadgeUnlockProps) {
 
               {/* "BADGE UNLOCKED" label */}
               <motion.p
-                className="text-[10px] font-mono tracking-[0.2em] uppercase"
+                className="text-[12px] font-mono tracking-[0.2em] uppercase"
                 style={{ color: info.color }}
                 variants={textVariants}
                 custom={0.45}

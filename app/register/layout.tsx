@@ -2,6 +2,7 @@
 // Wraps all /register/* routes. Server component — reads student stage from DB.
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { auth } from '@clerk/nextjs/server'
 import { db } from '@/lib/db'
 import { students } from '@/lib/db/schema'
@@ -38,19 +39,27 @@ export default async function RegisterLayout({
     <div className="min-h-screen flex flex-col" style={{ background: 'var(--bg-void)' }}>
       {/* Top bar */}
       <header
-        className="flex items-center justify-between px-4 sm:px-6 h-12 shrink-0 border-b"
+        className="flex items-center justify-between px-4 sm:px-6 h-12 md:h-16 shrink-0 border-b"
         style={{ borderColor: 'var(--border-faint)' }}
       >
         <Link
           href="/"
-          className="flex items-center gap-1.5 group"
-          aria-label="zer0.pro home"
+          className="flex shrink-0 items-center gap-2 sm:gap-3 min-h-[44px] select-none"
+          aria-label="Super Builders — home"
         >
+          <Image
+            src="/logo.png"
+            alt="Super Builders"
+            width={140}
+            height={40}
+            className="h-8 md:h-10 w-auto object-contain"
+            priority
+          />
           <span
-            className="font-display text-lg tracking-wider leading-none"
-            style={{ color: 'var(--brand)' }}
+            className="flex items-center font-heading font-extrabold text-[12px] md:text-[14px] tracking-[0.08em] uppercase leading-none whitespace-nowrap"
+            style={{ color: 'var(--text-brand)' }}
           >
-            zer0.pro
+            x Super Builders
           </span>
         </Link>
 

@@ -106,7 +106,7 @@ export function StageProgressBar({ currentStage }: StageProgressBarProps) {
                 {/* Label — hidden on xs, visible on sm+ */}
                 <span
                   className={[
-                    'hidden sm:block text-[10px] font-body text-center leading-tight max-w-[56px]',
+                    'hidden sm:block text-[12px] font-body text-center leading-tight max-w-[56px]',
                     isDone   ? 'text-brand'   : '',
                     isActive ? 'text-brand font-semibold' : '',
                     isLocked ? 'text-text-4'  : '',

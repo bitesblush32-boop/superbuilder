@@ -117,7 +117,7 @@ function BadgeCard({
       {/* Label */}
       <div className="text-center">
         <p
-          className="font-heading font-semibold text-[10px] sm:text-[12px] leading-tight text-center w-full truncate px-1"
+          className="font-heading font-semibold text-[12px] sm:text-[12px] leading-tight text-center w-full truncate px-1"
           style={{ color: unlocked ? 'var(--text-2)' : 'var(--text-4)' }}
         >
           {badge.id.replace(/_/g, ' ').toUpperCase()}
@@ -145,10 +145,10 @@ function XPBar() {
     >
       {/* Label row */}
       <div className="flex items-baseline justify-between mb-2.5">
-        <p className="font-mono text-[10px] tracking-[0.18em] uppercase" style={{ color: 'var(--text-3)' }}>
+        <p className="font-mono text-[12px] tracking-[0.18em] uppercase" style={{ color: 'var(--text-3)' }}>
           Your XP
         </p>
-        <p className="font-mono text-[10px]" style={{ color: 'var(--text-4)' }}>
+        <p className="font-mono text-[12px]" style={{ color: 'var(--text-4)' }}>
           <span style={{ color: 'var(--text-brand)' }}>{DEMO_CURRENT_XP}</span>
           {' / '}{DEMO_LEVEL2_XP}
         </p>
@@ -177,10 +177,10 @@ function XPBar() {
       </div>
 
       {/* Sub-label */}
-      <p className="mt-2 font-mono text-[10px] text-center" style={{ color: 'var(--text-4)' }}>
+      <p className="mt-2 font-mono text-[12px] text-center" style={{ color: 'var(--text-4)' }}>
         You&apos;re{' '}
         <span style={{ color: 'var(--text-brand)' }}>{DEMO_REMAINING} XP</span>
-        {' '}away from Level 2 — keep building 🔥
+        {' '}away from Level 2 — keep building
       </p>
     </motion.div>
   )
@@ -233,7 +233,7 @@ export function BadgeWall() {
           viewport={{ once: true, margin: '-60px' }}
         >
           <p
-            className="font-mono text-[10px] tracking-[0.28em] uppercase mb-3"
+            className="font-mono text-[12px] tracking-[0.28em] uppercase mb-3"
             style={{ color: 'var(--text-brand)' }}
           >
             Your Journey
@@ -279,14 +279,14 @@ export function BadgeWall() {
           viewport={{ once: true }}
           transition={{ duration: 0.5, delay: 0.25 }}
         >
-          <span className="flex items-center gap-1.5 font-mono text-[10px]" style={{ color: 'var(--text-3)' }}>
+          <span className="flex items-center gap-1.5 font-mono text-[12px]" style={{ color: 'var(--text-3)' }}>
             <span
               className="inline-block w-3 h-3 rounded-full border"
               style={{ borderColor: 'var(--brand)', background: 'rgba(255,184,0,0.15)' }}
             />
             Unlocked
           </span>
-          <span className="flex items-center gap-1.5 font-mono text-[10px]" style={{ color: 'var(--text-4)' }}>
+          <span className="flex items-center gap-1.5 font-mono text-[12px]" style={{ color: 'var(--text-4)' }}>
             <span
               className="inline-block w-3 h-3 rounded-full border"
               style={{ borderColor: 'var(--border-faint)', background: 'var(--bg-raised)', filter: 'grayscale(1)', opacity: 0.5 }}

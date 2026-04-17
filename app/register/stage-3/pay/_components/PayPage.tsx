@@ -150,7 +150,7 @@ export function PayPage({ studentId, fullName, email, phone, defaultTier }: PayP
         >
           <div className="flex items-start justify-between mb-4">
             <div>
-              <p className="font-mono text-[10px] tracking-[0.2em] uppercase mb-1" style={{ color: 'var(--text-3)' }}>
+              <p className="font-mono text-[12px] tracking-[0.2em] uppercase mb-1" style={{ color: 'var(--text-3)' }}>
                 Your selection
               </p>
               <h2 className="font-display text-3xl tracking-wide" style={{ color: tier === 'premium' ? 'var(--brand)' : 'var(--text-1)' }}>
@@ -267,7 +267,7 @@ export function PayPage({ studentId, fullName, email, phone, defaultTier }: PayP
           initial={{ opacity: 0 }}
           animate={{ opacity: 1, transition: { duration: 0.5, delay: 0.2 } }}
         >
-          <p className="font-mono text-[10px] tracking-[0.15em] uppercase mb-4" style={{ color: 'var(--text-3)' }}>
+          <p className="font-mono text-[12px] tracking-[0.15em] uppercase mb-4" style={{ color: 'var(--text-3)' }}>
             For Parents
           </p>
           {[

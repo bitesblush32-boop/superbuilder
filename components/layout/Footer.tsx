@@ -141,7 +141,7 @@ export function Footer() {
               </span>
             </Link>
             <p
-              className="font-mono text-[10px] leading-relaxed tracking-wide uppercase"
+              className="font-mono text-[12px] leading-relaxed tracking-wide uppercase"
               style={{ color: 'var(--text-4)' }}
             >
               School Edition · Season 01 · 2025
@@ -238,7 +238,7 @@ export function Footer() {
                   <li key={link.label}>
                     <Link
                       href={link.href}
-                      className="font-mono text-[10px] tracking-wide transition-colors duration-150 hover:underline underline-offset-2"
+                      className="font-mono text-[12px] tracking-wide transition-colors duration-150 hover:underline underline-offset-2"
                       style={{ color: 'var(--text-4)' }}
                       onMouseEnter={(e) =>
                         ((e.currentTarget as HTMLElement).style.color = 'var(--text-2)')

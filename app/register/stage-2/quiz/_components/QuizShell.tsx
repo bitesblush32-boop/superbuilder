@@ -489,7 +489,7 @@ export function QuizShell({ attemptCount, isLocked, lastAttemptAt }: QuizShellPr
               className="w-full rounded-2xl p-5 mb-6"
               style={{ background: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}
             >
-              <p className="font-mono text-[10px] tracking-[0.15em] uppercase mb-4" style={{ color: 'var(--text-3)' }}>
+              <p className="font-mono text-[12px] tracking-[0.15em] uppercase mb-4" style={{ color: 'var(--text-3)' }}>
                 Missed Questions
               </p>
               {wrongIds.map(id => {

@@ -127,7 +127,7 @@ export function FinalCTA() {
         {/* Eyebrow */}
         <motion.p
           variants={fadeUpVariants}
-          className="font-mono text-[10px] tracking-[0.3em] uppercase mb-6"
+          className="font-mono text-[12px] tracking-[0.3em] uppercase mb-6"
           style={{ color: 'var(--text-brand)' }}
         >
           Registration closes May 25 · Spots limited per grade
@@ -217,7 +217,7 @@ export function FinalCTA() {
                 boxShadow:  '0 0 0 1px rgba(255,184,0,0.5), 0 4px 32px rgba(255,184,0,0.4)',
               }}
             >
-              Claim Your Spot 🚀
+              Claim Your Spot
             </Link>
           </motion.div>
 
@@ -256,7 +256,7 @@ export function FinalCTA() {
         {/* Small print */}
         <motion.p
           variants={fadeUpVariants}
-          className="mt-6 font-mono text-[10px] tracking-wide"
+          className="mt-6 font-mono text-[12px] tracking-wide"
           style={{ color: 'var(--text-4)' }}
         >
           🔒 Full refund if programme doesn&apos;t start &nbsp;·&nbsp; No questions asked &nbsp;·&nbsp; Secure payment via Razorpay
