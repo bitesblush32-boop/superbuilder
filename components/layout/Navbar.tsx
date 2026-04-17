@@ -217,6 +217,7 @@ export function Navbar() {
             */}
             <SheetContent
               side="bottom"
+              forceMount
               className="navbar-mobile-sheet flex flex-col p-0 rounded-t-2xl max-h-[75vh] border-t [&>button]:hidden"
               style={{
                 background:  'var(--bg-base)',
