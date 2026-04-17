@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Script from 'next/script'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useRegistrationStore } from '@/lib/store/registration'
@@ -43,7 +43,8 @@ interface RazorpayOptions {
 }
 
 export function PayPage({ studentId, fullName, email, phone, defaultTier }: PayPageProps) {
-  const router = useRouter()
+  const router       = useRouter()
+  const searchParams = useSearchParams()
   const { tier: storeTier, isEmi, setTier } = useRegistrationStore()
 
   // Prefer Zustand (set on select page), fall back to DB value
@@ -57,7 +58,10 @@ export function PayPage({ studentId, fullName, email, phone, defaultTier }: PayP
   const [emiEnabled, setEmiEnabled]   = useState(isEmi)
   const [loading, setLoading]         = useState(false)
   const [scriptReady, setScriptReady] = useState(false)
-  const [error, setError]             = useState<string | null>(null)
+  // Pre-populate error from callback redirect (e.g. net banking failure)
+  const [error, setError] = useState<string | null>(
+    searchParams.get('error') ? decodeURIComponent(searchParams.get('error')!) : null
+  )
 
   const PREMIUM_PRICE  = TIERS.premium.priceMin // 2499
   const EMI_FIRST      = TIERS.premium.emiFirst  // 999
