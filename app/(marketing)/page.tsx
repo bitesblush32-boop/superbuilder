@@ -37,8 +37,8 @@ export const metadata: Metadata = {
     images: [{ url: '/og/super-builders.jpg', width: 1200, height: 630 }],
   },
   twitter: { card: 'summary_large_image' },
-  metadataBase: new URL('https://superbuilders.zer0.pro'),
-  alternates: { canonical: 'https://superbuilders.zer0.pro' },
+  metadataBase: new URL('https://superbuilder.org'),
+  alternates: { canonical: 'https://superbuilder.org' },
 }
 
 /* ─── JSON-LD structured data ────────────────────────────────────────────────── */

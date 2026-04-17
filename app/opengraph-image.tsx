@@ -179,7 +179,7 @@ export default function OGImage() {
             textTransform: 'uppercase',
           }}
         >
-          superbuilders.zer0.pro
+          superbuilder.org
         </div>
       </div>
     ),

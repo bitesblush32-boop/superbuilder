@@ -1,8 +1,13 @@
-export default function Stage1Page() {
-  return (
-    <div className="flex flex-col items-center justify-center p-12 mt-12 bg-bg-card rounded-xl border border-border-faint text-center">
-      <h1 className="text-3xl font-heading font-bold text-brand mb-4">Stage 1 Registration</h1>
-      <p className="text-text-2">This page is currently under construction. Registration UI will go here.</p>
-    </div>
-  )
+import { getStudentOrRedirect } from '@/lib/auth/getStudentOrRedirect'
+import { Stage1Form } from './_components/Stage1Form'
+
+export const metadata = {
+  title: 'Apply — Super Builders',
+  description: 'Start your Super Builders application. Takes about 5 minutes.',
+}
+
+export default async function Stage1Page() {
+  // Redirects to sign-in if unauthenticated; redirects past stage-1 if already submitted
+  await getStudentOrRedirect(1)
+  return <Stage1Form />
 }

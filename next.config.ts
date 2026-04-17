@@ -8,7 +8,7 @@ const nextConfig: NextConfig = {
       // Cloudflare R2 — project assets (screenshots, cert PDFs, OG images)
       {
         protocol: "https",
-        hostname: "assets.superbuilders.zer0.pro",
+        hostname: "assets.superbuilder.org",
       },
       // R2 dev/staging bucket direct URL
       {
