@@ -5,6 +5,7 @@ import {
   Plus_Jakarta_Sans,
   JetBrains_Mono,
 } from "next/font/google";
+import { ClerkProvider } from "@clerk/nextjs";
 import "./globals.css";
 
 const bebasNeue = Bebas_Neue({
@@ -33,7 +34,7 @@ const jetbrains = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://superbuilders.zer0.pro"),
+  metadataBase: new URL("https://superbuilder.org"),
   title: "Super Builders — AI Hackathon for School Students | zer0.pro",
   description:
     "India's #1 AI programme for Class 8–12 students. 3-week online programme + 24-hour hackathon. ₹1,00,000+ prizes. Register before May 25.",
@@ -50,7 +51,9 @@ export default function RootLayout({
       className={`${bebasNeue.variable} ${exo2.variable} ${plusJakarta.variable} ${jetbrains.variable} h-full antialiased`}
       data-scroll-behavior="smooth"
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <ClerkProvider>{children}</ClerkProvider>
+      </body>
     </html>
   );
 }

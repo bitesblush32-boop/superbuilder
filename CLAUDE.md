@@ -903,7 +903,7 @@ export const metadata: Metadata = {
     images: [{ url: '/og/super-builders.jpg', width: 1200, height: 630 }],
   },
   twitter: { card: 'summary_large_image' },
-  alternates: { canonical: 'https://superbuilders.zer0.pro' },
+  alternates: { canonical: 'https://superbuilder.org' },
 }
 ```
 
@@ -936,10 +936,10 @@ DATABASE_URL=postgresql://postgres:xxx@monorail.proxy.rlwy.net:PORT/railway
 NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_...
 CLERK_SECRET_KEY=sk_live_...
 NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
-NEXT_PUBLIC_CLERK_SIGN_UP_URL=/register/stage-1
+NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
 NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/register
 NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/register/stage-1
-CLERK_WEBHOOK_SECRET=whsec_...
+CLERK_WEBHOOK_SECRET=whsec_YOUR_SECRET
 
 # Razorpay
 RAZORPAY_KEY_ID=rzp_live_...
@@ -949,7 +949,7 @@ NEXT_PUBLIC_RAZORPAY_KEY_ID=rzp_live_...   # public — safe to expose
 
 # Email — Resend
 RESEND_API_KEY=re_...
-FROM_EMAIL=hello@superbuilders.zer0.pro
+FROM_EMAIL=hello@superbuilder.org
 
 # Email — Amazon SES (bulk)
 AWS_SES_REGION=ap-south-1
@@ -970,10 +970,10 @@ CLOUDFLARE_R2_ACCOUNT_ID=...
 CLOUDFLARE_R2_ACCESS_KEY_ID=...
 CLOUDFLARE_R2_SECRET_ACCESS_KEY=...
 CLOUDFLARE_R2_BUCKET_NAME=super-builders-assets
-CLOUDFLARE_R2_PUBLIC_URL=https://assets.superbuilders.zer0.pro
+CLOUDFLARE_R2_PUBLIC_URL=https://assets.superbuilder.org
 
 # App
-NEXT_PUBLIC_APP_URL=https://superbuilders.zer0.pro
+NEXT_PUBLIC_APP_URL=https://superbuilder.org
 NODE_ENV=production
 ```
 

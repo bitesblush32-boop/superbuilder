@@ -54,6 +54,7 @@ export const students = pgTable('students', {
   linkedinHandle:  varchar('linkedin_handle', { length: 100 }),
   discordId:       varchar('discord_id', { length: 100 }),
   certificateUrl:  text('certificate_url'),
+  engageAnswers:   jsonb('engage_answers'), // { goal: string, confidence: number, winBoast: string }
   createdAt:       timestamp('created_at').defaultNow().notNull(),
   updatedAt:       timestamp('updated_at').defaultNow().notNull(),
 }, t => ({
