@@ -17,8 +17,8 @@ const clerkConfigured =
   clerkKey.length > 40
 
 export default clerkConfigured
-  ? clerkMiddleware((auth, req) => {
-      if (isProtected(req)) auth.protect()
+  ? clerkMiddleware(async (auth, req) => {
+      if (isProtected(req)) await auth.protect()
     })
   : () => NextResponse.next()
 
