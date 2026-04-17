@@ -8,8 +8,8 @@ import { HACKATHON_START, REG_DEADLINE } from '@/lib/content/programme'
 
 /* Three.js — lazy loaded with ssr:false so it never runs during SSR and
    gets code-split into its own chunk, keeping the landing page bundle small. */
-const HeroBadge = dynamic<{ className?: string }>(
-  () => import('@/components/three/HeroBadge').then((m) => ({ default: m.HeroBadge })),
+const HeroAnimation = dynamic<{ className?: string }>(
+  () => import('@/components/three/heroanimation').then((m) => ({ default: m.HeroAnimation })),
   { ssr: false },
 )
 
@@ -188,7 +188,7 @@ export function HeroSection() {
             ease: [0.34, 1.56, 0.64, 1], // spring
           }}
         >
-          <HeroBadge className="w-[230px] h-[230px] sm:w-[300px] sm:h-[300px] md:w-[420px] md:h-[420px] lg:w-[500px] lg:h-[500px]" />
+          <HeroAnimation className="w-[230px] h-[230px] sm:w-[300px] sm:h-[300px] md:w-[420px] md:h-[420px] lg:w-[560px] lg:h-[560px]" />
         </motion.div>
 
         {/* ── Text column — bottom on mobile, left on desktop ── */}

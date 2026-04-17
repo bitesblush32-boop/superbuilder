@@ -9,6 +9,8 @@
 !.yarn/plugins
 !.yarn/releases
 !.yarn/versions
+.settings.local.json
+.pakage-lock.json
 
 # testing
 /coverage
@@ -40,3 +42,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# clerk configuration (can include secrets)
+/.clerk/
+super-builders-design-system.html
+.claude/settings.local.json
