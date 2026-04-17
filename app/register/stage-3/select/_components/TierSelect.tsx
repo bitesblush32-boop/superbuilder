@@ -264,7 +264,7 @@ function EmiToggle({
         <p className="font-body text-xs font-semibold mb-0.5" style={{ color: checked ? 'var(--brand)' : 'var(--text-2)' }}>
           Pay in 2 instalments (EMI)
         </p>
-        <p className="font-mono text-[11px]" style={{ color: 'var(--text-3)' }}>
+        <p className="font-mono text-[13px]" style={{ color: 'var(--text-3)' }}>
           ₹{emiFirst} now · ₹{emiRest} in 1 week · Total ₹{price.toLocaleString('en-IN')}
         </p>
       </div>

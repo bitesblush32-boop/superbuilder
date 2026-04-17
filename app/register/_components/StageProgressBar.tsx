@@ -68,7 +68,7 @@ export function StageProgressBar({
                 {/* Circle */}
                 <motion.div
                   layout
-                  className="relative flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-full text-[11px] sm:text-xs font-bold font-mono select-none"
+                  className="relative flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-full text-[13px] sm:text-xs font-bold font-mono select-none"
                   style={{
                     background: isDone
                       ? '#FFB800'
@@ -136,7 +136,7 @@ export function StageProgressBar({
       </div>
 
       {/* Mobile step text — xs only */}
-      <p className="sm:hidden mt-2 text-center text-[11px] text-text-3 font-body">
+      <p className="sm:hidden mt-2 text-center text-[13px] text-text-3 font-body">
         Step <span className="text-brand font-semibold">{currentStage}</span> of 5
       </p>
     </div>

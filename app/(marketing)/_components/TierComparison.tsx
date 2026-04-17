@@ -308,7 +308,7 @@ export function TierComparison() {
               }}
             >
               <p
-                className="font-mono text-[11px] font-semibold"
+                className="font-mono text-[13px] font-semibold"
                 style={{ color: 'var(--text-brand)' }}
               >
                 Or pay ₹{TIERS.premium.emiFirst} now + rest in 1 week

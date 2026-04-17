@@ -167,7 +167,7 @@ export function DomainSelectClient({ studentId: _studentId }: { studentId: strin
                   {domain.label}
                 </p>
                 <p
-                  className="text-[11px] font-body leading-tight"
+                  className="text-[13px] font-body leading-tight"
                   style={{ color: isSelected ? domain.color : 'var(--text-brand)', opacity: isSelected ? 0.9 : 0.75 }}
                 >
                   {domain.tagline}
@@ -178,7 +178,7 @@ export function DomainSelectClient({ studentId: _studentId }: { studentId: strin
               <AnimatePresence>
                 {isSelected && (
                   <motion.p
-                    className="text-[11px] font-body leading-relaxed"
+                    className="text-[13px] font-body leading-relaxed"
                     style={{ color: 'var(--text-2)' }}
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: 'auto' }}

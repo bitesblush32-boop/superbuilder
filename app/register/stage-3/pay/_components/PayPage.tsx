@@ -204,7 +204,7 @@ export function PayPage({ studentId, fullName, email, phone, defaultTier }: PayP
                   <p className="font-body text-xs font-semibold" style={{ color: emiEnabled ? 'var(--brand)' : 'var(--text-2)' }}>
                     Pay in 2 instalments
                   </p>
-                  <p className="font-mono text-[11px]" style={{ color: 'var(--text-3)' }}>
+                  <p className="font-mono text-[13px]" style={{ color: 'var(--text-3)' }}>
                     ₹{EMI_FIRST} now · ₹{EMI_REST} in 1 week
                   </p>
                 </div>

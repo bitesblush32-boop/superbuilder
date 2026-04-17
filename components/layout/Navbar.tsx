@@ -164,7 +164,7 @@ export function Navbar() {
             className={cn(
               'hidden sm:inline-flex items-center justify-center gap-1.5',
               'h-[34px] px-4 rounded-[3px]',
-              'font-heading font-bold text-[11px] md:text-[14px]  tracking-[0.12em] uppercase',
+              'font-heading font-bold text-[13px] md:text-[14px]  tracking-[0.12em] uppercase',
               'transition-all duration-150',
             )}
             style={{
@@ -292,7 +292,7 @@ export function Navbar() {
                       el.style.background = 'transparent'
                     }}
                   >
-                    <span className="font-body font-semibold text-[11px] tracking-wide uppercase">
+                    <span className="font-body font-semibold text-[13px] tracking-wide uppercase">
                       {link.label}
                     </span>
                     <ChevronRight

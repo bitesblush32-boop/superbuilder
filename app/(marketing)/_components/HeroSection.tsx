@@ -53,7 +53,7 @@ function Pill({ label, color }: { label: string; color: PillColor }) {
   const s = PILL_STYLES[color]
   return (
     <span
-      className="inline-flex items-center h-[26px] px-3 rounded-full font-mono text-[11px] tracking-wide border whitespace-nowrap"
+      className="inline-flex items-center h-[26px] px-3 rounded-full font-mono text-[13px] tracking-wide border whitespace-nowrap"
       style={{ borderColor: s.border, background: s.bg, color: s.text }}
     >
       {label}
@@ -319,7 +319,7 @@ export function HeroSection() {
               ].map(({ value, label }, i) => (
                 <span
                   key={i}
-                  className="font-mono text-[11px] tracking-wide flex items-baseline gap-1.5"
+                  className="font-mono text-[13px] tracking-wide flex items-baseline gap-1.5"
                   style={{ color: 'var(--text-3)' }}
                 >
                   <span

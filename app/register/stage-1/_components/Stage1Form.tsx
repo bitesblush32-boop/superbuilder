@@ -238,7 +238,7 @@ function Textarea({
         {...props}
       />
       <p
-        className="text-[11px] text-right font-mono mt-1"
+        className="text-[13px] text-right font-mono mt-1"
         style={{ color: overLimit ? 'var(--red)' : 'var(--text-4)' }}
       >
         {count}/{maxChars}
@@ -872,7 +872,7 @@ export function Stage1Form() {
                       className="rounded-xl p-4 flex flex-col gap-4"
                       style={{ background: 'var(--bg-float)', border: '1px solid var(--border-faint)' }}
                     >
-                      <p className="text-[11px] font-mono uppercase tracking-[0.12em]" style={{ color: 'var(--text-4)' }}>
+                      <p className="text-[13px] font-mono uppercase tracking-[0.12em]" style={{ color: 'var(--text-4)' }}>
                         Optional — but appreciated 😊
                       </p>
 
