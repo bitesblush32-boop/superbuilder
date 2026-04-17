@@ -69,7 +69,7 @@ function FeatureRow({
   return (
     <li className="flex items-start gap-3 py-2.5 border-b last:border-0" style={{ borderColor: 'var(--border-faint)' }}>
       <span
-        className="mt-[1px] flex-shrink-0 w-4 h-4 rounded-full flex items-center justify-center text-[10px] font-bold"
+        className="mt-[1px] flex-shrink-0 w-4 h-4 rounded-full flex items-center justify-center text-[12px] font-bold"
         style={
           included
             ? { background: `${accent}20`, color: accent }
@@ -118,7 +118,7 @@ export function TierComparison() {
           viewport={{ once: true, margin: '-60px' }}
         >
           <p
-            className="font-mono text-[10px] tracking-[0.28em] uppercase mb-3"
+            className="font-mono text-[12px] tracking-[0.28em] uppercase mb-3"
             style={{ color: 'var(--text-brand)' }}
           >
             Choose Your Path
@@ -139,7 +139,7 @@ export function TierComparison() {
         </motion.div>
 
         {/* ── Cards ── */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 items-start">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:items-stretch">
 
           {/* ── PRO card ── */}
           <motion.div
@@ -184,7 +184,7 @@ export function TierComparison() {
                 – ₹{TIERS.pro.priceMax.toLocaleString('en-IN')}
               </span>
               <p
-                className="font-mono text-[10px] mt-1 tracking-wide"
+                className="font-mono text-[12px] mt-1 tracking-wide"
                 style={{ color: 'var(--text-4)' }}
               >
                 One-time · Early bird pricing
@@ -241,7 +241,7 @@ export function TierComparison() {
           >
             {/* Most Popular pill */}
             <div
-              className="absolute -top-3.5 left-1/2 -translate-x-1/2 inline-flex items-center gap-1.5 px-4 h-7 rounded-full border font-mono text-[10px] tracking-wider uppercase font-semibold whitespace-nowrap"
+              className="absolute -top-3.5 left-1/2 -translate-x-1/2 inline-flex items-center gap-1.5 px-4 h-7 rounded-full border font-mono text-[12px] tracking-wider uppercase font-semibold whitespace-nowrap"
               style={{
                 background:  'var(--brand)',
                 borderColor: 'rgba(255,184,0,0.6)',
@@ -292,7 +292,7 @@ export function TierComparison() {
                 – ₹{TIERS.premium.priceMax.toLocaleString('en-IN')}
               </span>
               <p
-                className="font-mono text-[10px] mt-1 tracking-wide"
+                className="font-mono text-[12px] mt-1 tracking-wide"
                 style={{ color: 'var(--text-4)' }}
               >
                 One-time · Early bird pricing
@@ -311,7 +311,7 @@ export function TierComparison() {
                 className="font-mono text-[11px] font-semibold"
                 style={{ color: 'var(--text-brand)' }}
               >
-                💳 Or pay ₹{TIERS.premium.emiFirst} now + rest in 1 week
+                Or pay ₹{TIERS.premium.emiFirst} now + rest in 1 week
               </p>
             </div>
 
@@ -346,14 +346,14 @@ export function TierComparison() {
                 el.style.boxShadow  = '0 0 0 1px rgba(255,184,0,0.4), 0 4px 24px rgba(255,184,0,0.3)'
               }}
             >
-              Choose Premium 🚀
+              Choose Premium
             </Link>
           </motion.div>
         </div>
 
         {/* ── Footer note ── */}
         <motion.p
-          className="text-center font-mono text-[10px] mt-8 tracking-wide"
+          className="text-center font-mono text-[12px] mt-8 tracking-wide"
           style={{ color: 'var(--text-4)' }}
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}

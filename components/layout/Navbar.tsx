@@ -54,7 +54,7 @@ function CountdownPill() {
 
       {/* mobile: days only */}
       <span
-        className="font-mono text-[10px] tracking-wider whitespace-nowrap md:hidden"
+        className="font-mono text-[12px] tracking-wider whitespace-nowrap md:hidden"
         style={{ color: 'var(--text-brand)' }}
       >
         {days}d left
@@ -62,7 +62,7 @@ function CountdownPill() {
 
       {/* md+: full format */}
       <span
-        className="font-mono text-[10px] tracking-widest whitespace-nowrap hidden md:inline"
+        className="font-mono text-[12px] tracking-widest whitespace-nowrap hidden md:inline"
         style={{ color: 'var(--text-brand)' }}
       >
         JUN 7 ·{' '}
@@ -324,7 +324,7 @@ export function Navbar() {
                   </span>
                 </Link>
                 <p
-                  className="mt-2.5 text-center font-mono text-[10px] tracking-wider"
+                  className="mt-2.5 text-center font-mono text-[12px] tracking-wider"
                   style={{ color: 'var(--text-4)' }}
                 >
                   DEADLINE: MAY 25 · SPOTS FILLING FAST

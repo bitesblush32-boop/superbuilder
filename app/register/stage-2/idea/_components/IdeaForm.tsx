@@ -167,7 +167,7 @@ function FieldLabel({ children, optional }: { children: React.ReactNode; optiona
     <p className="text-xs font-mono font-medium mb-1.5 flex items-center gap-2" style={{ color: 'var(--text-3)' }}>
       {children}
       {optional && (
-        <span className="rounded-full px-2 py-0.5 text-[10px]"
+        <span className="rounded-full px-2 py-0.5 text-[12px]"
           style={{ background: 'var(--bg-float)', color: 'var(--text-4)', border: '1px solid var(--border-faint)' }}>
           optional
         </span>

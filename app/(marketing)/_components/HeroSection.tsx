@@ -142,7 +142,7 @@ export function HeroSection() {
 
   const daysLabel = regClosed
     ? hackStarted
-      ? 'Live Now 🔥'
+      ? 'Live Now'
       : `${hackDays}d to Hackathon`
     : `${regDays}d to Register`
 
@@ -166,7 +166,7 @@ export function HeroSection() {
 
       {/* ── Thin gold horizon line ── */}
       <div
-        className="pointer-events-none absolute top-[72px] inset-x-0 h-px"
+        className="pointer-events-none absolute md:top-[72px] inset-x-0 h-px"
         style={{
           background:
             'linear-gradient(90deg, transparent 0%, rgba(255,184,0,0.25) 30%, rgba(255,184,0,0.25) 70%, transparent 100%)',
@@ -201,7 +201,7 @@ export function HeroSection() {
           {/* Eyebrow */}
           <motion.p
             variants={fadeUp}
-            className="font-mono text-[10px] tracking-[0.28em] uppercase mb-5"
+            className="font-mono text-[12px] tracking-[0.28em] uppercase mb-5"
             style={{ color: 'var(--text-brand)' }}
           >
             ZER0.PRO PRESENTS · SEASON 1 · 2025
@@ -271,7 +271,7 @@ export function HeroSection() {
                     '0 0 0 1px rgba(255,184,0,0.4), 0 4px 24px rgba(255,184,0,0.35)',
                 }}
               >
-                Claim Your Spot 🚀
+                Claim Your Spot
               </Link>
             </motion.div>
 

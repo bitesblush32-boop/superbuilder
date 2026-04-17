@@ -69,7 +69,7 @@ export function JudgingCriteria() {
           viewport={{ once: true, margin: '-60px' }}
         >
           <p
-            className="font-mono text-[10px] tracking-[0.28em] uppercase mb-3"
+            className="font-mono text-[12px] tracking-[0.28em] uppercase mb-3"
             style={{ color: 'var(--text-brand)' }}
           >
             Judging
@@ -190,7 +190,7 @@ export function JudgingCriteria() {
                       {criterion.criterion}
                     </p>
                     <p
-                      className="font-mono text-[10px] mt-0.5"
+                      className="font-mono text-[12px] mt-0.5"
                       style={{ color }}
                     >
                       {criterion.weight} points
@@ -263,7 +263,7 @@ export function JudgingCriteria() {
 
         {/* ── Total note ── */}
         <motion.p
-          className="mt-8 text-right font-mono text-[10px] tracking-wide"
+          className="mt-8 text-right font-mono text-[12px] tracking-wide"
           style={{ color: 'var(--text-4)' }}
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}

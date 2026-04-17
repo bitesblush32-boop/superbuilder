@@ -150,7 +150,7 @@ function HorizontalTimeline() {
                   {phase.name}
                 </p>
                 <p
-                  className="font-mono text-[10px] leading-snug mb-1"
+                  className="font-mono text-[12px] leading-snug mb-1"
                   style={{ color: s.dateColor }}
                 >
                   {phase.dates}
@@ -245,7 +245,7 @@ function VerticalTimeline() {
                   {phase.dates}
                 </p>
                 <p
-                  className="font-mono text-[10px] tracking-wide uppercase"
+                  className="font-mono text-[12px] tracking-wide uppercase"
                   style={{ color: 'var(--text-4)' }}
                 >
                   {phase.milestone}
@@ -340,7 +340,7 @@ function WorkshopCard({
       {/* Meta pills */}
       <div className="flex flex-wrap gap-2 mb-4 relative z-10">
         <span
-          className="inline-flex items-center h-[22px] px-2.5 rounded-full font-mono text-[10px] border"
+          className="inline-flex items-center h-[22px] px-2.5 rounded-full font-mono text-[12px] border"
           style={{
             borderColor: 'var(--border-subtle)',
             color:       'var(--text-3)',
@@ -349,7 +349,7 @@ function WorkshopCard({
           ⏱ {workshop.duration} min
         </span>
         <span
-          className="inline-flex items-center h-[22px] px-2.5 rounded-full font-mono text-[10px] border"
+          className="inline-flex items-center h-[22px] px-2.5 rounded-full font-mono text-[12px] border"
           style={{
             borderColor: 'var(--border-subtle)',
             color:       'var(--text-3)',
@@ -390,7 +390,7 @@ function WorkshopCard({
           Unlock:
         </span>
         <span
-          className="font-mono text-[10px] font-semibold"
+          className="font-mono text-[12px] font-semibold"
           style={{ color: accent }}
         >
           {badge.id.replace(/_/g, ' ').toUpperCase()} BADGE
@@ -437,7 +437,7 @@ export function ProgrammeTimeline() {
           transition={{ duration: 0.6, ease: EASE_OUT }}
         >
           <p
-            className="font-mono text-[10px] tracking-[0.28em] uppercase mb-3"
+            className="font-mono text-[12px] tracking-[0.28em] uppercase mb-3"
             style={{ color: 'var(--text-brand)' }}
           >
             Programme Journey
@@ -469,7 +469,7 @@ export function ProgrammeTimeline() {
           transition={{ duration: 0.5, ease: EASE_OUT }}
         >
           <p
-            className="font-mono text-[10px] tracking-[0.22em] uppercase mb-6"
+            className="font-mono text-[12px] tracking-[0.22em] uppercase mb-6"
             style={{ color: 'var(--text-3)' }}
           >
             Three Workshops · Earn Badges · Level Up

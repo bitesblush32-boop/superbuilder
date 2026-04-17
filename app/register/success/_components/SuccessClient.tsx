@@ -319,7 +319,7 @@ export function SuccessClient({ firstName, referralCode, tier, xp }: SuccessClie
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0, transition: { duration: 0.5, ease: EASE_OUT, delay: 0.45 } }}
             >
-              <p className="font-mono text-[10px] tracking-[0.2em] uppercase mb-4" style={{ color: 'var(--text-3)' }}>
+              <p className="font-mono text-[12px] tracking-[0.2em] uppercase mb-4" style={{ color: 'var(--text-3)' }}>
                 Your Journey Ahead
               </p>
               <div className="flex flex-wrap gap-3">

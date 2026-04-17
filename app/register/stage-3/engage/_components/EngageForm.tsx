@@ -190,7 +190,7 @@ function Question1({ value, onChange }: { value: string; onChange: (v: string) =
 
   return (
     <div>
-      <p className="font-mono text-[10px] tracking-[0.2em] uppercase mb-3" style={{ color: 'var(--brand)' }}>
+      <p className="font-mono text-[12px] tracking-[0.2em] uppercase mb-3" style={{ color: 'var(--brand)' }}>
         Question 1
       </p>
       <h2 className="font-heading text-2xl font-bold mb-6 leading-snug" style={{ color: 'var(--text-1)' }}>
@@ -246,7 +246,7 @@ function Question2({ value, onChange }: { value: number; onChange: (v: number) =
 
   return (
     <div>
-      <p className="font-mono text-[10px] tracking-[0.2em] uppercase mb-3" style={{ color: 'var(--brand)' }}>
+      <p className="font-mono text-[12px] tracking-[0.2em] uppercase mb-3" style={{ color: 'var(--brand)' }}>
         Question 2
       </p>
       <h2 className="font-heading text-2xl font-bold mb-6 leading-snug" style={{ color: 'var(--text-1)' }}>
@@ -297,7 +297,7 @@ function Question2({ value, onChange }: { value: number; onChange: (v: number) =
 function Question3({ value, onChange }: { value: string; onChange: (v: string) => void }) {
   return (
     <div>
-      <p className="font-mono text-[10px] tracking-[0.2em] uppercase mb-3" style={{ color: 'var(--brand)' }}>
+      <p className="font-mono text-[12px] tracking-[0.2em] uppercase mb-3" style={{ color: 'var(--brand)' }}>
         Question 3
       </p>
       <h2 className="font-heading text-2xl font-bold mb-2 leading-snug" style={{ color: 'var(--text-1)' }}>

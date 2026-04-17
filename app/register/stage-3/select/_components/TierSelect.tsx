@@ -165,7 +165,7 @@ function TierCard({
         {/* Badge pill */}
         {badge && (
           <motion.div
-            className="self-start rounded-full px-3 py-1 font-mono text-[10px] tracking-[0.15em] uppercase"
+            className="self-start rounded-full px-3 py-1 font-mono text-[12px] tracking-[0.15em] uppercase"
             style={{ background: 'rgba(255,184,0,0.15)', color: 'var(--brand)', border: '1px solid rgba(255,184,0,0.3)' }}
             animate={{ opacity: [0.8, 1, 0.8] }}
             transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
@@ -188,7 +188,7 @@ function TierCard({
             </span>
           </div>
           {scarcity && (
-            <p className="font-mono text-[10px] tracking-[0.1em] uppercase mt-1" style={{ color: 'var(--red)' }}>
+            <p className="font-mono text-[12px] tracking-[0.1em] uppercase mt-1" style={{ color: 'var(--red)' }}>
               {scarcity}
             </p>
           )}
@@ -257,7 +257,7 @@ function EmiToggle({
           border:     checked ? 'none' : '1.5px solid var(--border-soft)',
         }}
       >
-        {checked && <span className="text-[10px] font-bold" style={{ color: '#000' }}>✓</span>}
+        {checked && <span className="text-[12px] font-bold" style={{ color: '#000' }}>✓</span>}
       </div>
 
       <div>

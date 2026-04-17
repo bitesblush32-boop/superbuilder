@@ -144,7 +144,7 @@ function FormCard({
       style={{ background: 'var(--bg-card)', border: '1px solid var(--border-faint)' }}
     >
       <div className="flex items-center gap-2">
-        <span className="text-base" aria-hidden="true">{icon}</span>
+        {/* <span className="text-base" aria-hidden="true">{icon}</span> */}
         <h3
           className="font-heading font-semibold text-xs tracking-[0.1em] uppercase"
           style={{ color: 'var(--text-3)' }}
@@ -384,7 +384,7 @@ function SubStepHeader({ step }: { step: 1 | 2 }) {
       </h1>
       <p className="text-sm font-body leading-relaxed" style={{ color: 'var(--text-3)' }}>
         {step === 1
-          ? 'No experience needed — just bring your ideas. 🚀 Takes ~3 minutes.'
+          ? 'No experience needed — just bring your ideas. Takes ~3 minutes.'
           : 'We need a parent or guardian to confirm your participation. Almost in! 🏆'}
       </p>
     </div>
@@ -882,7 +882,7 @@ export function Stage1Form() {
                           {...register('instagramHandle')}
                           placeholder="@yourhandle"
                           inputMode="text"
-                          autoComplete="username"
+                          autoComplete="nameid"
                           autoCapitalize="none"
                         />
                       </div>
