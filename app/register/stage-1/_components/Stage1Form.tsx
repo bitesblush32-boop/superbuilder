@@ -520,7 +520,15 @@ export function Stage1Form() {
       'availabilityHrs', 'deviceAccess', 'tshirtSize',
       'whyJoin', 'whatToBuild',
     ])
-    if (!valid) return
+    if (!valid) {
+      setTimeout(() => {
+        const firstErrorAlert = document.querySelector('p[role="alert"]')
+        if (firstErrorAlert && firstErrorAlert.parentElement) {
+          firstErrorAlert.parentElement.scrollIntoView({ behavior: 'smooth', block: 'center' })
+        }
+      }, 50)
+      return
+    }
     setDirection(1)
     setSubStep(2)
     window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -905,16 +913,10 @@ export function Stage1Form() {
                   </FormCard>
 
                   {/* Next CTA */}
-                  <CTAButton onClick={handleNext} disabled={!step1Ready}>
+                  <CTAButton onClick={handleNext}>
                     Parent Details
                     <ChevronRight size={18} strokeWidth={2.5} />
                   </CTAButton>
-
-                  {!step1Ready && (
-                    <p className="text-center text-xs font-body" style={{ color: 'var(--text-4)' }}>
-                      Fill all required fields above to continue
-                    </p>
-                  )}
                 </>
               ) : (
                 /* ═══ SUB-STEP 2 — Parent fields ════════════════════════════ */
@@ -1058,7 +1060,7 @@ export function Stage1Form() {
                   </AnimatePresence>
 
                   {/* Submit CTA */}
-                  <CTAButton type="submit" disabled={!step2Ready} loading={submitting}>
+                  <CTAButton type="submit" loading={submitting}>
                     🚀 Submit Application
                   </CTAButton>
 

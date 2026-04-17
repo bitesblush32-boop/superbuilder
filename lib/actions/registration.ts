@@ -1,5 +1,6 @@
 'use server'
 
+import { revalidatePath } from 'next/cache'
 import { auth, currentUser } from '@clerk/nextjs/server'
 import { db } from '@/lib/db'
 import { quizAttempts, ideaSubmissions } from '@/lib/db/schema'
@@ -111,6 +112,8 @@ export async function submitStage1(data: unknown): Promise<{
   // Award Explorer badge + 50 XP, then advance to stage 2
   await addBadgeToStudent(student.id, 'explorer', 50)
   await updateStudentStage(student.id, '2')
+  
+  revalidatePath('/register')
 
   return { success: true, badgeAwarded: 'EXPLORER' }
 }
@@ -244,6 +247,8 @@ export async function submitIdea(data: unknown): Promise<{
   // Award Idea Launcher badge + 75 XP, advance to stage 3
   await addBadgeToStudent(student.id, 'idea_launcher', 75)
   await updateStudentStage(student.id, '3')
+  
+  revalidatePath('/register')
 
   return { success: true, badgeAwarded: 'IDEA_LAUNCHER' }
 }
