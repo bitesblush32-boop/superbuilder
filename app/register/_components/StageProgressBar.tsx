@@ -58,7 +58,7 @@ export function StageProgressBar({ currentStage }: StageProgressBarProps) {
                     background: isDone
                       ? '#FFB800'
                       : isActive
-                        ? 'transparent'
+                        ? 'var(--bg-base)'
                         : 'var(--bg-float)',
                     border: isActive
                       ? '2px solid #FFB800'
