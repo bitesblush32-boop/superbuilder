@@ -135,7 +135,7 @@ export function DomainSelectClient({ studentId: _studentId }: { studentId: strin
               }}
               whileTap={{ scale: 0.97 }}
               animate={{ scale: isSelected ? [1, 1.04, 1] : 1 }}
-              transition={{ type: 'spring', stiffness: 400, damping: 20 }}
+              transition={{ type: 'tween', duration: 0.3, ease: 'easeInOut' }}
             >
               {/* Check badge */}
               <AnimatePresence>

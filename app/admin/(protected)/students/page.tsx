@@ -1,7 +1,7 @@
 import { Suspense } from 'react'
 import { getStudents } from '@/lib/db/queries/admin'
-import { StudentsFilterBar } from '../_components/StudentsFilterBar'
-import { StudentsTable } from '../_components/StudentsTable'
+import { StudentsFilterBar } from '../../_components/StudentsFilterBar'
+import { StudentsTable } from '../../_components/StudentsTable'
 
 interface PageProps {
   searchParams: Promise<{

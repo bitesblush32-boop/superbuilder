@@ -2,7 +2,7 @@ import { auth } from '@clerk/nextjs/server'
 import {
   getProjectsQueue, getScoredProjects, getJudgingLeaderboard, clerkIdToUuid,
 } from '@/lib/db/queries/admin'
-import { JudgingClient } from '../_components/JudgingClient'
+import { JudgingClient } from '../../_components/JudgingClient'
 
 export const dynamic = 'force-dynamic'
 

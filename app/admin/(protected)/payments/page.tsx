@@ -1,7 +1,7 @@
 import { Suspense } from 'react'
 import { getPayments, getPaymentSummary } from '@/lib/db/queries/admin'
-import { PaymentsTable } from '../_components/PaymentsTable'
-import { PaymentsFilterBar } from '../_components/PaymentsFilterBar'
+import { PaymentsTable } from '../../_components/PaymentsTable'
+import { PaymentsFilterBar } from '../../_components/PaymentsFilterBar'
 
 interface PageProps {
   searchParams: Promise<{
@@ -60,22 +60,19 @@ export default async function AdminPaymentsPage({ searchParams }: PageProps) {
         </p>
       </div>
 
-      {/* Summary row */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <SummaryCard label="Total Collected"    value={fmt(summary.capturedRupees)} color="var(--green)" />
-        <SummaryCard label="Pending"            value={fmt(summary.pendingRupees)}  color="var(--amber)" />
-        <SummaryCard label="Failed Count"       value={String(summary.failedCount)} color="var(--red)" />
-        <SummaryCard label="Refunded Count"     value={String(summary.refundedCount)} color="var(--purple)" />
+        <SummaryCard label="Total Collected"  value={fmt(summary.capturedRupees)}      color="var(--green)" />
+        <SummaryCard label="Pending"          value={fmt(summary.pendingRupees)}        color="var(--amber)" />
+        <SummaryCard label="Failed Count"     value={String(summary.failedCount)}       color="var(--red)" />
+        <SummaryCard label="Refunded Count"   value={String(summary.refundedCount)}     color="var(--purple)" />
       </div>
 
-      {/* Filter bar */}
       <div className="flex flex-col sm:flex-row gap-2 flex-wrap">
         <Suspense>
           <PaymentsFilterBar total={total} showing={payments.length} />
         </Suspense>
       </div>
 
-      {/* Table */}
       <Suspense>
         <PaymentsTable payments={payments} total={total} currentPage={page} />
       </Suspense>

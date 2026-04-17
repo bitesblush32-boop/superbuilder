@@ -1,5 +1,5 @@
 import { getDropoffCounts, getCommsLog } from '@/lib/db/queries/admin'
-import { CommsClient } from '../_components/CommsClient'
+import { CommsClient } from '../../_components/CommsClient'
 
 export const dynamic = 'force-dynamic'
 
