@@ -180,3 +180,25 @@ export const commsLog = pgTable('comms_log', {
 }, t => ({
   createdAtIdx: index('comms_log_created_at_idx').on(t.createdAt),
 }))
+
+export const programmeConfig = pgTable('programme_config', {
+  section:   varchar('section', { length: 50 }).primaryKey(),
+  data:      jsonb('data').notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+})
+
+export const scheduleItems = pgTable('schedule_items', {
+  id:            uuid('id').primaryKey().defaultRandom(),
+  type:          varchar('type', { length: 20 }).notNull(),  // 'video' | 'meeting' | 'resource'
+  title:         varchar('title', { length: 255 }).notNull(),
+  description:   text('description'),
+  url:           text('url'),
+  targetStage:   varchar('target_stage', { length: 20 }),   // '1','2','3','4','dashboard','all'
+  targetSection: varchar('target_section', { length: 50 }), // 'workshop_1','workshop_2','workshop_3','general'
+  scheduledAt:   timestamp('scheduled_at', { withTimezone: true }),
+  durationMins:  integer('duration_mins'),
+  isVisible:     boolean('is_visible').default(true).notNull(),
+  notifySent:    boolean('notify_sent').default(false).notNull(),
+  createdAt:     timestamp('created_at').defaultNow().notNull(),
+  updatedAt:     timestamp('updated_at').defaultNow().notNull(),
+})

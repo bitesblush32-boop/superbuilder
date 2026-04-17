@@ -2,13 +2,7 @@ import { auth } from '@clerk/nextjs/server'
 import Razorpay from 'razorpay'
 import { getStudentByClerkId } from '@/lib/db/queries/students'
 import { createPendingPayment } from '@/lib/db/queries/payments'
-
-// Amount map in paise (₹1 = 100 paise)
-const AMOUNT_MAP: Record<string, number> = {
-  'pro-false':      149900, // ₹1,499
-  'premium-false':  249900, // ₹2,499
-  'premium-true':    99900, // ₹999 (EMI first instalment)
-}
+import { getPricingConfig } from '@/lib/db/queries/config'
 
 export async function POST(req: Request) {
   const rzp = new Razorpay({
@@ -35,6 +29,13 @@ export async function POST(req: Request) {
     if (tier === 'pro' && isEmi) isEmi = false // EMI only for Premium
   } catch {
     return Response.json({ error: 'Invalid request body' }, { status: 400 })
+  }
+
+  const pricing = await getPricingConfig()
+  const AMOUNT_MAP: Record<string, number> = {
+    'pro-false':     pricing.pro.priceMin * 100,
+    'premium-false': pricing.premium.priceMin * 100,
+    'premium-true':  pricing.premium.emiFirst * 100,
   }
 
   const amount = AMOUNT_MAP[`${tier}-${isEmi}`]

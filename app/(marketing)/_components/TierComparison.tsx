@@ -2,43 +2,10 @@
 
 import Link from 'next/link'
 import { motion, type Variants } from 'framer-motion'
-import { TIERS } from '@/lib/content/programme'
+import type { PricingConfig } from '@/lib/db/queries/config'
 
 /* ─── constants ─────────────────────────────────────────────────────────────── */
 const EASE_OUT = [0.16, 1, 0.3, 1] as const
-
-// All features in display order (superset of both tiers)
-const ALL_FEATURES = [
-  '3 live workshops',
-  '3 workshops + bonus session',
-  'Group mentorship',
-  '1:1 mentor (2 slots)',
-  'Participation certificate',
-  'Verified LinkedIn certificate',
-  'Digital badge',
-  'T-shirt + premium kit',
-  'Priority judging',
-  'Parent progress report',
-  'EMI available',
-] as const
-
-// What each tier actually has (for the ✓ / — check)
-const PRO_HAS = new Set([
-  '3 live workshops',
-  'Group mentorship',
-  'Participation certificate',
-  'Digital badge',
-])
-
-const PREMIUM_HAS = new Set([
-  '3 workshops + bonus session',
-  '1:1 mentor (2 slots)',
-  'Verified LinkedIn certificate',
-  'T-shirt + premium kit',
-  'Priority judging',
-  'Parent progress report',
-  'EMI available',
-])
 
 /* ─── variants ──────────────────────────────────────────────────────────────── */
 const proCard: Variants = {
@@ -90,7 +57,12 @@ function FeatureRow({
 }
 
 /* ─── TierComparison ────────────────────────────────────────────────────────── */
-export function TierComparison() {
+export function TierComparison({ pricing }: { pricing: PricingConfig }) {
+  const proFeatureSet     = new Set(pricing.pro.features)
+  const premiumFeatureSet = new Set(pricing.premium.features)
+  const allFeaturesSet    = new Set([...pricing.pro.features, ...pricing.pro.missing, ...pricing.premium.features])
+  const ALL_FEATURES      = Array.from(allFeaturesSet)
+
   return (
     <section
       className="relative py-20 sm:py-28 overflow-hidden"
@@ -166,7 +138,7 @@ export function TierComparison() {
               className="font-display leading-none mb-5"
               style={{ fontSize: 'clamp(40px, 5vw, 56px)', color: 'var(--text-1)' }}
             >
-              {TIERS.pro.name}
+              Pro
             </h3>
 
             {/* Price */}
@@ -175,13 +147,13 @@ export function TierComparison() {
                 className="font-heading font-extrabold"
                 style={{ fontSize: 'clamp(28px, 4vw, 36px)', color: 'var(--text-brand)' }}
               >
-                ₹{TIERS.pro.priceMin.toLocaleString('en-IN')}
+                ₹{pricing.pro.priceMin.toLocaleString('en-IN')}
               </span>
               <span
                 className="font-heading font-medium text-lg ml-1"
                 style={{ color: 'var(--text-3)' }}
               >
-                – ₹{TIERS.pro.priceMax.toLocaleString('en-IN')}
+                – ₹{pricing.pro.priceMax.toLocaleString('en-IN')}
               </span>
               <p
                 className="font-mono text-[12px] mt-1 tracking-wide"
@@ -197,7 +169,7 @@ export function TierComparison() {
                 <FeatureRow
                   key={f}
                   feature={f}
-                  included={PRO_HAS.has(f)}
+                  included={proFeatureSet.has(f)}
                   accent="#22C55E"
                 />
               ))}
@@ -274,7 +246,7 @@ export function TierComparison() {
               className="font-display leading-none mb-5"
               style={{ fontSize: 'clamp(40px, 5vw, 56px)', color: 'var(--text-brand)' }}
             >
-              {TIERS.premium.name}
+              Premium
             </h3>
 
             {/* Price */}
@@ -283,13 +255,13 @@ export function TierComparison() {
                 className="font-heading font-extrabold"
                 style={{ fontSize: 'clamp(28px, 4vw, 36px)', color: 'var(--text-brand)' }}
               >
-                ₹{TIERS.premium.priceMin.toLocaleString('en-IN')}
+                ₹{pricing.premium.priceMin.toLocaleString('en-IN')}
               </span>
               <span
                 className="font-heading font-medium text-lg ml-1"
                 style={{ color: 'var(--text-3)' }}
               >
-                – ₹{TIERS.premium.priceMax.toLocaleString('en-IN')}
+                – ₹{pricing.premium.priceMax.toLocaleString('en-IN')}
               </span>
               <p
                 className="font-mono text-[12px] mt-1 tracking-wide"
@@ -311,7 +283,7 @@ export function TierComparison() {
                 className="font-mono text-[11px] font-semibold"
                 style={{ color: 'var(--text-brand)' }}
               >
-                Or pay ₹{TIERS.premium.emiFirst} now + rest in 1 week
+                Or pay ₹{pricing.premium.emiFirst} now + rest in 1 week
               </p>
             </div>
 
@@ -321,7 +293,7 @@ export function TierComparison() {
                 <FeatureRow
                   key={f}
                   feature={f}
-                  included={PREMIUM_HAS.has(f)}
+                  included={premiumFeatureSet.has(f)}
                   accent="#FFB800"
                 />
               ))}

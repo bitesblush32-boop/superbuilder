@@ -43,7 +43,9 @@ function SectionHeading({ children }: { children: React.ReactNode }) {
 }
 
 // ─── Key dates card ──────────────────────────────────────────────────────────
-const KEY_DATES = [
+type KeyDate = { label: string; date: string; active: boolean }
+
+const DEFAULT_KEY_DATES: KeyDate[] = [
   { label: 'Orientation',             date: 'Today — you\'re here! 🎉',        active: true  },
   { label: 'Workshop 1 (AI Basics)',  date: 'May 26, 6PM IST · 90 mins',        active: false },
   { label: 'Workshop 2 (Domain)',     date: 'Jun 1–3',                           active: false },
@@ -63,9 +65,11 @@ const RULES = [
 // ─── Main component ──────────────────────────────────────────────────────────
 export function OrientationClient({
   firstName,
+  keyDates = DEFAULT_KEY_DATES,
 }: {
   studentId: string
   firstName: string
+  keyDates?:  KeyDate[]
 }) {
   const router  = useRouter()
   const [loading, setLoading] = useState(false)
@@ -126,7 +130,7 @@ export function OrientationClient({
               </p>
             </div>
             <div className="divide-y" style={{ '--tw-divide-opacity': 1 } as React.CSSProperties}>
-              {KEY_DATES.map((item) => (
+              {keyDates.map((item) => (
                 <div
                   key={item.label}
                   className="flex items-center justify-between px-4 py-3 gap-3"
