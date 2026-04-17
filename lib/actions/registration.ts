@@ -3,7 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { auth, currentUser } from '@clerk/nextjs/server'
 import { db } from '@/lib/db'
-import { quizAttempts, ideaSubmissions } from '@/lib/db/schema'
+import { students, quizAttempts, ideaSubmissions } from '@/lib/db/schema'
 import { eq, count } from 'drizzle-orm'
 import { stage1Schema }            from '@/lib/validation/stage1'
 import { quizSchema, ideaSchema }  from '@/lib/validation/stage2'
@@ -17,23 +17,56 @@ import {
 } from '@/lib/db/queries/students'
 import { createParent } from '@/lib/db/queries/parents'
 import type { BadgeId } from '@/lib/gamification/badges'
+import { CORRECT_ANSWERS, SHORT_ANSWER_MIN } from '@/lib/content/quizQuestions'
 
-// ── Quiz answer keys (MCQ / T-F — exact key match) ───────────────────────────
-// Questions 7 and 10 are short-answer; scored by QUIZ_SHORT_ANSWER_MIN_CHARS below
-const QUIZ_CORRECT_ANSWERS: Record<number, string> = {
-  1: 'b', // Artificial Intelligence
-  2: 'b', // Music app recommending songs
-  3: 'c', // Conversation partner
-  4: 'b', // False — AI cannot think/feel like humans
-  5: 'b', // Midjourney
-  6: 'b', // Examples the AI learns patterns from
-  8: 'b', // Writing clear instructions to get better AI outputs
-  9: 'd', // Microsoft Excel (NOT an AI tool)
+const VALID_DOMAINS = ['health','education','finance','environment','entertainment','social_impact'] as const
+
+// ─────────────────────────────────────────────────────────────────────────────
+// completeOrientation
+// Marks orientationComplete = true on the student record
+// ─────────────────────────────────────────────────────────────────────────────
+export async function completeOrientation(): Promise<{ success: boolean }> {
+  const { userId } = await auth()
+  if (!userId) return { success: false }
+
+  const student = await getStudentByClerkId(userId)
+  if (!student) return { success: false }
+
+  await db
+    .update(students)
+    .set({ orientationComplete: true, updatedAt: new Date() })
+    .where(eq(students.id, student.id))
+
+  revalidatePath('/register')
+
+  return { success: true }
 }
-// Short-answer questions: awarded 1 point if answer meets minimum character length
-const QUIZ_SHORT_ANSWER_MIN_CHARS: Record<number, number> = {
-  7: 10,  // Name one real-world AI application in education
-  10: 30, // Why is AI bias a problem?
+
+// ─────────────────────────────────────────────────────────────────────────────
+// selectDomain
+// Locks the student's hackathon domain — can only be set once
+// ─────────────────────────────────────────────────────────────────────────────
+export async function selectDomain(domain: string): Promise<{ success: boolean; error?: string }> {
+  const { userId } = await auth()
+  if (!userId) return { success: false, error: 'Not authenticated' }
+
+  const student = await getStudentByClerkId(userId)
+  if (!student) return { success: false, error: 'Student not found' }
+  if (!student.orientationComplete) return { success: false, error: 'Complete orientation first' }
+  if (student.hackathonDomain) return { success: false, error: 'Domain already selected' }
+
+  if (!(VALID_DOMAINS as readonly string[]).includes(domain)) {
+    return { success: false, error: 'Invalid domain' }
+  }
+
+  await db
+    .update(students)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    .set({ hackathonDomain: domain as any, updatedAt: new Date() })
+    .where(eq(students.id, student.id))
+
+  revalidatePath('/register')
+  return { success: true }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -153,13 +186,17 @@ export async function submitQuiz(data: unknown): Promise<{
     return { passed: false, score: 0, error: 'Maximum quiz attempts reached' }
   }
 
+  // Domain-aware scoring
+  const domain       = student.hackathonDomain ?? 'health'
+  const correctAnswers = CORRECT_ANSWERS[domain] ?? {}
+
   // Score quiz — MCQ/T-F: exact key match; short-answer: minimum char length
   const score = answers.reduce((acc, { questionId, answer }) => {
-    const minChars = QUIZ_SHORT_ANSWER_MIN_CHARS[questionId]
+    const minChars = SHORT_ANSWER_MIN[questionId]
     if (minChars !== undefined) {
       return acc + (answer.trim().length >= minChars ? 1 : 0)
     }
-    return acc + (QUIZ_CORRECT_ANSWERS[questionId] === answer ? 1 : 0)
+    return acc + (correctAnswers[questionId] === answer ? 1 : 0)
   }, 0)
 
   const passed     = score >= 6

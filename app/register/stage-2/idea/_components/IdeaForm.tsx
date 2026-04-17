@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Check, Loader2, Lightbulb } from 'lucide-react'
+import { Check, Loader2, Lightbulb, Lock } from 'lucide-react'
 import { ideaSchema, type IdeaFormData } from '@/lib/validation/stage2'
 import { submitIdea } from '@/lib/actions/registration'
 import { BadgeUnlock } from '@/components/gamification/BadgeUnlock'
@@ -360,13 +360,12 @@ function SidePanel({ domain }: { domain: DomainValue | undefined }) {
 
 // ─── Main form ────────────────────────────────────────────────────────────────
 
-export function IdeaForm() {
+export function IdeaForm({ lockedDomain }: { lockedDomain: DomainValue }) {
   const router = useRouter()
   const [submitting, setSubmitting]     = useState(false)
   const [serverError, setServerError]   = useState<string | null>(null)
   const [pendingBadge, setPendingBadge] = useState<BadgeId | null>(null)
-  // Per-domain animation key: incremented on each selection to trigger spring
-  const [animKeys, setAnimKeys] = useState<Partial<Record<DomainValue, number>>>({})
+  const [animKeys]                      = useState<Partial<Record<DomainValue, number>>>({})
 
   const {
     control,
@@ -377,15 +376,19 @@ export function IdeaForm() {
     resolver: zodResolver(ideaSchema) as any,
     mode: 'onBlur',
     reValidateMode: 'onChange',
-    defaultValues: { techStackPref: undefined, priorBuildExp: undefined },
+    defaultValues: {
+      domain:        lockedDomain,
+      techStackPref: undefined,
+      priorBuildExp: undefined,
+    },
   })
 
   const selectedDomain = useWatch({ control, name: 'domain' }) as DomainValue | undefined
 
+  // Domain is locked — no-op handler
   const handleDomainSelect = useCallback(
-    (onChange: (v: DomainValue) => void, value: DomainValue) => {
-      onChange(value)
-      setAnimKeys(prev => ({ ...prev, [value]: (prev[value] ?? 0) + 1 }))
+    (_onChange: (v: DomainValue) => void, _value: DomainValue) => {
+      // Domain is locked after selection in stage-2/domain — cannot be changed here
     },
     [],
   )
@@ -454,7 +457,7 @@ export function IdeaForm() {
           </motion.p>
         </div>
 
-        {/* ── Domain selector ─────────────────────────────────────────────── */}
+        {/* ── Domain (locked) ─────────────────────────────────────────────── */}
         <motion.section
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -466,26 +469,53 @@ export function IdeaForm() {
             className="text-xs font-mono font-semibold uppercase tracking-[0.12em] mb-3"
             style={{ color: 'var(--text-3)' }}
           >
-            Choose your domain <span style={{ color: 'var(--brand)' }}>*</span>
+            Your domain <span style={{ color: 'var(--brand)' }}>*</span>
           </p>
 
+          {/* Locked domain display */}
+          {(() => {
+            const d = DOMAINS.find(x => x.value === lockedDomain)
+            if (!d) return null
+            return (
+              <div
+                className="flex items-center gap-4 rounded-2xl px-4 py-4 border"
+                style={{
+                  background:  d.bg,
+                  borderColor: `${d.color}50`,
+                }}
+              >
+                <span className="text-3xl select-none" aria-hidden="true">{d.emoji}</span>
+                <div className="flex-1">
+                  <p className="font-heading font-bold text-sm" style={{ color: d.color }}>
+                    {d.label}
+                  </p>
+                  <p className="text-xs mt-0.5" style={{ color: 'var(--text-3)' }}>
+                    {d.teaser}
+                  </p>
+                </div>
+                <div
+                  className="flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-mono"
+                  style={{ background: 'var(--bg-float)', border: '1px solid var(--border-subtle)', color: 'var(--text-4)' }}
+                >
+                  <Lock size={10} />
+                  Locked
+                </div>
+              </div>
+            )
+          })()}
+
+          {/* Hidden field to keep form value in sync */}
           <Controller
             control={control}
             name="domain"
             render={({ field }) => (
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                {DOMAINS.map(domain => (
-                  <DomainCard
-                    key={domain.value}
-                    domain={domain}
-                    selected={field.value === domain.value}
-                    onSelect={() => handleDomainSelect(field.onChange, domain.value)}
-                    animKey={animKeys[domain.value] ?? 0}
-                  />
-                ))}
-              </div>
+              <input type="hidden" value={field.value ?? lockedDomain} readOnly />
             )}
           />
+
+          <p className="text-xs mt-2 font-body" style={{ color: 'var(--text-4)' }}>
+            Your domain is locked to <strong style={{ color: 'var(--text-3)' }}>{DOMAINS.find(d => d.value === lockedDomain)?.label ?? lockedDomain}</strong>. This was set in the previous step.
+          </p>
           <FieldError message={errors.domain?.message} />
         </motion.section>
 

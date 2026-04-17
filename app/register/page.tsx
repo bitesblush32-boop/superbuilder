@@ -3,18 +3,10 @@ import { auth } from '@clerk/nextjs/server'
 import { db } from '@/lib/db'
 import { students } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
+import { getStage2Checkpoint } from '@/lib/auth/getStudentOrRedirect'
 
 export const dynamic = 'force-dynamic'
 
-const STAGE_ROUTES: Record<string, string> = {
-  '1': '/register/stage-1',
-  '2': '/register/stage-2/quiz',
-  '3': '/register/stage-3/engage',
-  '4': '/dashboard',
-  '5': '/dashboard',
-}
-
-// Redirect to the student's current stage (server-side stage gate)
 export default async function RegisterPage() {
   const { userId } = await auth()
 
@@ -23,7 +15,7 @@ export default async function RegisterPage() {
   }
 
   const [student] = await db
-    .select({ currentStage: students.currentStage })
+    .select()
     .from(students)
     .where(eq(students.clerkId, userId))
     .limit(1)
@@ -32,5 +24,28 @@ export default async function RegisterPage() {
     redirect('/register/stage-1')
   }
 
-  redirect(STAGE_ROUTES[student.currentStage] ?? '/register/stage-1')
+  const stage = student.currentStage
+
+  // Stage 2 — check each sub-step in order using shared helper
+  if (stage === '2') {
+    if (!student.orientationComplete) redirect('/register/stage-2/orientation')
+    if (!student.hackathonDomain)     redirect('/register/stage-2/domain')
+
+    const { quizPassed, ideaSubmitted } = await getStage2Checkpoint(student.id)
+
+    if (!quizPassed)    redirect('/register/stage-2/quiz')
+    if (!ideaSubmitted) redirect('/register/stage-2/idea')
+
+    // All stage 2 sub-steps complete
+    redirect('/register/stage-3/engage')
+  }
+
+  const STAGE_ROUTES: Record<string, string> = {
+    '1': '/register/stage-1',
+    '3': '/register/stage-3/engage',
+    '4': '/dashboard',
+    '5': '/dashboard',
+  }
+
+  redirect(STAGE_ROUTES[stage] ?? '/register/stage-1')
 }

@@ -5,17 +5,32 @@ import { Check } from 'lucide-react'
 
 const STAGES = [
   { num: 1, label: 'Apply' },
-  { num: 2, label: 'Quiz + Idea' },
+  { num: 2, label: 'Learn + Quiz' },
   { num: 3, label: 'Pay' },
   { num: 4, label: 'Build' },
   { num: 5, label: 'Celebrate' },
 ]
 
 interface StageProgressBarProps {
-  currentStage: number
+  currentStage:         number
+  orientationComplete?: boolean
+  hackathonDomain?:     string | null
+  quizPassed?:          boolean
+  ideaSubmitted?:       boolean
 }
 
-export function StageProgressBar({ currentStage }: StageProgressBarProps) {
+export function StageProgressBar({
+  currentStage,
+  // sub-step props accepted but stage 2 detail is rendered by Stage2SubProgress
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  orientationComplete: _o,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  hackathonDomain: _d,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  quizPassed: _q,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  ideaSubmitted: _i,
+}: StageProgressBarProps) {
   return (
     <div className="w-full px-4 py-3 sm:py-4">
       <div className="relative mx-auto max-w-md sm:max-w-lg">

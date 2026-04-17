@@ -5,26 +5,62 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { auth } from '@clerk/nextjs/server'
 import { db } from '@/lib/db'
-import { students } from '@/lib/db/schema'
-import { eq } from 'drizzle-orm'
+import { students, quizAttempts, ideaSubmissions } from '@/lib/db/schema'
+import { eq, and } from 'drizzle-orm'
 import { StageProgressBar } from './_components/StageProgressBar'
+import { Stage2SubProgress } from './_components/Stage2SubProgress'
 
 export const dynamic = 'force-dynamic'
 
-async function getCurrentStage(): Promise<number> {
+interface StageData {
+  currentStage: number
+  // Stage 2 sub-step completion — only populated when currentStage === 2
+  orientationComplete: boolean
+  hasDomain:           boolean
+  hasPassedQuiz:       boolean
+  hasIdea:             boolean
+}
+
+async function getStageData(): Promise<StageData> {
   try {
     const { userId } = await auth()
-    if (!userId) return 1
+    if (!userId) return { currentStage: 1, orientationComplete: false, hasDomain: false, hasPassedQuiz: false, hasIdea: false }
 
     const [student] = await db
-      .select({ currentStage: students.currentStage })
+      .select()
       .from(students)
       .where(eq(students.clerkId, userId))
+      .limit(1)
 
-    if (!student) return 1
-    return parseInt(student.currentStage, 10)
+    if (!student) return { currentStage: 1, orientationComplete: false, hasDomain: false, hasPassedQuiz: false, hasIdea: false }
+
+    const stageNum = parseInt(student.currentStage, 10)
+
+    if (stageNum !== 2) {
+      return { currentStage: stageNum, orientationComplete: false, hasDomain: false, hasPassedQuiz: false, hasIdea: false }
+    }
+
+    // Stage 2 — check sub-steps in parallel
+    const [quizRow, ideaRow] = await Promise.all([
+      db.select({ passed: quizAttempts.passed })
+        .from(quizAttempts)
+        .where(and(eq(quizAttempts.studentId, student.id), eq(quizAttempts.passed, true)))
+        .limit(1),
+      db.select({ id: ideaSubmissions.id })
+        .from(ideaSubmissions)
+        .where(eq(ideaSubmissions.studentId, student.id))
+        .limit(1),
+    ])
+
+    return {
+      currentStage:        2,
+      orientationComplete: student.orientationComplete,
+      hasDomain:           !!student.hackathonDomain,
+      hasPassedQuiz:       quizRow.length > 0,
+      hasIdea:             ideaRow.length > 0,
+    }
   } catch {
-    return 1
+    return { currentStage: 1, orientationComplete: false, hasDomain: false, hasPassedQuiz: false, hasIdea: false }
   }
 }
 
@@ -33,7 +69,7 @@ export default async function RegisterLayout({
 }: {
   children: React.ReactNode
 }) {
-  const currentStage = await getCurrentStage()
+  const stageData = await getStageData()
 
   return (
     <div className="min-h-screen flex flex-col" style={{ background: 'var(--bg-void)' }}>
@@ -68,13 +104,7 @@ export default async function RegisterLayout({
           className="flex items-center gap-1 text-xs font-body transition-colors min-h-[44px] px-2"
           style={{ color: 'var(--text-3)' }}
         >
-          <svg
-            width="12"
-            height="12"
-            viewBox="0 0 12 12"
-            fill="none"
-            aria-hidden="true"
-          >
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
             <path
               d="M10 6H2M2 6L5 3M2 6L5 9"
               stroke="currentColor"
@@ -92,8 +122,29 @@ export default async function RegisterLayout({
         className="shrink-0 border-b"
         style={{ borderColor: 'var(--border-faint)', background: 'var(--bg-base)' }}
       >
-        <StageProgressBar currentStage={currentStage} />
+        <StageProgressBar
+          currentStage={stageData.currentStage}
+          orientationComplete={stageData.orientationComplete}
+          hackathonDomain={stageData.hasDomain ? 'set' : null}
+          quizPassed={stageData.hasPassedQuiz}
+          ideaSubmitted={stageData.hasIdea}
+        />
       </div>
+
+      {/* Stage 2 sub-progress — only visible during stage 2 */}
+      {stageData.currentStage === 2 && (
+        <div
+          className="shrink-0 border-b"
+          style={{ borderColor: 'var(--border-faint)', background: 'var(--bg-inset)' }}
+        >
+          <Stage2SubProgress
+            orientationComplete={stageData.orientationComplete}
+            hasDomain={stageData.hasDomain}
+            hasPassedQuiz={stageData.hasPassedQuiz}
+            hasIdea={stageData.hasIdea}
+          />
+        </div>
+      )}
 
       {/* Page content */}
       <main className="flex-1 mx-auto w-full max-w-xl px-4 py-8 sm:py-10">

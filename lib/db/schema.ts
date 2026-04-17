@@ -52,10 +52,12 @@ export const students = pgTable('students', {
   tshirtSize:      varchar('tshirt_size', { length: 5 }),
   instagramHandle: varchar('instagram_handle', { length: 100 }),
   linkedinHandle:  varchar('linkedin_handle', { length: 100 }),
-  discordId:       varchar('discord_id', { length: 100 }),
-  certificateUrl:  text('certificate_url'),
-  engageAnswers:   jsonb('engage_answers'), // { goal: string, confidence: number, winBoast: string }
-  createdAt:       timestamp('created_at').defaultNow().notNull(),
+  discordId:            varchar('discord_id', { length: 100 }),
+  certificateUrl:       text('certificate_url'),
+  engageAnswers:        jsonb('engage_answers'), // { goal: string, confidence: number, winBoast: string }
+  orientationComplete:  boolean('orientation_complete').default(false).notNull(),
+  hackathonDomain:      domainEnum('hackathon_domain'),
+  createdAt:            timestamp('created_at').defaultNow().notNull(),
   updatedAt:       timestamp('updated_at').defaultNow().notNull(),
 }, t => ({
   cityIdx:  index('students_city_idx').on(t.city),

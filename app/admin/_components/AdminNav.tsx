@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 
@@ -29,9 +29,9 @@ function NavItem({ href, label, emoji, onClick }: {
       onClick={onClick}
       className="flex items-center gap-3 px-4 min-h-[44px] text-sm font-medium transition-all duration-150 rounded-r-none"
       style={{
-        color:           isActive ? 'var(--text-brand)' : 'var(--text-3)',
-        background:      isActive ? 'var(--brand-subtle)' : 'transparent',
-        borderRight:     isActive ? '2px solid var(--brand)' : '2px solid transparent',
+        color:       isActive ? 'var(--text-brand)' : 'var(--text-3)',
+        background:  isActive ? 'var(--brand-subtle)' : 'transparent',
+        borderRight: isActive ? '2px solid var(--brand)' : '2px solid transparent',
       }}
     >
       <span className="text-base leading-none">{emoji}</span>
@@ -40,13 +40,34 @@ function NavItem({ href, label, emoji, onClick }: {
   )
 }
 
+function SignOutButton({ onSignOut }: { onSignOut?: () => void }) {
+  const router = useRouter()
+
+  async function handleSignOut() {
+    onSignOut?.()
+    await fetch('/api/admin/auth/logout', { method: 'POST' })
+    router.push('/admin/login')
+  }
+
+  return (
+    <button
+      onClick={handleSignOut}
+      className="flex items-center gap-3 px-4 min-h-[44px] text-sm font-medium w-full transition-all duration-150 active:scale-95"
+      style={{ color: 'var(--text-4)' }}
+    >
+      <span className="text-base leading-none">🚪</span>
+      <span>Sign Out</span>
+    </button>
+  )
+}
+
 export function AdminSidebar() {
   return (
     <aside
       className="hidden md:flex flex-col w-[220px] shrink-0 min-h-screen border-r"
       style={{
-        background:   'var(--bg-card)',
-        borderColor:  'var(--border-faint)',
+        background:  'var(--bg-card)',
+        borderColor: 'var(--border-faint)',
       }}
     >
       {/* Logo */}
@@ -66,9 +87,10 @@ export function AdminSidebar() {
         ))}
       </nav>
 
-      {/* Footer hint */}
-      <div className="px-4 pb-4">
-        <p className="text-xs" style={{ color: 'var(--text-4)' }}>
+      {/* Footer */}
+      <div className="pb-2 border-t" style={{ borderColor: 'var(--border-faint)' }}>
+        <SignOutButton />
+        <p className="px-4 pb-3 text-xs" style={{ color: 'var(--text-4)' }}>
           Season 1 · 2025
         </p>
       </div>
@@ -100,8 +122,8 @@ export function AdminMobileTopBar({ adminEmail }: { adminEmail: string }) {
             <span
               className="block w-5 h-0.5 transition-all duration-200"
               style={{
-                background:  'var(--text-2)',
-                transform:   open ? 'translateY(6.5px) rotate(45deg)' : 'none',
+                background: 'var(--text-2)',
+                transform:  open ? 'translateY(6.5px) rotate(45deg)' : 'none',
               }}
             />
             <span
@@ -139,6 +161,9 @@ export function AdminMobileTopBar({ adminEmail }: { adminEmail: string }) {
               <NavItem key={item.href} {...item} onClick={() => setOpen(false)} />
             ))}
           </nav>
+          <div className="border-t pb-2" style={{ borderColor: 'var(--border-faint)' }}>
+            <SignOutButton onSignOut={() => setOpen(false)} />
+          </div>
         </SheetContent>
       </Sheet>
     </div>

@@ -5,123 +5,13 @@ import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { submitQuiz } from '@/lib/actions/registration'
 import { BadgeUnlock } from '@/components/gamification/BadgeUnlock'
+import { QUIZ_QUESTIONS, CORRECT_ANSWERS, SHORT_ANSWER_MIN, DOMAIN_META } from '@/lib/content/quizQuestions'
 import type { BadgeId } from '@/lib/gamification/badges'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-type QuestionType = 'mcq' | 'tf' | 'short'
 type Phase = 'intro' | 'question' | 'submitting' | 'results' | 'locked'
 
-interface Option { key: string; label: string }
-
-interface QuizQuestion {
-  id: number
-  type: QuestionType
-  question: string
-  options?: Option[]
-  hint?: string
-}
-
-// ─── Questions ────────────────────────────────────────────────────────────────
-
-const QUESTIONS: QuizQuestion[] = [
-  {
-    id: 1, type: 'mcq',
-    question: 'What does AI stand for?',
-    options: [
-      { key: 'a', label: 'Automated Intelligence' },
-      { key: 'b', label: 'Artificial Intelligence' },
-      { key: 'c', label: 'Advanced Interface' },
-      { key: 'd', label: 'Automated Interface' },
-    ],
-  },
-  {
-    id: 2, type: 'mcq',
-    question: 'Which of these is an example of machine learning?',
-    options: [
-      { key: 'a', label: 'A calculator adding numbers' },
-      { key: 'b', label: 'A music recommendation app' },
-      { key: 'c', label: 'A light switch' },
-      { key: 'd', label: 'A printed map' },
-    ],
-  },
-  {
-    id: 3, type: 'mcq',
-    question: 'What is a chatbot most similar to?',
-    options: [
-      { key: 'a', label: 'A telephone' },
-      { key: 'b', label: 'A search engine' },
-      { key: 'c', label: 'A conversation partner' },
-      { key: 'd', label: 'A video game' },
-    ],
-  },
-  {
-    id: 4, type: 'tf',
-    question: 'True or False — AI can think and feel just like humans.',
-    options: [
-      { key: 'a', label: '✅ True' },
-      { key: 'b', label: '❌ False' },
-    ],
-  },
-  {
-    id: 5, type: 'mcq',
-    question: 'Which tool would you use to generate an image using AI?',
-    options: [
-      { key: 'a', label: 'Canva (manual)' },
-      { key: 'b', label: 'Midjourney' },
-      { key: 'c', label: 'Microsoft Excel' },
-      { key: 'd', label: 'Google Sheets' },
-    ],
-  },
-  {
-    id: 6, type: 'mcq',
-    question: "What is 'training data' in AI?",
-    options: [
-      { key: 'a', label: 'Data that exercises the processor' },
-      { key: 'b', label: 'Examples the AI learns patterns from' },
-      { key: 'c', label: 'Private user data stored secretly' },
-      { key: 'd', label: 'Code written to run AI programs' },
-    ],
-  },
-  {
-    id: 7, type: 'short',
-    question: 'Name one real-world application of AI in education.',
-    hint: 'Think about tools teachers or students use today — tutors, graders, content generators…',
-  },
-  {
-    id: 8, type: 'mcq',
-    question: "What does 'prompt engineering' mean?",
-    options: [
-      { key: 'a', label: 'Building a robot arm' },
-      { key: 'b', label: 'Writing good instructions for AI' },
-      { key: 'c', label: 'Coding in Python' },
-      { key: 'd', label: 'Fixing bugs in AI models' },
-    ],
-  },
-  {
-    id: 9, type: 'mcq',
-    question: 'Which of these is NOT an AI tool?',
-    options: [
-      { key: 'a', label: 'ChatGPT' },
-      { key: 'b', label: 'Midjourney' },
-      { key: 'c', label: 'Notion AI' },
-      { key: 'd', label: 'Microsoft Excel' },
-    ],
-  },
-  {
-    id: 10, type: 'short',
-    question: 'Why is AI bias a problem? Give a brief example.',
-    hint: 'Think about who gets hurt when AI makes unfair decisions — hiring, loans, healthcare…',
-  },
-]
-
-const CORRECT_KEYS: Record<number, string> = {
-  1: 'b', 2: 'b', 3: 'c', 4: 'b',
-  5: 'b', 6: 'b', 8: 'b', 9: 'd',
-}
-const SHORT_MIN: Record<number, number> = { 7: 10, 10: 30 }
-
-const TOTAL = QUESTIONS.length
 const TIMER_START = 5 * 60 // 300s
 
 // ─── Motion helpers ───────────────────────────────────────────────────────────
@@ -147,15 +37,15 @@ const fadeUp = {
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-function isAnswered(qId: number, ans: string | undefined): boolean {
+function isAnswered(qId: number, ans: string | undefined, shortMin: Record<number, number>): boolean {
   if (!ans) return false
-  if (SHORT_MIN[qId] !== undefined) return ans.trim().length >= 1 // allow Next if any text
+  if (shortMin[qId] !== undefined) return ans.trim().length >= 1 // allow Next if any text
   return ans.length > 0
 }
 
-function isCorrect(qId: number, ans: string): boolean {
-  if (SHORT_MIN[qId] !== undefined) return ans.trim().length >= SHORT_MIN[qId]
-  return CORRECT_KEYS[qId] === ans
+function isCorrect(qId: number, ans: string, correctKeys: Record<number, string>, shortMin: Record<number, number>): boolean {
+  if (shortMin[qId] !== undefined) return ans.trim().length >= shortMin[qId]
+  return correctKeys[qId] === ans
 }
 
 function fmtTime(secs: number): string {
@@ -167,14 +57,19 @@ function fmtTime(secs: number): string {
 // ─── Props ────────────────────────────────────────────────────────────────────
 
 interface QuizShellProps {
-  attemptCount: number
-  isLocked:     boolean
+  domain:        string
+  attemptCount:  number
+  isLocked:      boolean
   lastAttemptAt: string | null
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-export function QuizShell({ attemptCount, isLocked, lastAttemptAt }: QuizShellProps) {
+export function QuizShell({ domain, attemptCount, isLocked, lastAttemptAt }: QuizShellProps) {
+  const QUESTIONS    = QUIZ_QUESTIONS[domain]    ?? QUIZ_QUESTIONS['health']
+  const CORRECT_KEYS = CORRECT_ANSWERS[domain]   ?? {}
+  const SHORT_MIN    = SHORT_ANSWER_MIN
+  const TOTAL        = QUESTIONS.length
   const router = useRouter()
 
   const [phase, setPhase]               = useState<Phase>(isLocked ? 'locked' : 'intro')
@@ -301,7 +196,7 @@ export function QuizShell({ attemptCount, isLocked, lastAttemptAt }: QuizShellPr
 
   const q         = QUESTIONS[currentQ]
   const curAnswer = answers[q?.id] ?? ''
-  const canNext   = q ? isAnswered(q.id, curAnswer) : false
+  const canNext   = q ? isAnswered(q.id, curAnswer, SHORT_MIN) : false
   const isRed     = timeLeft <= 60
   const pct       = ((currentQ) / TOTAL) * 100
 
@@ -361,11 +256,11 @@ export function QuizShell({ attemptCount, isLocked, lastAttemptAt }: QuizShellPr
           initial={{ scale: 0.6, opacity: 0 }}
           animate={{ scale: 1, opacity: 1, transition: { type: 'spring' as const, stiffness: 400, damping: 20, delay: 0.1 } }}
         >
-          🧠
+          {DOMAIN_META[domain]?.emoji ?? '🧠'}
         </motion.div>
 
-        <h1 className="font-display text-5xl tracking-wide mb-3" style={{ color: 'var(--text-1)' }}>
-          AI EXPLORER CHALLENGE
+        <h1 className="font-display text-5xl tracking-wide mb-3 text-center" style={{ color: 'var(--text-1)' }}>
+          {(DOMAIN_META[domain]?.label ?? 'AI').toUpperCase()} CHALLENGE
         </h1>
 
         <p className="font-body text-base mb-8 max-w-[260px]" style={{ color: 'var(--text-2)' }}>
@@ -428,7 +323,7 @@ export function QuizShell({ attemptCount, isLocked, lastAttemptAt }: QuizShellPr
   // ─────────────────────────────────────────────────────────────────────────
   if (phase === 'results') {
     const wrongIds = QUESTIONS
-      .filter(q => !isCorrect(q.id, answers[q.id] ?? ''))
+      .filter(q => !isCorrect(q.id, answers[q.id] ?? '', CORRECT_KEYS, SHORT_MIN))
       .map(q => q.id)
 
     return (
@@ -609,9 +504,17 @@ export function QuizShell({ attemptCount, isLocked, lastAttemptAt }: QuizShellPr
         className="sticky top-0 z-10 flex items-center justify-between px-4 py-3"
         style={{ background: 'rgba(10,10,10,0.92)', backdropFilter: 'blur(8px)', borderBottom: '1px solid var(--border-faint)' }}
       >
-        <span className="font-mono text-xs" style={{ color: 'var(--text-3)' }}>
-          Q{currentQ + 1} of {TOTAL}
-        </span>
+        <div className="flex items-center gap-2">
+          <span className="font-mono text-xs" style={{ color: 'var(--text-3)' }}>
+            Q{currentQ + 1} of {TOTAL}
+          </span>
+          <span
+            className="hidden sm:inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-mono"
+            style={{ background: 'var(--brand-subtle)', color: 'var(--text-brand)', border: '1px solid var(--border-brand)' }}
+          >
+            {DOMAIN_META[domain]?.emoji} {DOMAIN_META[domain]?.label}
+          </span>
+        </div>
 
         {/* Timer */}
         <motion.span

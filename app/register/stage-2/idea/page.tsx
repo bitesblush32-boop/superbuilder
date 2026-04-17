@@ -1,4 +1,5 @@
-import { getStudentOrRedirect } from '@/lib/auth/getStudentOrRedirect'
+import { redirect } from 'next/navigation'
+import { getStudentOrRedirect, getStage2Checkpoint } from '@/lib/auth/getStudentOrRedirect'
 import { IdeaForm } from './_components/IdeaForm'
 
 export const metadata = {
@@ -7,6 +8,13 @@ export const metadata = {
 }
 
 export default async function IdeaPage() {
-  await getStudentOrRedirect(2)
-  return <IdeaForm />
+  const { student } = await getStudentOrRedirect(2)
+  if (!student) redirect('/register/stage-1')
+  if (!student.hackathonDomain) redirect('/register/stage-2/domain')
+
+  const { quizPassed } = await getStage2Checkpoint(student.id)
+  if (!quizPassed) redirect('/register/stage-2/quiz')
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return <IdeaForm lockedDomain={student.hackathonDomain as any} />
 }

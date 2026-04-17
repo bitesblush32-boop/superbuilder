@@ -1,18 +1,71 @@
 import { auth } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
 import { db } from '@/lib/db'
-import { students } from '@/lib/db/schema'
-import { eq } from 'drizzle-orm'
+import { students, quizAttempts, ideaSubmissions } from '@/lib/db/schema'
+import { eq, and } from 'drizzle-orm'
 
 export type Student = typeof students.$inferSelect
 
-// Maps pipeline_stage enum values to the first page of that stage
+// Maps pipeline_stage enum values to the entry page of that stage
 const STAGE_ROUTES: Record<string, string> = {
   '1': '/register/stage-1',
-  '2': '/register/stage-2/quiz',
+  '2': '/register/stage-2/orientation',
   '3': '/register/stage-3/engage',
   '4': '/dashboard',
   '5': '/dashboard',
+}
+
+/**
+ * Returns where in Stage 2 the student currently is based on sub-step completion.
+ * Does NOT check quiz attempts (requires a separate DB query — handled in register/page.tsx).
+ */
+export function getStage2SubRoute(student: Student): string {
+  if (!student.orientationComplete) return '/register/stage-2/orientation'
+  if (!student.hackathonDomain)     return '/register/stage-2/domain'
+  // quiz + idea sub-steps require extra queries — caller handles these
+  return '/register/stage-2/quiz'
+}
+
+/**
+ * Returns the Stage 2 sub-step completion state for a student.
+ * Runs quiz + idea queries in parallel.
+ */
+export async function getStage2Checkpoint(studentId: string): Promise<{
+  orientationComplete: boolean
+  domainSelected:      boolean
+  quizPassed:          boolean
+  ideaSubmitted:       boolean
+}> {
+  const [student] = await db
+    .select({
+      orientationComplete: students.orientationComplete,
+      hackathonDomain:     students.hackathonDomain,
+    })
+    .from(students)
+    .where(eq(students.id, studentId))
+    .limit(1)
+
+  if (!student) {
+    return { orientationComplete: false, domainSelected: false, quizPassed: false, ideaSubmitted: false }
+  }
+
+  const [quizRow, ideaRow] = await Promise.all([
+    db.select({ passed: quizAttempts.passed })
+      .from(quizAttempts)
+      .where(and(eq(quizAttempts.studentId, studentId), eq(quizAttempts.passed, true)))
+      .limit(1),
+    db.select({ id: ideaSubmissions.id })
+      .from(ideaSubmissions)
+      .where(eq(ideaSubmissions.studentId, studentId))
+      .limit(1),
+  ])
+
+  return {
+    orientationComplete: student.orientationComplete,
+    domainSelected:      !!student.hackathonDomain,
+    quizPassed:          quizRow.length > 0,
+    ideaSubmitted:       ideaRow.length > 0,
+  }
 }
 
 /**
@@ -59,6 +112,10 @@ export async function getStudentOrRedirect(requiredStage: number): Promise<{
   }
 
   if (studentStageNum < requiredStage) {
+    // For stage 2, route to the correct sub-step
+    if (student.currentStage === '2') {
+      redirect(getStage2SubRoute(student))
+    }
     redirect(STAGE_ROUTES[student.currentStage] ?? '/register/stage-1')
   }
 

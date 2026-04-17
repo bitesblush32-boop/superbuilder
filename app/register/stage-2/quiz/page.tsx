@@ -1,19 +1,22 @@
 import { redirect } from 'next/navigation'
-import { desc } from 'drizzle-orm'
-import { eq } from 'drizzle-orm'
+import { desc, eq } from 'drizzle-orm'
 import { db } from '@/lib/db'
 import { quizAttempts } from '@/lib/db/schema'
 import { getStudentOrRedirect } from '@/lib/auth/getStudentOrRedirect'
 import { QuizShell } from './_components/QuizShell'
 
 export const metadata = {
-  title: 'AI Explorer Challenge — Super Builders',
-  description: 'Test your AI knowledge. Score 6+ to unlock your spot.',
+  title: 'Domain Challenge — Super Builders',
+  description: 'Test your domain knowledge. Score 6+ to unlock your spot.',
 }
 
 export default async function QuizPage() {
   const { student } = await getStudentOrRedirect(2)
   if (!student) redirect('/register/stage-1')
+
+  // Guard: must have completed prior sub-steps
+  if (!student.orientationComplete) redirect('/register/stage-2/orientation')
+  if (!student.hackathonDomain)     redirect('/register/stage-2/domain')
 
   // Fetch all prior attempts ordered newest-first
   const attempts = await db
@@ -22,16 +25,17 @@ export default async function QuizPage() {
     .where(eq(quizAttempts.studentId, student.id))
     .orderBy(desc(quizAttempts.createdAt))
 
-  const attemptCount   = attempts.length
-  const hasPassed      = attempts.some(a => a.passed)
-  const isLocked       = attemptCount >= 2 && !hasPassed
-  const lastAttemptAt  = attempts[0]?.createdAt?.toISOString() ?? null
+  const attemptCount  = attempts.length
+  const hasPassed     = attempts.some(a => a.passed)
+  const isLocked      = attemptCount >= 2 && !hasPassed
+  const lastAttemptAt = attempts[0]?.createdAt?.toISOString() ?? null
 
   // Already passed — go straight to the idea form
   if (hasPassed) redirect('/register/stage-2/idea')
 
   return (
     <QuizShell
+      domain={student.hackathonDomain}
       attemptCount={attemptCount}
       isLocked={isLocked}
       lastAttemptAt={lastAttemptAt}

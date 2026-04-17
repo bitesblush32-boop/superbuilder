@@ -1,12 +1,14 @@
-import Link from 'next/link'
-import { currentUser } from '@clerk/nextjs/server'
+import { redirect } from 'next/navigation'
+import { verifyAdminSession } from '@/lib/auth/adminAuth'
 import { AdminSidebar, AdminMobileTopBar } from './_components/AdminNav'
 
 export const dynamic = 'force-dynamic'
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
-  const user = await currentUser()
-  const adminEmail = user?.emailAddresses[0]?.emailAddress ?? 'admin'
+  const valid = await verifyAdminSession()
+  if (!valid) redirect('/admin/login')
+
+  const adminEmail = process.env.ADMIN_EMAIL ?? 'admin'
 
   return (
     <div className="flex min-h-screen" style={{ background: 'var(--bg-base)' }}>
@@ -33,7 +35,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
             <span className="text-xs font-mono" style={{ color: 'var(--text-3)' }}>
               {adminEmail}
             </span>
-            <Link
+            <a
               href="/"
               className="text-xs px-3 py-1.5 rounded border transition-colors duration-150"
               style={{
@@ -42,7 +44,19 @@ export default async function AdminLayout({ children }: { children: React.ReactN
               }}
             >
               View Site ↗
-            </Link>
+            </a>
+            <form action="/api/admin/auth/logout" method="POST">
+              <button
+                type="submit"
+                className="text-xs px-3 py-1.5 rounded border transition-colors duration-150 active:scale-95"
+                style={{
+                  color:       'var(--text-3)',
+                  borderColor: 'var(--border-faint)',
+                }}
+              >
+                Sign Out
+              </button>
+            </form>
           </div>
         </header>
 
