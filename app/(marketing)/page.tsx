@@ -13,6 +13,7 @@ import { DomainGrid }         from './_components/DomainGrid'
 import { ForParents }         from './_components/ForParents'
 import { JudgingCriteria }    from './_components/JudgingCriteria'
 import { FAQ }                from './_components/FAQ'
+import { JurySection }        from './_components/JurySection'
 import { FinalCTA }           from './_components/FinalCTA'
 
 /* ─── ISR — revalidate once per hour ────────────────────────────────────────── */
@@ -105,7 +106,10 @@ export default function LandingPage() {
         {/* 10 — FAQ */}
         <FAQ />
 
-        {/* 11 — Final CTA */}
+        {/* 11 — Jury */}
+        <JurySection />
+
+        {/* 12 — Final CTA */}
         <FinalCTA />
       </main>
 
