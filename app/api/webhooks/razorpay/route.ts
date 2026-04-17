@@ -154,7 +154,7 @@ export async function POST(req: Request) {
     const firstName = studentName.split(' ')[0]
 
     resend.emails.send({
-      from:    'Super Builders <hello@superbuilders.zer0.pro>',
+      from:    'Super Builders <hello@superbuilder.org>',
       to:      [studentEmail],
       subject: `You're officially a Super Builder, ${firstName}! 🏆`,
       html:    studentConfirmationEmail({ firstName, tier: tierName }),
@@ -162,7 +162,7 @@ export async function POST(req: Request) {
 
     if (parentEmail) {
       resend.emails.send({
-        from:    'Super Builders <hello@superbuilders.zer0.pro>',
+        from:    'Super Builders <hello@superbuilder.org>',
         to:      [parentEmail],
         subject: `${firstName} is registered for Super Builders ${tierName} ✅`,
         html:    parentConfirmationEmail({ studentName, parentName, tier: tierName }),
@@ -214,7 +214,7 @@ function studentConfirmationEmail({ firstName, tier }: { firstName: string; tier
             </div>`).join('')}
           </div>
         </div>
-        <a href="https://superbuilders.zer0.pro/dashboard"
+        <a href="https://superbuilder.org/dashboard"
            style="display:block;background:#FFB800;color:#000;text-align:center;padding:16px 24px;border-radius:12px;font-weight:700;font-size:14px;letter-spacing:0.06em;text-decoration:none;text-transform:uppercase">
           Go to Dashboard →
         </a>

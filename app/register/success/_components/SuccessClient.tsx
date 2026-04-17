@@ -28,7 +28,7 @@ function downloadWorkshop1ICS() {
     'VERSION:2.0',
     'PRODID:-//Super Builders//EN',
     'BEGIN:VEVENT',
-    'UID:sb-workshop-1-2025@superbuilders.zer0.pro',
+    'UID:sb-workshop-1-2025@superbuilder.org',
     'DTSTART:20250526T123000Z',      // May 26 6pm IST = 12:30 UTC
     'DTEND:20250526T151500Z',        // + 90 min
     'SUMMARY:🚀 Super Builders — Workshop 1: AI Fundamentals + Tools',

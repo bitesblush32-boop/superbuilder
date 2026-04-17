@@ -1,27 +1,23 @@
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
-import { NextResponse } from 'next/server'
 
-const isProtected = createRouteMatcher([
-  '/dashboard(.*)',
-  '/register/stage-2(.*)',
-  '/register/stage-3(.*)',
-  '/register/success(.*)',
-  '/admin(.*)',
+// Public routes — Clerk will NOT enforce auth.protect() on these
+const isPublicRoute = createRouteMatcher([
+  '/',                      // landing page
+  '/sign-in(.*)',           // sign-in + sso-callback catch-all
+  '/sign-up(.*)',           // sign-up catch-all
 ])
 
-// Guard: if Clerk keys are placeholders/missing, skip auth entirely.
-// Real Clerk publishable keys are 80+ chars. Placeholders like "pk_live_YOUR_KEY" are short.
-const clerkKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY ?? ''
-const clerkConfigured =
-  (clerkKey.startsWith('pk_live_') || clerkKey.startsWith('pk_test_')) &&
-  clerkKey.length > 40
-
-export default clerkConfigured
-  ? clerkMiddleware(async (auth, req) => {
-      if (isProtected(req)) await auth.protect()
-    })
-  : () => NextResponse.next()
+export default clerkMiddleware(async (auth, req) => {
+  if (!isPublicRoute(req)) {
+    await auth.protect()
+  }
+})
 
 export const config = {
-  matcher: ['/((?!.*\\..*|_next).*)', '/', '/(api|trpc)(.*)'],
+  matcher: [
+    // Skip Next.js internals and all static files, unless found in search params
+    '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
+    // Always run for API routes
+    '/(api|trpc)(.*)',
+  ],
 }
