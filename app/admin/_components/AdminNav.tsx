@@ -1,0 +1,146 @@
+'use client'
+
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
+import { useState } from 'react'
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
+
+const NAV_ITEMS = [
+  { href: '/admin',          label: 'Overview',  emoji: '📊' },
+  { href: '/admin/students', label: 'Students',  emoji: '👥' },
+  { href: '/admin/payments', label: 'Payments',  emoji: '💳' },
+  { href: '/admin/projects', label: 'Projects',  emoji: '📁' },
+  { href: '/admin/judging',  label: 'Judging',   emoji: '⚖️' },
+  { href: '/admin/comms',    label: 'Comms',     emoji: '📢' },
+]
+
+function NavItem({ href, label, emoji, onClick }: {
+  href:    string
+  label:   string
+  emoji:   string
+  onClick?: () => void
+}) {
+  const pathname = usePathname()
+  const isActive = pathname === href || (href !== '/admin' && pathname.startsWith(href))
+
+  return (
+    <Link
+      href={href}
+      onClick={onClick}
+      className="flex items-center gap-3 px-4 min-h-[44px] text-sm font-medium transition-all duration-150 rounded-r-none"
+      style={{
+        color:           isActive ? 'var(--text-brand)' : 'var(--text-3)',
+        background:      isActive ? 'var(--brand-subtle)' : 'transparent',
+        borderRight:     isActive ? '2px solid var(--brand)' : '2px solid transparent',
+      }}
+    >
+      <span className="text-base leading-none">{emoji}</span>
+      <span>{label}</span>
+    </Link>
+  )
+}
+
+export function AdminSidebar() {
+  return (
+    <aside
+      className="hidden md:flex flex-col w-[220px] shrink-0 min-h-screen border-r"
+      style={{
+        background:   'var(--bg-card)',
+        borderColor:  'var(--border-faint)',
+      }}
+    >
+      {/* Logo */}
+      <div
+        className="flex items-center gap-2 px-4 h-14 border-b shrink-0"
+        style={{ borderColor: 'var(--border-faint)' }}
+      >
+        <span className="font-display text-lg tracking-widest" style={{ color: 'var(--brand)' }}>
+          SUPER<span style={{ color: 'var(--text-2)' }}>BUILDERS</span>
+        </span>
+      </div>
+
+      {/* Nav */}
+      <nav className="flex flex-col gap-0.5 pt-3 flex-1">
+        {NAV_ITEMS.map(item => (
+          <NavItem key={item.href} {...item} />
+        ))}
+      </nav>
+
+      {/* Footer hint */}
+      <div className="px-4 pb-4">
+        <p className="text-xs" style={{ color: 'var(--text-4)' }}>
+          Season 1 · 2025
+        </p>
+      </div>
+    </aside>
+  )
+}
+
+export function AdminMobileTopBar({ adminEmail }: { adminEmail: string }) {
+  const [open, setOpen] = useState(false)
+
+  return (
+    <div
+      className="md:hidden flex items-center justify-between px-4 h-14 border-b shrink-0"
+      style={{
+        background:  'var(--bg-card)',
+        borderColor: 'var(--border-faint)',
+      }}
+    >
+      <span className="font-display text-base tracking-widest" style={{ color: 'var(--brand)' }}>
+        ADMIN
+      </span>
+
+      <Sheet open={open} onOpenChange={setOpen}>
+        <SheetTrigger asChild>
+          <button
+            className="flex flex-col gap-[5px] p-2 min-h-[44px] min-w-[44px] items-center justify-center"
+            aria-label="Open navigation"
+          >
+            <span
+              className="block w-5 h-0.5 transition-all duration-200"
+              style={{
+                background:  'var(--text-2)',
+                transform:   open ? 'translateY(6.5px) rotate(45deg)' : 'none',
+              }}
+            />
+            <span
+              className="block w-5 h-0.5 transition-all duration-200"
+              style={{
+                background: 'var(--text-2)',
+                opacity:    open ? 0 : 1,
+              }}
+            />
+            <span
+              className="block w-5 h-0.5 transition-all duration-200"
+              style={{
+                background: 'var(--text-2)',
+                transform:  open ? 'translateY(-6.5px) rotate(-45deg)' : 'none',
+              }}
+            />
+          </button>
+        </SheetTrigger>
+
+        <SheetContent
+          side="bottom"
+          className="p-0 rounded-t-2xl border-t"
+          style={{
+            background:  'var(--bg-card)',
+            borderColor: 'var(--border-subtle)',
+          }}
+        >
+          <div className="p-4 border-b" style={{ borderColor: 'var(--border-faint)' }}>
+            <p className="text-xs font-mono" style={{ color: 'var(--text-3)' }}>
+              {adminEmail}
+            </p>
+          </div>
+          <nav className="flex flex-col gap-0.5 py-3">
+            {NAV_ITEMS.map(item => (
+              <NavItem key={item.href} {...item} onClick={() => setOpen(false)} />
+            ))}
+          </nav>
+        </SheetContent>
+      </Sheet>
+    </div>
+  )
+}

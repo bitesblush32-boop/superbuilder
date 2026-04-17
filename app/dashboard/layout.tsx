@@ -1,16 +1,18 @@
-// Dashboard layout — auth-protected, streaming-enabled shell
-// Wraps all /dashboard/* routes. Provides DashboardShell + MobileNav.
+import { redirect } from 'next/navigation'
+import { getStudentOrRedirect } from '@/lib/auth/getStudentOrRedirect'
 
-// All dashboard pages are dynamic — they are auth-gated and personalised.
-// Force-dynamic prevents Next.js from attempting static prerendering, which
-// would fail because Clerk uses React context (useContext) at render time.
+// All dashboard pages are dynamic — auth-gated and personalised.
 export const dynamic = 'force-dynamic'
 
-export default function DashboardLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
+  // Stage gate: must be at stage 4+ (post-payment) to access dashboard
+  const { student } = await getStudentOrRedirect(4)
+
+  // Extra guard: paid flag must be true
+  if (student && !student.isPaid) {
+    redirect('/register/stage-3/pay')
+  }
+
   return (
     <div className="min-h-screen bg-bg-base">
       {/* TODO: DashboardShell — Navbar + MobileNav + sidebar */}

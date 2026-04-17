@@ -163,3 +163,18 @@ export const workshopAttendance = pgTable('workshop_attendance', {
   xpAwarded:     boolean('xp_awarded').default(false),
   createdAt:     timestamp('created_at').defaultNow(),
 })
+
+export const commsLog = pgTable('comms_log', {
+  id:          uuid('id').primaryKey().defaultRandom(),
+  studentId:   uuid('student_id').references(() => students.id, { onDelete: 'set null' }),
+  studentName: varchar('student_name', { length: 255 }),
+  template:    varchar('template', { length: 100 }).notNull(),
+  recipient:   varchar('recipient', { length: 255 }).notNull(), // email or E.164 phone
+  channel:     varchar('channel', { length: 20 }).notNull(),    // 'email' | 'whatsapp'
+  status:      varchar('status', { length: 20 }).notNull().default('sent'), // 'sent' | 'failed'
+  error:       text('error'),
+  triggeredBy: varchar('triggered_by', { length: 255 }),  // admin Clerk userId
+  createdAt:   timestamp('created_at').defaultNow().notNull(),
+}, t => ({
+  createdAtIdx: index('comms_log_created_at_idx').on(t.createdAt),
+}))
