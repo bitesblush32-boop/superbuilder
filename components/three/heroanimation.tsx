@@ -98,12 +98,15 @@ function ParticleSwarm({ count }: { count: number }) {
         const angle   = frac * Math.PI * 2 + t * speed
         const ex = Math.cos(angle) * RING_RADIUS
         const ey = Math.sin(angle) * RING_RADIUS
-        const cx = Math.cos(TILT_X[ringIdx])
-        const sx = Math.sin(TILT_X[ringIdx])
+        // Dynamic tumbling rotation
+        const currentTiltX = TILT_X[ringIdx] + t * 0.15 * (ringIdx === 1 ? -1 : 1)
+        const currentTiltZ = TILT_Z[ringIdx] + t * 0.25 * (ringIdx === 2 ? -1 : 1)
+        const cx = Math.cos(currentTiltX)
+        const sx = Math.sin(currentTiltX)
         const ey1 = ey * cx
         const ez1 = ey * sx
-        const cz  = Math.cos(TILT_Z[ringIdx])
-        const sz  = Math.sin(TILT_Z[ringIdx])
+        const cz  = Math.cos(currentTiltZ)
+        const sz  = Math.sin(currentTiltZ)
         target.set(ex * cz - ey1 * sz, ex * sz + ey1 * cz, ez1)
         const bright = 0.5 + 0.2 * Math.sin(angle * 3 + t)
         // Ring 0: gold #FFB800 | Ring 1: blue #60A5FA | Ring 2: purple #C084FC
@@ -124,12 +127,15 @@ function ParticleSwarm({ count }: { count: number }) {
         const angle = t * speed * 3.0 - trailOffset * (ringIdx === 1 ? -1 : 1)
         const tx = Math.cos(angle) * RING_RADIUS
         const ty = Math.sin(angle) * RING_RADIUS
-        const cx = Math.cos(TILT_X[ringIdx])
-        const sx = Math.sin(TILT_X[ringIdx])
+        // Match tumbling rotation
+        const currentTiltX = TILT_X[ringIdx] + t * 0.15 * (ringIdx === 1 ? -1 : 1)
+        const currentTiltZ = TILT_Z[ringIdx] + t * 0.25 * (ringIdx === 2 ? -1 : 1)
+        const cx = Math.cos(currentTiltX)
+        const sx = Math.sin(currentTiltX)
         const ty1 = ty * cx
         const tz1 = ty * sx
-        const cz  = Math.cos(TILT_Z[ringIdx])
-        const sz  = Math.sin(TILT_Z[ringIdx])
+        const cz  = Math.cos(currentTiltZ)
+        const sz  = Math.sin(currentTiltZ)
         target.set(tx * cz - ty1 * sz, tx * sz + ty1 * cz, tz1)
         const fade = (1.0 - trailFrac) ** 2
         // Head: white flash → fades to ring colour
