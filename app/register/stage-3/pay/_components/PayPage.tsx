@@ -54,11 +54,42 @@ interface RazorpayOptions {
   modal?:         { ondismiss?: () => void }
 }
 
+function TeamStatusCard({ teamData, discountPct }: { teamData: TeamData; discountPct: number }) {
+  return (
+    <div className="rounded-2xl p-5" style={{ background: 'var(--bg-float)', border: '1px solid var(--border-subtle)' }}>
+      <p className="font-heading font-semibold text-lg tracking-wide mb-1" style={{ color: 'var(--text-1)' }}>
+        Team: {teamData.name} <span className="font-mono text-sm opacity-60">#{teamData.code}</span>
+      </p>
+      {discountPct > 0 ? (
+        <p className="font-body text-sm mb-4" style={{ color: 'var(--green)' }}>
+          You get a {discountPct}% group discount because your team has {teamData.memberCount} members!
+        </p>
+      ) : (
+        <p className="font-body text-sm mb-4" style={{ color: 'var(--text-3)' }}>
+          Your team has {teamData.memberCount} member(s). Add more to unlock group discounts!
+        </p>
+      )}
+      <div className="flex flex-col gap-2">
+        {teamData.members.map((m) => (
+          <div key={m.id} className="flex justify-between font-body text-sm py-1.5 px-3 rounded-lg bg-black/20">
+            <span style={{ color: 'var(--text-2)' }}>
+              {m.fullName} {m.teamRole === 'leader' ? '(Leader)' : ''}
+            </span>
+            <span style={{ color: m.isPaid ? 'var(--green)' : 'var(--text-4)' }}>
+              {m.isPaid ? 'Paid' : 'Pending'}
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 function applyDiscount(amount: number, pct: number): number {
   return Math.floor(amount * (1 - pct / 100))
 }
 
-export function PayPage({ studentId, fullName, email, phone, defaultTier }: PayPageProps) {
+export function PayPage({ studentId, fullName, email, phone, defaultTier, teamData, discountPct }: PayPageProps) {
   const router       = useRouter()
   const searchParams = useSearchParams()
   const { tier: storeTier, isEmi, setTier } = useRegistrationStore()
