@@ -43,9 +43,9 @@ export const stage1Schema = z.object({
     .array(z.string().min(1))
     .min(1, 'Select at least one area of interest'),
 
-  teamPreference: z.enum(['solo', 'team', 'no_preference'], {
-    error: 'Select a team preference',
-  }),
+  // teamPreference removed — real team system is post-form (see createStudentTeam / joinStudentTeam)
+  teamMode: z.enum(['solo', 'create', 'join']).optional(),
+  teamCode: z.string().optional(), // only used if teamMode === 'join'
 
   availabilityHrs: z.enum(['less_than_5', '5_to_10', '10_to_20', 'more_than_20'], {
     error: 'Select your weekly availability',
@@ -61,7 +61,6 @@ export const stage1Schema = z.object({
 
   instagramHandle: z.string().optional(),
   linkedinHandle:  z.string().optional(),
-  referralCode:    z.string().optional(),
 
   whyJoin: z
     .string()

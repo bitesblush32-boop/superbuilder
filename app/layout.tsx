@@ -50,6 +50,7 @@ export default function RootLayout({
       lang="en"
       className={`${bebasNeue.variable} ${exo2.variable} ${plusJakarta.variable} ${jetbrains.variable} h-full antialiased`}
       data-scroll-behavior="smooth"
+      suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col">
         <ClerkProvider>{children}</ClerkProvider>

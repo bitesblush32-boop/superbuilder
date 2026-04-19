@@ -131,8 +131,8 @@ export default async function RegisterLayout({
         />
       </div>
 
-      {/* Stage 2 sub-progress — only visible during stage 2 */}
-      {stageData.currentStage === 2 && (
+      {/* Learn sub-progress (Domain → Quiz) — visible during stage 2 after orientation */}
+      {stageData.currentStage === 2 && stageData.orientationComplete && (
         <div
           className="shrink-0 border-b"
           style={{ borderColor: 'var(--border-faint)', background: 'var(--bg-inset)' }}
@@ -143,6 +143,31 @@ export default async function RegisterLayout({
             hasPassedQuiz={stageData.hasPassedQuiz}
             hasIdea={stageData.hasIdea}
           />
+        </div>
+      )}
+
+      {/* Team manage link — visible during stage 2 after orientation, not during team step */}
+      {stageData.currentStage === 2 && stageData.orientationComplete && (
+        <div
+          className="shrink-0 flex items-center justify-between px-4 sm:px-6 py-2"
+          style={{ background: 'var(--bg-raised)', borderBottom: '1px solid var(--border-faint)' }}
+        >
+          <p className="text-xs font-body" style={{ color: 'var(--text-4)' }}>
+            Building with friends?
+          </p>
+          <Link
+            href="/register/team"
+            className="flex items-center gap-1.5 text-xs font-heading font-semibold px-3 rounded-lg transition-all active:scale-95"
+            style={{
+              minHeight: '32px',
+              background: 'rgba(255,184,0,0.08)',
+              border:     '1px solid rgba(255,184,0,0.25)',
+              color:      'var(--text-brand)',
+            }}
+          >
+            <span aria-hidden="true">👥</span>
+            Team Settings
+          </Link>
         </div>
       )}
 

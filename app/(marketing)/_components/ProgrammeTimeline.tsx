@@ -2,7 +2,7 @@
 
 import { motion, type Variants } from 'framer-motion'
 import { cn } from '@/lib/utils'
-import { PHASES, WORKSHOPS } from '@/lib/content/programme'
+import type { PhaseEntry, WorkshopEntry } from '@/lib/db/queries/config'
 import { BADGES } from '@/lib/gamification/badges'
 
 /* ─── Config ─────────────────────────────────────────────────────────────────── */
@@ -63,8 +63,8 @@ function phaseStyles(phaseNum: number) {
 }
 
 /* ─── Horizontal timeline (desktop) ─────────────────────────────────────────── */
-function HorizontalTimeline() {
-  const total = PHASES.length
+function HorizontalTimeline({ phases }: { phases: PhaseEntry[] }) {
+  const total = phases.length
 
   return (
     <div className="hidden md:block relative" aria-label="Programme phases">
@@ -105,7 +105,7 @@ function HorizontalTimeline() {
         whileInView="show"
         viewport={{ once: true, margin: '-80px' }}
       >
-        {PHASES.map((phase) => {
+        {phases.map((phase) => {
           const s = phaseStyles(phase.num)
           return (
             <div key={phase.num} className="flex flex-col items-center">
@@ -171,7 +171,7 @@ function HorizontalTimeline() {
 }
 
 /* ─── Vertical timeline (mobile) ─────────────────────────────────────────────── */
-function VerticalTimeline() {
+function VerticalTimeline({ phases }: { phases: PhaseEntry[] }) {
   return (
     <div className="md:hidden relative" aria-label="Programme phases">
       {/* Vertical gold gradient line */}
@@ -195,13 +195,13 @@ function VerticalTimeline() {
         whileInView="show"
         viewport={{ once: true, margin: '-40px' }}
       >
-        {PHASES.map((phase, i) => {
+        {phases.map((phase, i) => {
           const s = phaseStyles(phase.num)
           return (
             <motion.div
               key={phase.num}
               variants={nodeVariants}
-              className={cn('flex items-start gap-5', i < PHASES.length - 1 && 'pb-8')}
+              className={cn('flex items-start gap-5', i < phases.length - 1 && 'pb-8')}
             >
               {/* Node — w-9 = 36px, centre aligns with line at left-[18px] */}
               <div className="relative flex-shrink-0">
@@ -264,10 +264,10 @@ function WorkshopCard({
   workshop,
   index,
 }: {
-  workshop: typeof WORKSHOPS[number]
+  workshop: WorkshopEntry
   index: number
 }) {
-  const badge  = BADGES[workshop.badge]
+  const badge  = BADGES[workshop.badge as keyof typeof BADGES]
   const accent = badge.color
   const num    = String(index + 1).padStart(2, '0')
 
@@ -407,7 +407,7 @@ function WorkshopCard({
 }
 
 /* ─── ProgrammeTimeline ──────────────────────────────────────────────────────── */
-export function ProgrammeTimeline() {
+export function ProgrammeTimeline({ phases, workshops }: { phases: PhaseEntry[]; workshops: WorkshopEntry[] }) {
   return (
     <section
       className="relative py-20 sm:py-28 overflow-hidden"
@@ -456,8 +456,8 @@ export function ProgrammeTimeline() {
 
         {/* ── Timeline ── */}
         <div className="mb-16">
-          <HorizontalTimeline />
-          <VerticalTimeline />
+          <HorizontalTimeline phases={phases} />
+          <VerticalTimeline phases={phases} />
         </div>
 
         {/* ── Workshop cards ── */}
@@ -483,7 +483,7 @@ export function ProgrammeTimeline() {
           whileInView="show"
           viewport={{ once: true, margin: '-60px' }}
         >
-          {WORKSHOPS.map((ws, i) => (
+          {workshops.map((ws, i) => (
             <WorkshopCard key={ws.id} workshop={ws} index={i} />
           ))}
         </motion.div>

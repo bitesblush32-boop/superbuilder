@@ -2,6 +2,7 @@
 
 import React, {
   useState,
+  useEffect,
   useMemo,
   useCallback,
   forwardRef,
@@ -11,32 +12,22 @@ import { useForm, Controller, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ArrowLeft, ChevronRight, Loader2, Check } from 'lucide-react'
+import { State, City } from 'country-state-city'
 import { stage1Schema, type Stage1FormData } from '@/lib/validation/stage1'
 import { submitStage1 } from '@/lib/actions/registration'
 import { BadgeUnlock } from '@/components/gamification/BadgeUnlock'
 import type { BadgeId } from '@/lib/gamification/badges'
+import { SchoolAutocomplete } from './SchoolAutocomplete'
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const INDIAN_CITIES = [
-  'Agra','Ahmedabad','Ajmer','Aligarh','Allahabad','Amritsar','Aurangabad',
-  'Bangalore','Bareilly','Bhopal','Bhubaneswar','Bikaner','Chennai','Coimbatore',
-  'Dehradun','Delhi','Dhanbad','Durgapur','Faridabad','Ghaziabad','Gorakhpur',
-  'Gurgaon','Guwahati','Gwalior','Hyderabad','Indore','Jabalpur','Jaipur',
-  'Jalandhar','Jammu','Jodhpur','Kanpur','Kochi','Kolkata','Kozhikode',
-  'Lucknow','Ludhiana','Madurai','Mangalore','Meerut','Mumbai','Mysore',
-  'Nagpur','Nashik','Navi Mumbai','Noida','Patna','Pune','Raipur','Rajkot',
-  'Ranchi','Salem','Shimla','Srinagar','Surat','Thane','Thiruvananthapuram',
-  'Tiruchirappalli','Vadodara','Varanasi','Vijayawada','Visakhapatnam',
-]
+// Pre-built at module load (server + client) — no API key needed
+const _rawStates = State.getStatesOfCountry('IN')
+const INDIAN_STATES = _rawStates.sort((a, b) => a.name.localeCompare(b.name))
+const STATE_ISO_MAP: Record<string, string> = Object.fromEntries(
+  INDIAN_STATES.map(s => [s.name, s.isoCode])
+)
 
-const INDIAN_STATES = [
-  'Andhra Pradesh','Assam','Bihar','Chandigarh','Chhattisgarh','Delhi','Goa',
-  'Gujarat','Haryana','Himachal Pradesh','Jammu & Kashmir','Jharkhand',
-  'Karnataka','Kerala','Madhya Pradesh','Maharashtra','Manipur','Meghalaya',
-  'Mizoram','Nagaland','Odisha','Punjab','Rajasthan','Sikkim','Tamil Nadu',
-  'Telangana','Tripura','Uttar Pradesh','Uttarakhand','West Bengal',
-]
 
 type PillOpt = { value: string; label: string; emoji?: string }
 
@@ -71,12 +62,6 @@ const INTEREST_OPTS: PillOpt[] = [
   { value: 'Art & Design', label: 'Art & Design',  emoji: '🎨' },
   { value: 'Web Dev',      label: 'Web Dev',       emoji: '💻' },
   { value: 'Robotics',     label: 'Robotics',      emoji: '🦾' },
-]
-
-const TEAM_OPTS: PillOpt[] = [
-  { value: 'solo',          label: 'Solo',         emoji: '🦅' },
-  { value: 'team',          label: 'Open to Team', emoji: '🤝' },
-  { value: 'no_preference', label: 'Either works', emoji: '✌️' },
 ]
 
 const AVAIL_OPTS: PillOpt[] = [
@@ -426,12 +411,16 @@ function CTAButton({
 
 // ─── Main exported form ───────────────────────────────────────────────────────
 
+
+// ─────────────────────────────────────────────────────────────────────────────
+
+
 export function Stage1Form() {
   const router = useRouter()
-  const [subStep, setSubStep]       = useState<1 | 2>(1)
-  const [direction, setDirection]   = useState<1 | -1>(1)
-  const [submitting, setSubmitting] = useState(false)
-  const [serverError, setServerError] = useState<string | null>(null)
+  const [subStep, setSubStep]           = useState<1 | 2>(1)
+  const [direction, setDirection]       = useState<1 | -1>(1)
+  const [submitting, setSubmitting]     = useState(false)
+  const [serverError, setServerError]   = useState<string | null>(null)
   const [pendingBadge, setPendingBadge] = useState<BadgeId | null>(null)
 
   const {
@@ -439,6 +428,7 @@ export function Stage1Form() {
     control,
     trigger,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<Stage1FormData>({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -452,7 +442,7 @@ export function Stage1Form() {
   const [
     fullName, dateOfBirth, gender, grade,
     schoolName, city, state, phone,
-    codingExp, interests, teamPreference,
+    codingExp, interests,
     availabilityHrs, deviceAccess, tshirtSize,
     whyJoin, whatToBuild,
   ] = useWatch({
@@ -460,7 +450,7 @@ export function Stage1Form() {
     name: [
       'fullName', 'dateOfBirth', 'gender', 'grade',
       'schoolName', 'city', 'state', 'phone',
-      'codingExp', 'interests', 'teamPreference',
+      'codingExp', 'interests',
       'availabilityHrs', 'deviceAccess', 'tshirtSize',
       'whyJoin', 'whatToBuild',
     ],
@@ -475,14 +465,29 @@ export function Stage1Form() {
     phone && /^[6-9]\d{9}$/.test(phone) &&
     codingExp &&
     interests?.length >= 1 &&
-    teamPreference && availabilityHrs && deviceAccess && tshirtSize &&
+    availabilityHrs && deviceAccess && tshirtSize &&
     whyJoin?.length >= 20 &&
     whatToBuild?.length >= 20
   ), [
     fullName, dateOfBirth, gender, grade, schoolName, city, state, phone,
-    codingExp, interests, teamPreference, availabilityHrs, deviceAccess,
+    codingExp, interests, availabilityHrs, deviceAccess,
     tshirtSize, whyJoin, whatToBuild,
   ])
+
+  // Reset city when state changes so stale value doesn't persist
+  useEffect(() => {
+    setValue('city', '', { shouldValidate: false, shouldDirty: false })
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state])
+
+  // Derive city options from country-state-city package
+  const citiesForState = useMemo(() => {
+    const iso = STATE_ISO_MAP[state as string]
+    if (!iso) return []
+    return City.getCitiesOfState('IN', iso)
+      .map(c => c.name)
+      .sort((a, b) => a.localeCompare(b))
+  }, [state])
 
   // ── Reactive "Submit" disabled check for sub-step 2 ────────────────────────
   const [
@@ -516,7 +521,7 @@ export function Stage1Form() {
     const valid = await trigger([
       'fullName', 'dateOfBirth', 'gender', 'grade',
       'schoolName', 'city', 'state', 'phone',
-      'codingExp', 'interests', 'teamPreference',
+      'codingExp', 'interests',
       'availabilityHrs', 'deviceAccess', 'tshirtSize',
       'whyJoin', 'whatToBuild',
     ])
@@ -560,7 +565,7 @@ export function Stage1Form() {
 
   const handleBadgeDismiss = useCallback(() => {
     setPendingBadge(null)
-    router.push('/register') // register/page.tsx will redirect to stage-2/quiz
+    router.push('/register/team')
   }, [router])
 
   // ── Input style helpers ─────────────────────────────────────────────────────
@@ -662,36 +667,7 @@ export function Stage1Form() {
 
                   {/* Card 2 · School */}
                   <FormCard icon="🏫" title="Your School" index={1}>
-                    <div>
-                      <FieldLabel required>School Name</FieldLabel>
-                      <TextInput
-                        {...register('schoolName')}
-                        placeholder="Full name of your school"
-                        inputMode="text"
-                        autoComplete="organization"
-                        autoCapitalize="words"
-                        hasError={!!errors.schoolName}
-                      />
-                      <FieldError message={errors.schoolName?.message} />
-                    </div>
-
-                    <div>
-                      <FieldLabel required>City</FieldLabel>
-                      <TextInput
-                        {...register('city')}
-                        list="sb-cities"
-                        placeholder="Type to search city..."
-                        inputMode="text"
-                        autoComplete="address-level2"
-                        autoCapitalize="words"
-                        hasError={!!errors.city}
-                      />
-                      <datalist id="sb-cities">
-                        {INDIAN_CITIES.map(c => <option key={c} value={c} />)}
-                      </datalist>
-                      <FieldError message={errors.city?.message} />
-                    </div>
-
+                    {/* 1. State — fixed dropdown */}
                     <div>
                       <FieldLabel required>State</FieldLabel>
                       <select
@@ -701,10 +677,51 @@ export function Stage1Form() {
                       >
                         <option value="">Select your state</option>
                         {INDIAN_STATES.map(s => (
-                          <option key={s} value={s}>{s}</option>
+                          <option key={s.isoCode} value={s.name}>{s.name}</option>
                         ))}
                       </select>
                       <FieldError message={errors.state?.message} />
+                    </div>
+
+                    {/* 2. City — filtered by state, fixed dropdown */}
+                    <div>
+                      <FieldLabel required>City</FieldLabel>
+                      <select
+                        {...register('city')}
+                        className={inputCls}
+                        disabled={!state}
+                        style={{
+                          ...inputStyle(!!errors.city),
+                          colorScheme: 'dark',
+                          opacity: !state ? 0.45 : 1,
+                          cursor: !state ? 'not-allowed' : 'pointer',
+                        }}
+                      >
+                        <option value="">{state ? 'Select your city' : 'Select state first'}</option>
+                        {citiesForState.map(c => (
+                          <option key={c} value={c}>{c}</option>
+                        ))}
+                      </select>
+                      <FieldError message={errors.city?.message} />
+                    </div>
+
+                    {/* 3. School — Google Places autocomplete with free-text fallback */}
+                    <div>
+                      <FieldLabel required>School Name</FieldLabel>
+                      <Controller
+                        control={control}
+                        name="schoolName"
+                        render={({ field }) => (
+                          <SchoolAutocomplete
+                            value={field.value ?? ''}
+                            onChange={field.onChange}
+                            onBlur={field.onBlur}
+                            cityName={(city as string) ?? ''}
+                            hasError={!!errors.schoolName}
+                          />
+                        )}
+                      />
+                      <FieldError message={errors.schoolName?.message} />
                     </div>
                   </FormCard>
 
@@ -795,23 +812,6 @@ export function Stage1Form() {
                     </div>
 
                     <div>
-                      <FieldLabel required>Team Preference</FieldLabel>
-                      <Controller
-                        control={control}
-                        name="teamPreference"
-                        render={({ field }) => (
-                          <PillSelector
-                            options={TEAM_OPTS}
-                            value={field.value}
-                            onChange={field.onChange}
-                            disabled={submitting}
-                          />
-                        )}
-                      />
-                      <FieldError message={errors.teamPreference?.message} />
-                    </div>
-
-                    <div>
                       <FieldLabel required>T-Shirt Size</FieldLabel>
                       <Controller
                         control={control}
@@ -898,17 +898,6 @@ export function Stage1Form() {
                         />
                       </div>
 
-                      <div>
-                        <FieldLabel>Friend's Referral Code</FieldLabel>
-                        <TextInput
-                          {...register('referralCode')}
-                          placeholder="e.g. AB3X72QK"
-                          inputMode="text"
-                          autoComplete="off"
-                          autoCapitalize="characters"
-                          style={{ letterSpacing: '0.08em' }}
-                        />
-                      </div>
                     </div>
                   </FormCard>
 

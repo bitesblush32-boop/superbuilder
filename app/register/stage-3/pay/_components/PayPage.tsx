@@ -10,12 +10,24 @@ import { TIERS } from '@/lib/content/programme'
 type Bez = [number, number, number, number]
 const EASE_OUT: Bez = [0.16, 1, 0.3, 1]
 
+interface TeamMember {
+  id: string; fullName: string; grade: string; city: string | null
+  teamRole: string | null; isPaid: boolean; tier: string | null
+}
+
+interface TeamData {
+  id: string; name: string; code: string; memberCount: number
+  members: TeamMember[]
+}
+
 interface PayPageProps {
   studentId:   string
   fullName:    string
   email:       string
   phone:       string
   defaultTier: 'pro' | 'premium' | null
+  teamData:    TeamData | null
+  discountPct: number  // 0, 10, or 20
 }
 
 // Feature summaries for the summary card
@@ -67,13 +79,14 @@ export function PayPage({ studentId, fullName, email, phone, defaultTier }: PayP
   const EMI_FIRST      = TIERS.premium.emiFirst  // 999
   const EMI_REST       = PREMIUM_PRICE - EMI_FIRST
 
-  const displayPrice = !tier
-    ? 0
-    : tier === 'pro'
-    ? TIERS.pro.priceMin
-    : emiEnabled ? EMI_FIRST : PREMIUM_PRICE
+  const basePrice = !tier ? 0
+    : tier === 'pro'    ? TIERS.pro.priceMin
+    : emiEnabled        ? EMI_FIRST
+    : PREMIUM_PRICE
 
-  const amountPaise = displayPrice * 100
+  const displayPrice = applyDiscount(basePrice, discountPct)
+  const savedAmount  = basePrice - displayPrice
+  const amountPaise  = displayPrice * 100
 
   async function handlePay() {
     if (!tier || !scriptReady) return
@@ -138,9 +151,20 @@ export function PayPage({ studentId, fullName, email, phone, defaultTier }: PayP
         src="https://checkout.razorpay.com/v1/checkout.js"
         strategy="lazyOnload"
         onLoad={() => setScriptReady(true)}
+        onReady={() => setScriptReady(true)}
       />
 
       <div className="flex flex-col gap-6 max-w-lg mx-auto pb-8">
+        {/* Team status card — shown if student is in a team */}
+        {teamData && (
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0, transition: { duration: 0.4, ease: EASE_OUT } }}
+          >
+            <TeamStatusCard teamData={teamData} discountPct={discountPct} />
+          </motion.div>
+        )}
+
         {/* Tier summary card */}
         <motion.div
           className="rounded-2xl p-5"
@@ -188,7 +212,7 @@ export function PayPage({ studentId, fullName, email, phone, defaultTier }: PayP
                 background: emiEnabled ? 'rgba(255,184,0,0.08)' : 'var(--bg-float)',
                 border:     emiEnabled ? '1px solid rgba(255,184,0,0.4)' : '1px solid var(--border-subtle)',
               }}
-              onClick={() => setEmiEnabled(v => !v)}
+              onClick={() => { setEmiEnabled(v => !v); setLoading(false); setError(null) }}
             >
               <div className="flex items-center gap-3">
                 <div
@@ -220,7 +244,7 @@ export function PayPage({ studentId, fullName, email, phone, defaultTier }: PayP
           animate={{ opacity: 1, y: 0, transition: { duration: 0.4, ease: EASE_OUT, delay: 0.1 } }}
         >
           {/* Price display */}
-          <div className="flex items-baseline gap-2 px-1">
+          <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 px-1">
             <span className="font-display text-5xl tracking-tight" style={{ color: 'var(--text-1)' }}>
               ₹{displayPrice.toLocaleString('en-IN')}
             </span>
@@ -230,6 +254,21 @@ export function PayPage({ studentId, fullName, email, phone, defaultTier }: PayP
               </span>
             )}
           </div>
+
+          {/* Savings badge */}
+          {discountPct > 0 && savedAmount > 0 && (
+            <div className="flex items-center gap-2 px-1">
+              <span className="font-body text-sm line-through" style={{ color: 'var(--text-4)' }}>
+                ₹{basePrice.toLocaleString('en-IN')}
+              </span>
+              <span
+                className="font-mono text-xs px-2 py-0.5 rounded-full"
+                style={{ background: 'rgba(34,197,94,0.12)', color: 'var(--green)' }}
+              >
+                You save ₹{savedAmount.toLocaleString('en-IN')}
+              </span>
+            </div>
+          )}
 
           {/* Error message */}
           <AnimatePresence>

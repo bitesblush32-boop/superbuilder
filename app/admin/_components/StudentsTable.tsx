@@ -81,7 +81,7 @@ function StudentDetailPanel({ studentId }: { studentId: string }) {
   }
   if (!detail?.student) return <p className="p-4 text-sm" style={{ color: 'var(--text-3)' }}>Not found.</p>
 
-  const { student: s, parent: p, quizAttempt: q, ideaSubmission: idea, payment: pay } = detail
+  const { student: s, parent: p, quizAttempt: q, ideaSubmission: idea, payment: pay, team } = detail
 
   return (
     <div className="p-4 space-y-6 overflow-y-auto">
@@ -137,6 +137,15 @@ function StudentDetailPanel({ studentId }: { studentId: string }) {
         <DetailRow label="Referral" value={s.referralCode} />
         <DetailRow label="Discord"  value={s.discordId} />
       </Section>
+
+      {team && (
+        <Section title="Team">
+          <DetailRow label="Team"    value={team.name} />
+          <DetailRow label="Code"    value={team.code} />
+          <DetailRow label="Role"    value={s.teamRole ?? '—'} />
+          <DetailRow label="Members" value={`${team.memberCount} / 4`} />
+        </Section>
+      )}
 
       {p && (
         <Section title="Parent / Guardian">
@@ -237,7 +246,7 @@ export function StudentsTable({ students, total, currentPage }: Props) {
           <table className="w-full text-sm border-collapse">
             <thead>
               <tr style={{ background: 'var(--bg-raised)' }}>
-                {['#', 'Student', 'Grade', 'City', 'Stage', 'Tier', 'XP', 'Joined'].map(h => (
+                {['#', 'Student', 'Grade', 'City', 'Stage', 'Tier', 'Team', 'XP', 'Joined'].map(h => (
                   <th
                     key={h}
                     className="px-4 py-3 text-left text-xs uppercase tracking-wider font-medium whitespace-nowrap"
@@ -295,6 +304,18 @@ export function StudentsTable({ students, total, currentPage }: Props) {
                       </span>
                     ) : (
                       <span style={{ color: 'var(--text-4)' }}>—</span>
+                    )}
+                  </td>
+                  <td className="px-4 py-3">
+                    {s.teamCode ? (
+                      <span
+                        className="font-mono text-[11px] px-2 py-0.5 rounded-full"
+                        style={{ background: 'var(--brand-subtle)', color: 'var(--text-brand)' }}
+                      >
+                        {s.teamCode}
+                      </span>
+                    ) : (
+                      <span style={{ color: 'var(--text-4)' }}>Solo</span>
                     )}
                   </td>
                   <td className="px-4 py-3 font-mono text-xs" style={{ color: 'var(--text-brand)' }}>

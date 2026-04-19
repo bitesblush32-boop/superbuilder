@@ -11,6 +11,7 @@ export async function createPendingPayment(data: {
   amount:          number
   tier:            'pro' | 'premium'
   isEmi:           boolean
+  discountPct?:    number
 }): Promise<Payment> {
   const [payment] = await db
     .insert(payments)
@@ -21,6 +22,7 @@ export async function createPendingPayment(data: {
       tier:            data.tier,
       status:          'pending',
       isEmi:           data.isEmi,
+      discountPct:     data.discountPct ?? 0,
     })
     .returning()
   return payment

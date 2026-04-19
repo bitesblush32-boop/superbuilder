@@ -3,7 +3,6 @@
 import Link from 'next/link'
 import { motion, type Variants } from 'framer-motion'
 import { useCountdown } from '@/hooks/useCountdown'
-import { REG_DEADLINE } from '@/lib/content/programme'
 
 /* ─── Constants ──────────────────────────────────────────────────────────────── */
 const EASE_OUT = [0.16, 1, 0.3, 1] as const
@@ -53,8 +52,14 @@ function CountdownUnit({ value, label }: { value: number; label: string }) {
 }
 
 /* ─── FinalCTA ───────────────────────────────────────────────────────────────── */
-export function FinalCTA() {
-  const { days, hours, mins, secs, expired } = useCountdown(REG_DEADLINE)
+export function FinalCTA({
+  regDeadlineISO,
+  regDeadlineDisplay,
+}: {
+  regDeadlineISO:     string
+  regDeadlineDisplay: string
+}) {
+  const { days, hours, mins, secs, expired } = useCountdown(new Date(regDeadlineISO))
 
   return (
     <section
@@ -130,7 +135,7 @@ export function FinalCTA() {
           className="font-mono text-[12px] tracking-[0.3em] uppercase mb-6"
           style={{ color: 'var(--text-brand)' }}
         >
-          Registration closes May 25 · Spots limited per grade
+          Registration closes {regDeadlineDisplay} · Spots limited per grade
         </motion.p>
 
         {/* Headline */}
@@ -143,7 +148,7 @@ export function FinalCTA() {
             textShadow: '0 0 80px rgba(255,184,0,0.3)',
           }}
         >
-          REGISTER BEFORE MAY 25
+          REGISTER BEFORE {regDeadlineDisplay.toUpperCase()}
         </motion.h2>
 
         {/* Sub-headline */}

@@ -1,9 +1,10 @@
 import { db } from '@/lib/db'
 import {
-  students, payments, quizAttempts, parents, ideaSubmissions, projects, scores, commsLog,
+  students, payments, quizAttempts, parents, ideaSubmissions, projects, scores, commsLog, teams,
 } from '@/lib/db/schema'
 import {
   eq, count, sum, gte, lte, desc, asc, isNotNull, isNull, and, or, ilike, notInArray, sql, inArray,
+  getTableColumns,
 } from 'drizzle-orm'
 import crypto from 'crypto'
 
@@ -141,7 +142,10 @@ export interface StudentFilters {
   limit?:  number
 }
 
-export type StudentRow = typeof students.$inferSelect
+export type StudentRow = typeof students.$inferSelect & {
+  teamCode: string | null
+  teamName: string | null
+}
 
 export async function getStudents(
   filters: StudentFilters = {},
@@ -168,8 +172,13 @@ export async function getStudents(
 
   const [rows, countResult] = await Promise.all([
     db
-      .select()
+      .select({
+        ...getTableColumns(students),
+        teamCode: teams.code,
+        teamName: teams.name,
+      })
       .from(students)
+      .leftJoin(teams, eq(students.teamId, teams.id))
       .where(where)
       .orderBy(desc(students.createdAt))
       .limit(limit)
@@ -177,7 +186,7 @@ export async function getStudents(
     db.select({ count: count() }).from(students).where(where),
   ])
 
-  return { students: rows, total: countResult[0]?.count ?? 0 }
+  return { students: rows as StudentRow[], total: countResult[0]?.count ?? 0 }
 }
 
 // ─── Student detail ───────────────────────────────────────────────────────────
@@ -187,6 +196,7 @@ export interface StudentDetail {
   quizAttempt:    typeof quizAttempts.$inferSelect | null
   ideaSubmission: typeof ideaSubmissions.$inferSelect | null
   payment:        typeof payments.$inferSelect | null
+  team:           { name: string; code: string; memberCount: number } | null
 }
 
 export async function getStudentDetail(studentId: string): Promise<StudentDetail> {
@@ -197,7 +207,12 @@ export async function getStudentDetail(studentId: string): Promise<StudentDetail
     ideaRows,
     paymentRows,
   ] = await Promise.all([
-    db.select().from(students).where(eq(students.id, studentId)).limit(1),
+    db
+      .select({ ...getTableColumns(students), teamCode: teams.code, teamName: teams.name })
+      .from(students)
+      .leftJoin(teams, eq(students.teamId, teams.id))
+      .where(eq(students.id, studentId))
+      .limit(1),
     db.select().from(parents).where(eq(parents.studentId, studentId)).limit(1),
     db.select().from(quizAttempts).where(eq(quizAttempts.studentId, studentId))
       .orderBy(desc(quizAttempts.createdAt)).limit(1),
@@ -209,12 +224,26 @@ export async function getStudentDetail(studentId: string): Promise<StudentDetail
     )).orderBy(desc(payments.createdAt)).limit(1),
   ])
 
+  const studentRecord = (studentRows[0] ?? null) as StudentRow | null
+
+  // Fetch team member count separately if student is in a team
+  let team: StudentDetail['team'] = null
+  if (studentRecord?.teamId) {
+    const teamRows = await db
+      .select({ name: teams.name, code: teams.code, memberCount: teams.memberCount })
+      .from(teams)
+      .where(eq(teams.id, studentRecord.teamId))
+      .limit(1)
+    team = teamRows[0] ?? null
+  }
+
   return {
-    student:        studentRows[0]    ?? null,
+    student:        studentRecord,
     parent:         parentRows[0]     ?? null,
     quizAttempt:    quizRows[0]       ?? null,
     ideaSubmission: ideaRows[0]       ?? null,
     payment:        paymentRows[0]    ?? null,
+    team,
   }
 }
 
@@ -254,6 +283,7 @@ export interface PaymentRow {
   tier:              'pro' | 'premium'
   status:            'pending' | 'captured' | 'failed' | 'refunded'
   isEmi:             boolean | null
+  discountPct:       number
   confirmedAt:       Date | null
   createdAt:         Date | null
 }
@@ -306,6 +336,7 @@ export async function getPayments(
         tier:              payments.tier,
         status:            payments.status,
         isEmi:             payments.isEmi,
+        discountPct:       payments.discountPct,
         confirmedAt:       payments.confirmedAt,
         createdAt:         payments.createdAt,
       })

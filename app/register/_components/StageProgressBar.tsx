@@ -1,14 +1,17 @@
 'use client'
 
+import { usePathname } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { Check } from 'lucide-react'
 
 const STAGES = [
-  { num: 1, label: 'Apply' },
-  { num: 2, label: 'Learn + Quiz' },
-  { num: 3, label: 'Pay' },
-  { num: 4, label: 'Build' },
-  { num: 5, label: 'Celebrate' },
+  { num: 1, label: 'Apply'       },
+  { num: 2, label: 'Team'        },
+  { num: 3, label: 'Orientation' },
+  { num: 4, label: 'Learn'       },
+  { num: 5, label: 'Idea'        },
+  { num: 6, label: 'Pay'         },
+  { num: 7, label: 'Build'       },
 ]
 
 interface StageProgressBarProps {
@@ -19,25 +22,54 @@ interface StageProgressBarProps {
   ideaSubmitted?:       boolean
 }
 
+function computeDisplayStage(
+  pathname: string,
+  currentStage: number,
+  orientationComplete: boolean,
+  hasDomain: boolean,
+  quizPassed: boolean,
+  ideaSubmitted: boolean,
+): number {
+  // Priority: Match exact routes so the stepper always visually matches the page
+  if (pathname.includes('/register/stage-1')) return 1
+  if (pathname.includes('/register/team')) return 2
+  if (pathname.includes('/register/stage-2/orientation')) return 3
+  if (pathname.includes('/register/stage-2/idea')) return 5
+  if (pathname.includes('/register/stage-2')) return 4
+  if (pathname.includes('/register/stage-3')) return 6
+  if (pathname.includes('/register/success') || pathname.includes('/dashboard')) return 7
+
+  // Fallback to state-based calculation
+  if (currentStage <= 1) return 1
+  if (currentStage >= 4) return 7
+  if (currentStage === 3) return 6
+
+  if (!orientationComplete) return 3
+  if (!hasDomain || !quizPassed) return 4
+  if (!ideaSubmitted) return 5
+  return 5
+}
+
 export function StageProgressBar({
   currentStage,
-  // sub-step props accepted but stage 2 detail is rendered by Stage2SubProgress
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  orientationComplete: _o,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  hackathonDomain: _d,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  quizPassed: _q,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  ideaSubmitted: _i,
+  orientationComplete = false,
+  hackathonDomain,
+  quizPassed = false,
+  ideaSubmitted = false,
 }: StageProgressBarProps) {
+  const pathname     = usePathname()
+  const displayStage = computeDisplayStage(
+    pathname, currentStage,
+    orientationComplete, !!hackathonDomain, quizPassed, ideaSubmitted,
+  )
+
   return (
     <div className="w-full px-4 py-3 sm:py-4">
-      <div className="relative mx-auto max-w-md sm:max-w-lg">
-        {/* Connector lines — rendered behind circles */}
-        <div className="absolute top-4 left-0 right-0 flex items-center px-4 sm:px-5" aria-hidden="true">
+      <div className="relative mx-auto max-w-2xl">
+        {/* Connector lines */}
+        <div className="absolute top-4 left-0 right-0 flex items-center px-3 sm:px-4" aria-hidden="true">
           {STAGES.slice(0, -1).map((stage) => {
-            const isComplete = stage.num < currentStage
+            const isComplete = stage.num < displayStage
             return (
               <div
                 key={stage.num}
@@ -49,7 +81,7 @@ export function StageProgressBar({
                   style={{ background: 'linear-gradient(90deg, #FFB800, #FFCF40)' }}
                   initial={{ scaleX: 0 }}
                   animate={{ scaleX: isComplete ? 1 : 0 }}
-                  transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1], delay: stage.num * 0.08 }}
+                  transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1], delay: stage.num * 0.06 }}
                 />
               </div>
             )
@@ -59,16 +91,16 @@ export function StageProgressBar({
         {/* Circles row */}
         <div className="relative flex items-start justify-between">
           {STAGES.map((stage) => {
-            const isDone   = stage.num < currentStage
-            const isActive = stage.num === currentStage
-            const isLocked = stage.num > currentStage
+            const isDone   = stage.num < displayStage
+            const isActive = stage.num === displayStage
+            const isLocked = stage.num > displayStage
 
             return (
               <div key={stage.num} className="flex flex-col items-center gap-1.5">
                 {/* Circle */}
                 <motion.div
                   layout
-                  className="relative flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-full text-[13px] sm:text-xs font-bold font-mono select-none"
+                  className="relative flex h-8 w-8 items-center justify-center rounded-full text-[10px] font-bold font-mono select-none"
                   style={{
                     background: isDone
                       ? '#FFB800'
@@ -92,21 +124,18 @@ export function StageProgressBar({
                         : 'none',
                   }}
                   initial={false}
-                  animate={{
-                    scale: isActive ? [1, 1.06, 1] : 1,
-                  }}
+                  animate={{ scale: isActive ? [1, 1.06, 1] : 1 }}
                   transition={isActive
                     ? { duration: 2.4, repeat: Infinity, ease: 'easeInOut' }
                     : { duration: 0.3 }
                   }
                 >
                   {isDone ? (
-                    <Check className="h-3.5 w-3.5 sm:h-4 sm:w-4" strokeWidth={3} />
+                    <Check className="h-3.5 w-3.5" strokeWidth={3} />
                   ) : (
                     <span>{stage.num}</span>
                   )}
 
-                  {/* Active glow ring */}
                   {isActive && (
                     <motion.div
                       className="absolute inset-0 rounded-full"
@@ -118,14 +147,15 @@ export function StageProgressBar({
                   )}
                 </motion.div>
 
-                {/* Label — hidden on xs, visible on sm+ */}
+                {/* Label — hidden on very small screens */}
                 <span
                   className={[
-                    'hidden sm:block text-[12px] font-body text-center leading-tight max-w-[56px]',
-                    isDone   ? 'text-brand'   : '',
-                    isActive ? 'text-brand font-semibold' : '',
-                    isLocked ? 'text-text-4'  : '',
+                    'hidden sm:block text-[10px] font-body text-center leading-tight max-w-[46px]',
+                    isDone   ? 'text-brand'                   : '',
+                    isActive ? 'text-brand font-semibold'     : '',
+                    isLocked ? ''                             : '',
                   ].join(' ')}
+                  style={{ color: isLocked ? 'var(--text-4)' : undefined }}
                 >
                   {stage.label}
                 </span>
@@ -135,9 +165,9 @@ export function StageProgressBar({
         </div>
       </div>
 
-      {/* Mobile step text — xs only */}
-      <p className="sm:hidden mt-2 text-center text-[13px] text-text-3 font-body">
-        Step <span className="text-brand font-semibold">{currentStage}</span> of 5
+      {/* Mobile step text */}
+      <p className="sm:hidden mt-2 text-center text-[11px] text-text-3 font-body">
+        Step <span className="text-brand font-semibold">{displayStage}</span> of {STAGES.length}
       </p>
     </div>
   )

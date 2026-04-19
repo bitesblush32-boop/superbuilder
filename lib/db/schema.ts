@@ -25,6 +25,26 @@ export const domainEnum = pgEnum('domain', [
   'other',
 ])
 
+// teams.leaderId FK to students is added via ALTER after both tables exist (circular dep)
+export const teams = pgTable('teams', {
+  id:          uuid('id').primaryKey().defaultRandom(),
+  name:        varchar('name', { length: 100 }).notNull(),
+  code:        varchar('code', { length: 10 }).unique().notNull(), // e.g. "SB-X7K2"
+  leaderId:    uuid('leader_id').notNull(),                        // FK added via ALTER after students
+  maxSize:     integer('max_size').default(4).notNull(),
+  memberCount: integer('member_count').default(1).notNull(),
+  isLocked:    boolean('is_locked').default(false).notNull(),      // locked after reg deadline
+  createdAt:   timestamp('created_at').defaultNow().notNull(),
+  updatedAt:   timestamp('updated_at').defaultNow().notNull(),
+})
+
+export const appSettings = pgTable('app_settings', {
+  key:       varchar('key', { length: 100 }).primaryKey(),
+  value:     text('value').notNull(),
+  label:     varchar('label', { length: 255 }),  // human-readable label for admin UI
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+})
+
 export const students = pgTable('students', {
   id:              uuid('id').primaryKey().defaultRandom(),
   clerkId:         varchar('clerk_id', { length: 255 }).unique().notNull(),
@@ -46,7 +66,10 @@ export const students = pgTable('students', {
   referredBy:      varchar('referred_by', { length: 20 }),
   codingExp:       varchar('coding_exp', { length: 50 }),
   interests:       text('interests').array(),
+  // TODO: teamPreference can be dropped in next migration cycle once team system is live
   teamPreference:  varchar('team_preference', { length: 20 }),
+  teamId:          uuid('team_id').references(() => teams.id, { onDelete: 'set null' }),
+  teamRole:        varchar('team_role', { length: 20 }), // 'leader' | 'member' | null
   availabilityHrs: varchar('availability_hrs', { length: 20 }),
   deviceAccess:    varchar('device_access', { length: 20 }),
   tshirtSize:      varchar('tshirt_size', { length: 5 }),
@@ -110,6 +133,7 @@ export const payments = pgTable('payments', {
   status:            statusEnum('status').default('pending').notNull(),
   isEmi:             boolean('is_emi').default(false),
   emiPhase:          integer('emi_phase').default(1),
+  discountPct:       integer('discount_pct').default(0).notNull(), // 0, 10, or 20
   confirmedAt:       timestamp('confirmed_at'),
   createdAt:         timestamp('created_at').defaultNow(),
 })
@@ -180,3 +204,25 @@ export const commsLog = pgTable('comms_log', {
 }, t => ({
   createdAtIdx: index('comms_log_created_at_idx').on(t.createdAt),
 }))
+
+export const programmeConfig = pgTable('programme_config', {
+  section:   varchar('section', { length: 50 }).primaryKey(),
+  data:      jsonb('data').notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+})
+
+export const scheduleItems = pgTable('schedule_items', {
+  id:            uuid('id').primaryKey().defaultRandom(),
+  type:          varchar('type', { length: 20 }).notNull(),  // 'video' | 'meeting' | 'resource'
+  title:         varchar('title', { length: 255 }).notNull(),
+  description:   text('description'),
+  url:           text('url'),
+  targetStage:   varchar('target_stage', { length: 20 }),   // '1','2','3','4','dashboard','all'
+  targetSection: varchar('target_section', { length: 50 }), // 'workshop_1','workshop_2','workshop_3','general'
+  scheduledAt:   timestamp('scheduled_at', { withTimezone: true }),
+  durationMins:  integer('duration_mins'),
+  isVisible:     boolean('is_visible').default(true).notNull(),
+  notifySent:    boolean('notify_sent').default(false).notNull(),
+  createdAt:     timestamp('created_at').defaultNow().notNull(),
+  updatedAt:     timestamp('updated_at').defaultNow().notNull(),
+})

@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Script from 'next/script'
+import { getDatesConfig, getPricingConfig } from '@/lib/db/queries/config'
 
 import { Navbar }             from '@/components/layout/Navbar'
 import { Footer }             from '@/components/layout/Footer'
@@ -16,8 +17,8 @@ import { FAQ }                from './_components/FAQ'
 import { JurySection }        from './_components/JurySection'
 import { FinalCTA }           from './_components/FinalCTA'
 
-/* ─── ISR — revalidate once per hour ────────────────────────────────────────── */
-export const revalidate = 3600
+/* ─── ISR — revalidate once per minute ──────────────────────────────────────── */
+export const revalidate = 60
 
 /* ─── SEO Metadata ───────────────────────────────────────────────────────────── */
 export const metadata: Metadata = {
@@ -42,30 +43,31 @@ export const metadata: Metadata = {
   alternates: { canonical: 'https://superbuilder.org' },
 }
 
-/* ─── JSON-LD structured data ────────────────────────────────────────────────── */
-const jsonLd = {
-  '@context': 'https://schema.org',
-  '@type': 'Event',
-  name: 'Super Builders — School Edition',
-  startDate: '2025-06-07T08:00:00+05:30',
-  endDate: '2025-06-08T08:00:00+05:30',
-  eventStatus: 'https://schema.org/EventScheduled',
-  eventAttendanceMode: 'https://schema.org/OnlineEventAttendanceMode',
-  organizer: {
-    '@type': 'Organization',
-    name: 'zer0.pro',
-    url: 'https://zer0.pro',
-  },
-  offers: {
-    '@type': 'Offer',
-    price: '1499',
-    priceCurrency: 'INR',
-    validThrough: '2025-05-25',
-  },
-}
-
 /* ─── Page ───────────────────────────────────────────────────────────────────── */
-export default function LandingPage() {
+export default async function LandingPage() {
+  const [dates, pricing] = await Promise.all([getDatesConfig(), getPricingConfig()])
+
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Event',
+    name: 'Super Builders — School Edition',
+    startDate: dates.hackathonStartISO,
+    endDate:   dates.hackathonEndISO,
+    eventStatus: 'https://schema.org/EventScheduled',
+    eventAttendanceMode: 'https://schema.org/OnlineEventAttendanceMode',
+    organizer: {
+      '@type': 'Organization',
+      name: 'zer0.pro',
+      url: 'https://zer0.pro',
+    },
+    offers: {
+      '@type': 'Offer',
+      price: String(pricing.pro.priceMin),
+      priceCurrency: 'INR',
+      validThrough: dates.regDeadlineISO,
+    },
+  }
+
   return (
     <>
       {/* JSON-LD */}
@@ -86,10 +88,10 @@ export default function LandingPage() {
         <StatsBar />
 
         {/* 4 — Programme timeline (phases + workshop cards) */}
-        <ProgrammeTimeline />
+        <ProgrammeTimeline phases={dates.phases} workshops={dates.workshops} />
 
         {/* 5 — Tier comparison */}
-        <TierComparison />
+        <TierComparison pricing={pricing} />
 
         {/* 6 — Badge wall */}
         <BadgeWall />
@@ -106,11 +108,8 @@ export default function LandingPage() {
         {/* 10 — FAQ */}
         <FAQ />
 
-        {/* 11 — Jury */}
-        <JurySection />
-
-        {/* 12 — Final CTA */}
-        <FinalCTA />
+        {/* 11 — Final CTA */}
+        <FinalCTA regDeadlineISO={dates.regDeadlineISO} regDeadlineDisplay={dates.regDeadlineDisplay} />
       </main>
 
       {/* 12 — Footer */}

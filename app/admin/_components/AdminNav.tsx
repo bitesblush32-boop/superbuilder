@@ -6,12 +6,15 @@ import { useState } from 'react'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 
 const NAV_ITEMS = [
-  { href: '/admin',          label: 'Overview',  emoji: '📊' },
-  { href: '/admin/students', label: 'Students',  emoji: '👥' },
-  { href: '/admin/payments', label: 'Payments',  emoji: '💳' },
-  { href: '/admin/projects', label: 'Projects',  emoji: '📁' },
-  { href: '/admin/judging',  label: 'Judging',   emoji: '⚖️' },
-  { href: '/admin/comms',    label: 'Comms',     emoji: '📢' },
+  { href: '/admin',           label: 'Overview',  emoji: '📊' },
+  { href: '/admin/students',  label: 'Students',  emoji: '👥' },
+  { href: '/admin/payments',  label: 'Payments',  emoji: '💳' },
+  { href: '/admin/teams',     label: 'Teams',     emoji: '🤝' },
+  { href: '/admin/projects',  label: 'Projects',  emoji: '📁' },
+  { href: '/admin/judging',   label: 'Judging',   emoji: '⚖️' },
+  { href: '/admin/comms',     label: 'Comms',     emoji: '📢' },
+  { href: '/admin/schedule',  label: 'Schedule',  emoji: '📅' },
+  { href: '/admin/settings',  label: 'Pricing',   emoji: '💰' },
 ]
 
 function NavItem({ href, label, emoji, onClick }: {
