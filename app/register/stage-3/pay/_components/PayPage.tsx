@@ -54,7 +54,61 @@ interface RazorpayOptions {
   modal?:         { ondismiss?: () => void }
 }
 
-export function PayPage({ studentId, fullName, email, phone, defaultTier }: PayPageProps) {
+function TeamStatusCard({ teamData, discountPct }: { teamData: TeamData; discountPct: number }) {
+  const paidCount = teamData.members.filter(m => m.isPaid).length
+  const totalCount = teamData.memberCount
+
+  return (
+    <div
+      className="rounded-2xl p-4"
+      style={{
+        background: discountPct > 0 ? 'rgba(34,197,94,0.06)' : 'var(--bg-card)',
+        border: discountPct > 0 ? '1px solid rgba(34,197,94,0.25)' : '1px solid var(--border-subtle)',
+      }}
+    >
+      <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center gap-2">
+          <span className="text-base">👥</span>
+          <p className="font-body text-sm font-semibold" style={{ color: 'var(--text-1)' }}>
+            {teamData.name}
+          </p>
+          <span
+            className="font-mono text-[10px] px-1.5 py-0.5 rounded"
+            style={{ background: 'var(--bg-float)', color: 'var(--text-3)' }}
+          >
+            {teamData.code}
+          </span>
+        </div>
+        {discountPct > 0 && (
+          <span
+            className="font-mono text-xs px-2 py-0.5 rounded-full font-bold"
+            style={{ background: 'rgba(34,197,94,0.15)', color: 'var(--green)' }}
+          >
+            {discountPct}% team discount
+          </span>
+        )}
+      </div>
+      <div className="flex items-center gap-2">
+        <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: 'var(--bg-float)' }}>
+          <div
+            className="h-full rounded-full transition-all"
+            style={{ width: `${(paidCount / totalCount) * 100}%`, background: 'var(--green)' }}
+          />
+        </div>
+        <p className="font-mono text-[11px] shrink-0" style={{ color: 'var(--text-3)' }}>
+          {paidCount}/{totalCount} paid
+        </p>
+      </div>
+      {discountPct === 0 && totalCount < 3 && (
+        <p className="font-body text-[11px] mt-2" style={{ color: 'var(--text-3)' }}>
+          Get 3+ members to unlock a team discount
+        </p>
+      )}
+    </div>
+  )
+}
+
+export function PayPage({ studentId, fullName, email, phone, defaultTier, discountPct, teamData }: PayPageProps) {
   const router       = useRouter()
   const searchParams = useSearchParams()
   const { tier: storeTier, isEmi, setTier } = useRegistrationStore()
@@ -84,7 +138,7 @@ export function PayPage({ studentId, fullName, email, phone, defaultTier }: PayP
     : emiEnabled        ? EMI_FIRST
     : PREMIUM_PRICE
 
-  const displayPrice = applyDiscount(basePrice, discountPct)
+  const displayPrice = Math.round(basePrice * (1 - discountPct / 100))
   const savedAmount  = basePrice - displayPrice
   const amountPaise  = displayPrice * 100
 
