@@ -124,7 +124,7 @@ export async function submitStage1(data: unknown): Promise<{
     tshirtSize:      form.tshirtSize,
     instagramHandle: form.instagramHandle ?? null,
     linkedinHandle:  form.linkedinHandle  ?? null,
-    referredBy:      form.referralCode    ?? null,
+    referredBy:      null,
     referralCode,
     currentStage:    '1', // will be advanced below
   })

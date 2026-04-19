@@ -14,7 +14,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { ArrowLeft, ChevronRight, Loader2, Check } from 'lucide-react'
 import { State, City } from 'country-state-city'
 import { stage1Schema, type Stage1FormData } from '@/lib/validation/stage1'
-import { submitStage1, createStudentTeam, joinStudentTeam } from '@/lib/actions/registration'
+import { submitStage1 } from '@/lib/actions/registration'
 import { BadgeUnlock } from '@/components/gamification/BadgeUnlock'
 import type { BadgeId } from '@/lib/gamification/badges'
 import { SchoolAutocomplete } from './SchoolAutocomplete'
@@ -411,362 +411,9 @@ function CTAButton({
 
 // ─── Main exported form ───────────────────────────────────────────────────────
 
-// ─── CopyButton ───────────────────────────────────────────────────────────────
-
-function CopyButton({ text }: { text: string }) {
-  const [copied, setCopied] = useState(false)
-  return (
-    <button
-      type="button"
-      onClick={() => {
-        navigator.clipboard.writeText(text).then(() => {
-          setCopied(true)
-          setTimeout(() => setCopied(false), 2000)
-        })
-      }}
-      className="flex items-center gap-2 px-5 rounded-xl font-heading font-semibold text-sm transition-all active:scale-95"
-      style={{
-        minHeight: '44px',
-        background: copied ? 'rgba(34,197,94,0.12)' : 'var(--bg-float)',
-        border: `1px solid ${copied ? 'rgba(34,197,94,0.4)' : 'var(--border-soft)'}`,
-        color: copied ? 'var(--green)' : 'var(--text-2)',
-      }}
-    >
-      {copied ? '✓ Copied!' : '📋 Copy Code'}
-    </button>
-  )
-}
-
-// ─── TeamSelectionScreen ──────────────────────────────────────────────────────
-
-function TeamSelectionScreen({
-  studentName,
-  onComplete,
-}: {
-  studentName: string
-  onComplete: () => void
-}) {
-  type Mode = 'choosing' | 'create_form' | 'join_form' | 'created' | 'joined' | 'skipped'
-  const [mode, setMode]       = useState<Mode>('choosing')
-  const [teamName, setTeamName] = useState('')
-  const [joinCode, setJoinCode] = useState('')
-  const [loading, setLoading]   = useState(false)
-  const [error, setError]       = useState<string | null>(null)
-  const [result, setResult]     = useState<{
-    teamCode?: string; teamName?: string; memberCount?: number
-  } | null>(null)
-
-  // SCREEN 1 — solo / create / join choice
-  if (mode === 'choosing') {
-    return (
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.38, ease: [0.16, 1, 0.3, 1] }}
-        className="flex flex-col gap-5"
-      >
-        <div>
-          <h2
-            className="font-display leading-none tracking-wide mb-2"
-            style={{ fontSize: '2.8rem', color: 'var(--text-1)' }}
-          >
-            SOLO OR SQUAD? 🤝
-          </h2>
-
-        </div>
-
-        <div className="flex flex-col gap-3">
-          {/* Solo */}
-          <button
-            type="button"
-            onClick={() => { setMode('skipped'); setTimeout(onComplete, 600) }}
-            className="w-full rounded-2xl p-5 text-left transition-all active:scale-[0.98] flex items-start gap-4"
-            style={{ background: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}
-          >
-            <span className="text-3xl">🦅</span>
-            <div>
-              <p className="font-heading font-bold text-base mb-0.5" style={{ color: 'var(--text-1)' }}>
-                Go Solo
-              </p>
-              <p className="font-body text-xs" style={{ color: 'var(--text-3)' }}>
-                Build independently. Full prize if you win. No discount.
-              </p>
-            </div>
-          </button>
-
-          {/* Create Team */}
-          <button
-            type="button"
-            onClick={() => setMode('create_form')}
-            className="w-full rounded-2xl p-5 text-left transition-all active:scale-[0.98] flex items-start gap-4"
-            style={{
-              background: 'rgba(255,184,0,0.06)',
-              border: '2px solid rgba(255,184,0,0.4)',
-            }}
-          >
-            <span className="text-3xl">⚡</span>
-            <div>
-              <p className="font-heading font-bold text-base mb-0.5" style={{ color: 'var(--text-brand)' }}>
-                Create a Team
-              </p>
-              <p className="font-body text-xs" style={{ color: 'var(--text-3)' }}>
-                Give your team a name → get a code → share with 2–3 friends.
-              </p>
-              <div className="flex flex-wrap gap-2 mt-2">
-                <span
-                  className="font-mono text-[11px] px-2 py-0.5 rounded-full"
-                  style={{ background: 'rgba(34,197,94,0.12)', color: 'var(--green)' }}
-                >
-                  Team of 3 → 10% off
-                </span>
-                <span
-                  className="font-mono text-[11px] px-2 py-0.5 rounded-full"
-                  style={{ background: 'rgba(34,197,94,0.12)', color: 'var(--green)' }}
-                >
-                  Team of 4 → 20% off
-                </span>
-              </div>
-            </div>
-          </button>
-
-          {/* Join Team */}
-          <button
-            type="button"
-            onClick={() => setMode('join_form')}
-            className="w-full rounded-2xl p-5 text-left transition-all active:scale-[0.98] flex items-start gap-4"
-            style={{ background: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}
-          >
-            <span className="text-3xl">🔗</span>
-            <div>
-              <p className="font-heading font-bold text-base mb-0.5" style={{ color: 'var(--text-1)' }}>
-                Join a Team
-              </p>
-              <p className="font-body text-xs" style={{ color: 'var(--text-3)' }}>
-                A friend already created a team? Enter their code to join.
-              </p>
-            </div>
-          </button>
-        </div>
-
-        <p className="font-mono text-[11px] text-center" style={{ color: 'var(--text-4)' }}>
-          You can update your team on your dashboard until May 25
-        </p>
-      </motion.div>
-    )
-  }
-
-  // SCREEN 2a — create team name
-  if (mode === 'create_form') {
-    const handleCreate = async () => {
-      if (teamName.trim().length < 2) { setError('Team name must be at least 2 characters'); return }
-      setLoading(true); setError(null)
-      const res = await createStudentTeam(teamName)
-      setLoading(false)
-      if (!res.success) { setError(res.error ?? 'Something went wrong'); return }
-      setResult({ teamCode: res.teamCode })
-      setMode('created')
-    }
-    return (
-      <motion.div
-        initial={{ opacity: 0, x: 40 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.32, ease: [0.16, 1, 0.3, 1] }}
-        className="flex flex-col gap-5"
-      >
-        <button
-          type="button"
-          onClick={() => { setMode('choosing'); setError(null) }}
-          className="flex items-center gap-1 text-sm"
-          style={{ minHeight: '44px', color: 'var(--text-3)' }}
-        >
-          ← Back
-        </button>
-        <h2
-          className="font-display leading-none tracking-wide"
-          style={{ fontSize: '2.2rem', color: 'var(--text-1)' }}
-        >
-          NAME YOUR TEAM ⚡
-        </h2>
-        <p className="font-body text-sm" style={{ color: 'var(--text-3)' }}>
-          Choose something memorable. Your teammates will see this name.
-        </p>
-        <input
-          type="text"
-          value={teamName}
-          onChange={e => setTeamName(e.target.value)}
-          onKeyDown={e => e.key === 'Enter' && handleCreate()}
-          placeholder="e.g. Byte Brigade, AI Avengers..."
-          inputMode="text"
-          autoCapitalize="words"
-          maxLength={50}
-          className="w-full rounded-xl px-4 font-body outline-none"
-          style={{
-            minHeight: '52px',
-            background: 'var(--bg-inset)',
-            border: `1px solid ${error ? 'rgba(248,113,113,0.45)' : 'var(--border-subtle)'}`,
-            color: 'var(--text-1)',
-            fontSize: '16px',
-          }}
-        />
-        {error && (
-          <p className="text-xs font-body" style={{ color: 'var(--red)' }}>⚠ {error}</p>
-        )}
-        <CTAButton onClick={handleCreate} disabled={loading || teamName.trim().length < 2} loading={loading}>
-          Create Team →
-        </CTAButton>
-      </motion.div>
-    )
-  }
-
-  // SCREEN 2b — join with code
-  if (mode === 'join_form') {
-    const handleJoin = async () => {
-      if (joinCode.trim().length < 5) { setError('Enter a valid team code'); return }
-      setLoading(true); setError(null)
-      const res = await joinStudentTeam(joinCode)
-      setLoading(false)
-      if (!res.success) { setError(res.error ?? 'Invalid code'); return }
-      setResult({ teamName: res.teamName, memberCount: res.memberCount })
-      setMode('joined')
-    }
-    return (
-      <motion.div
-        initial={{ opacity: 0, x: 40 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.32, ease: [0.16, 1, 0.3, 1] }}
-        className="flex flex-col gap-5"
-      >
-        <button
-          type="button"
-          onClick={() => { setMode('choosing'); setError(null) }}
-          className="flex items-center gap-1 text-sm"
-          style={{ minHeight: '44px', color: 'var(--text-3)' }}
-        >
-          ← Back
-        </button>
-        <h2
-          className="font-display leading-none tracking-wide"
-          style={{ fontSize: '2.2rem', color: 'var(--text-1)' }}
-        >
-          ENTER TEAM CODE 🔗
-        </h2>
-        <p className="font-body text-sm" style={{ color: 'var(--text-3)' }}>
-          Ask your team leader for their code. It looks like SB-XXXX.
-        </p>
-        <input
-          type="text"
-          value={joinCode}
-          onChange={e => setJoinCode(e.target.value.toUpperCase())}
-          onKeyDown={e => e.key === 'Enter' && handleJoin()}
-          placeholder="SB-XXXX"
-          inputMode="text"
-          autoCapitalize="characters"
-          autoComplete="off"
-          maxLength={10}
-          className="w-full rounded-xl px-4 font-mono outline-none tracking-widest text-center"
-          style={{
-            minHeight: '56px',
-            background: 'var(--bg-inset)',
-            border: `1px solid ${error ? 'rgba(248,113,113,0.45)' : 'var(--border-subtle)'}`,
-            color: 'var(--text-brand)',
-            fontSize: '20px',
-            letterSpacing: '0.15em',
-          }}
-        />
-        {error && (
-          <p className="text-xs font-body" style={{ color: 'var(--red)' }}>⚠ {error}</p>
-        )}
-        <CTAButton onClick={handleJoin} disabled={loading || joinCode.trim().length < 5} loading={loading}>
-          Join Team →
-        </CTAButton>
-      </motion.div>
-    )
-  }
-
-  // SCREEN 3a — team created, show code to copy
-  if (mode === 'created') {
-    return (
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-        className="flex flex-col gap-5 items-center text-center"
-      >
-        <div className="text-6xl">🎉</div>
-        <h2
-          className="font-display leading-none tracking-wide"
-          style={{ fontSize: '2.4rem', color: 'var(--text-brand)' }}
-        >
-          TEAM CREATED!
-        </h2>
-        <p className="font-body text-sm" style={{ color: 'var(--text-3)' }}>
-          Share this code with your teammates. They paste it after completing Stage 1.
-        </p>
-        <div
-          className="w-full rounded-2xl p-5 flex flex-col gap-3 items-center"
-          style={{ background: 'var(--bg-card)', border: '2px solid rgba(255,184,0,0.4)' }}
-        >
-          <p className="font-mono text-xs tracking-[0.2em] uppercase" style={{ color: 'var(--text-4)' }}>
-            Your Team Code
-          </p>
-          <p
-            className="font-mono font-bold tracking-[0.25em]"
-            style={{ fontSize: '2.4rem', color: 'var(--brand)' }}
-          >
-            {result?.teamCode}
-          </p>
-          <CopyButton text={result?.teamCode ?? ''} />
-        </div>
-        <p className="font-body text-xs" style={{ color: 'var(--text-4)' }}>
-          Team discount unlocks at payment when 3+ members have joined.
-        </p>
-        <CTAButton onClick={onComplete}>
-          Continue to Stage 2 🚀
-        </CTAButton>
-      </motion.div>
-    )
-  }
-
-  // SCREEN 3b — joined successfully
-  if (mode === 'joined') {
-    return (
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-        className="flex flex-col gap-5 items-center text-center"
-      >
-        <div className="text-6xl">🤝</div>
-        <h2
-          className="font-display leading-none tracking-wide"
-          style={{ fontSize: '2.4rem', color: 'var(--text-brand)' }}
-        >
-          YOU&apos;RE IN THE TEAM!
-        </h2>
-        <div
-          className="w-full rounded-2xl p-4"
-          style={{ background: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}
-        >
-          <p className="font-heading font-bold text-lg mb-1" style={{ color: 'var(--text-1)' }}>
-            {result?.teamName}
-          </p>
-          <p className="font-mono text-xs" style={{ color: 'var(--text-3)' }}>
-            {result?.memberCount} of 4 members joined
-          </p>
-        </div>
-        <CTAButton onClick={onComplete}>
-          Continue to Stage 2 🚀
-        </CTAButton>
-      </motion.div>
-    )
-  }
-
-  return null
-}
 
 // ─────────────────────────────────────────────────────────────────────────────
 
-type TeamPhase = 'choosing' | 'creating' | 'joining' | 'done'
 
 export function Stage1Form() {
   const router = useRouter()
@@ -775,8 +422,6 @@ export function Stage1Form() {
   const [submitting, setSubmitting]     = useState(false)
   const [serverError, setServerError]   = useState<string | null>(null)
   const [pendingBadge, setPendingBadge] = useState<BadgeId | null>(null)
-  // null = badge not yet dismissed; 'choosing'+ = team selection screen active
-  const [teamPhase, setTeamPhase]       = useState<TeamPhase | null>(null)
 
   const {
     register,
@@ -920,8 +565,8 @@ export function Stage1Form() {
 
   const handleBadgeDismiss = useCallback(() => {
     setPendingBadge(null)
-    setTeamPhase('choosing') // show team selection screen before continuing
-  }, [])
+    router.push('/register/team')
+  }, [router])
 
   // ── Input style helpers ─────────────────────────────────────────────────────
   const inputCls = 'w-full rounded-xl px-4 font-body transition-colors outline-none focus:outline-none placeholder:opacity-40'
@@ -935,27 +580,9 @@ export function Stage1Form() {
 
   // ─────────────────────────────────────────────────────────────────────────────
 
-  const studentFirstName = useWatch({ control, name: 'fullName' })?.split(' ')[0] ?? ''
-
   return (
     <>
       <BadgeUnlock badge={pendingBadge} onDismiss={handleBadgeDismiss} />
-
-      <AnimatePresence mode="wait">
-        {teamPhase !== null ? (
-          <motion.div
-            key="team"
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-          >
-            <TeamSelectionScreen
-              studentName={studentFirstName}
-              onComplete={() => router.push('/register')}
-            />
-          </motion.div>
-        ) : (
-          <motion.div key="form" initial={{ opacity: 1 }} exit={{ opacity: 0 }}>
 
       <form onSubmit={onSubmit} noValidate>
         {/* Overflow hidden only on the clipping wrapper — scroll container lives outside */}
@@ -1271,17 +898,6 @@ export function Stage1Form() {
                         />
                       </div>
 
-                      <div>
-                        <FieldLabel>Friend's Referral Code</FieldLabel>
-                        <TextInput
-                          {...register('referralCode')}
-                          placeholder="e.g. AB3X72QK"
-                          inputMode="text"
-                          autoComplete="off"
-                          autoCapitalize="characters"
-                          style={{ letterSpacing: '0.08em' }}
-                        />
-                      </div>
                     </div>
                   </FormCard>
 
@@ -1454,10 +1070,6 @@ export function Stage1Form() {
           </AnimatePresence>
         </div>
       </form>
-
-          </motion.div>
-        )}
-      </AnimatePresence>
     </>
   )
 }

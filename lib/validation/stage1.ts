@@ -61,7 +61,6 @@ export const stage1Schema = z.object({
 
   instagramHandle: z.string().optional(),
   linkedinHandle:  z.string().optional(),
-  referralCode:    z.string().optional(),
 
   whyJoin: z
     .string()

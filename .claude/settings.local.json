@@ -71,7 +71,8 @@
       "Bash(cd \"C:\\\\Users\\\\Ravi Desai\\\\Downloads\\\\SuperBuilders\\\\super-builders\" && pnpm type-check 2>&1 | head -80)",
       "Bash(cd \"C:\\\\Users\\\\Ravi Desai\\\\Downloads\\\\SuperBuilders\\\\super-builders\" && pnpm add country-state-city)",
       "Bash(cd \"C:\\\\Users\\\\Ravi Desai\\\\Downloads\\\\SuperBuilders\\\\super-builders\" && pnpm add -D @types/google.maps 2>&1 | tail -5)",
-      "Bash(cd \"C:\\\\Users\\\\Ravi Desai\\\\Downloads\\\\SuperBuilders\\\\super-builders\" && npx tsc --noEmit --skipLibCheck 2>&1 | head -40)"
+      "Bash(cd \"C:\\\\Users\\\\Ravi Desai\\\\Downloads\\\\SuperBuilders\\\\super-builders\" && npx tsc --noEmit --skipLibCheck 2>&1 | head -40)",
+      "Bash(npx tsc *)"
     ]
   }
 }

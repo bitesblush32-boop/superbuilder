@@ -174,7 +174,8 @@ export function PayPage({ studentId, fullName, email, phone, defaultTier, teamDa
 
   const [emiEnabled, setEmiEnabled]   = useState(isEmi)
   const [loading, setLoading]         = useState(false)
-  const [scriptReady, setScriptReady] = useState(false)
+  // Check on mount whether the Razorpay script is already loaded (e.g. returning from tier select)
+  const [scriptReady, setScriptReady] = useState(() => typeof window !== 'undefined' && typeof window.Razorpay !== 'undefined')
   const [error, setError]             = useState<string | null>(null)
 
   const PREMIUM_PRICE  = TIERS.premium.priceMin // 2499
@@ -253,6 +254,7 @@ export function PayPage({ studentId, fullName, email, phone, defaultTier, teamDa
         src="https://checkout.razorpay.com/v1/checkout.js"
         strategy="lazyOnload"
         onLoad={() => setScriptReady(true)}
+        onReady={() => setScriptReady(true)}
       />
 
       <div className="flex flex-col gap-6 max-w-lg mx-auto pb-8">
@@ -313,7 +315,7 @@ export function PayPage({ studentId, fullName, email, phone, defaultTier, teamDa
                 background: emiEnabled ? 'rgba(255,184,0,0.08)' : 'var(--bg-float)',
                 border:     emiEnabled ? '1px solid rgba(255,184,0,0.4)' : '1px solid var(--border-subtle)',
               }}
-              onClick={() => setEmiEnabled(v => !v)}
+              onClick={() => { setEmiEnabled(v => !v); setLoading(false); setError(null) }}
             >
               <div className="flex items-center gap-3">
                 <div

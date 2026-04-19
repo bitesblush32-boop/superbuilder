@@ -2,8 +2,8 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
-import { useState, useEffect } from 'react'
-import { Menu, Zap, ChevronRight } from 'lucide-react'
+import { useState, useEffect, useRef } from 'react'
+import { Menu, Zap, ChevronRight, LayoutDashboard, LogOut, Shield, ReceiptText } from 'lucide-react'
 import {
   Sheet,
   SheetContent,
@@ -14,6 +14,7 @@ import {
 import { useCountdown } from '@/hooks/useCountdown'
 import { HACKATHON_START } from '@/lib/content/programme'
 import { cn } from '@/lib/utils'
+import { useUser, useClerk } from '@clerk/nextjs'
 
 /* ─── zer0.pro geometric "0" mark ─────────────────────────────────────────── */
 function Zer0Mark({ size = 26 }: { size?: number }) {
@@ -76,15 +77,108 @@ function CountdownPill() {
 
 /* ─── Nav links data ───────────────────────────────────────────────────────── */
 const NAV_LINKS = [
-  { label: 'Programme',  href: '#programme' },
-  { label: 'Workshops',  href: '#workshops' },
-  { label: 'Prizes',     href: '#prizes'    },
+  { label: 'Programme',  href: '#badges' },
+  { label: 'Workshops',  href: '#programme' },
+  { label: 'Prizes',     href: '#tiers'     },
   { label: 'For Parents', href: '#parents'  },
   { label: 'FAQ',        href: '#faq'       },
 ] as const
 
+/* ─── User avatar dropdown ─────────────────────────────────────────────────── */
+function UserMenu() {
+  const { user } = useUser()
+  const { signOut } = useClerk()
+  const [open, setOpen] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    function onClick(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
+    }
+    document.addEventListener('mousedown', onClick)
+    return () => document.removeEventListener('mousedown', onClick)
+  }, [])
+
+  const initials = user?.firstName?.[0]?.toUpperCase() ?? user?.emailAddresses?.[0]?.emailAddress?.[0]?.toUpperCase() ?? '?'
+
+  return (
+    <div ref={ref} className="relative">
+      <button
+        onClick={() => setOpen(v => !v)}
+        className="flex shrink-0 items-center justify-center w-9 h-9 aspect-square rounded-full overflow-hidden font-heading font-bold text-sm transition-all active:scale-95 select-none"
+        style={{
+          width: '36px',
+          height: '36px',
+          minWidth: '36px',
+          minHeight: '36px',
+          maxWidth: '36px',
+          maxHeight: '36px',
+          flexShrink: 0,
+          background: open ? 'var(--brand)' : 'rgba(255,184,0,0.15)',
+          color:      open ? '#000' : 'var(--text-brand)',
+          border:     '1.5px solid rgba(255,184,0,0.4)',
+        }}
+        aria-label="Account menu"
+        aria-expanded={open}
+      >
+        {user?.imageUrl ? (
+          <Image src={user.imageUrl} alt="Avatar" width={36} height={36} className="rounded-full object-cover w-full h-full" />
+        ) : (
+          initials
+        )}
+      </button>
+
+      {open && (
+        <div
+          className="absolute right-0 top-[calc(100%+8px)] w-48 rounded-xl overflow-hidden shadow-xl z-50"
+          style={{ background: 'var(--bg-float)', border: '1px solid var(--border-subtle)' }}
+        >
+          <div className="px-4 py-3 border-b" style={{ borderColor: 'var(--border-faint)' }}>
+            <p className="font-body text-xs truncate" style={{ color: 'var(--text-3)' }}>
+              {user?.emailAddresses?.[0]?.emailAddress}
+            </p>
+          </div>
+          <Link
+            href="/privacy-policy"
+            onClick={() => setOpen(false)}
+            className="flex items-center gap-3 px-4 h-11 font-body text-sm transition-colors"
+            style={{ color: 'var(--text-2)' }}
+            onMouseEnter={e => (e.currentTarget.style.background = 'var(--brand-subtle)')}
+            onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+          >
+            <Shield className="size-4" />
+            Privacy Policy
+          </Link>
+          <Link
+            href="/refund-policy"
+            onClick={() => setOpen(false)}
+            className="flex items-center gap-3 px-4 h-11 font-body text-sm transition-colors"
+            style={{ color: 'var(--text-2)' }}
+            onMouseEnter={e => (e.currentTarget.style.background = 'var(--brand-subtle)')}
+            onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+          >
+            <ReceiptText className="size-4" />
+            Refund Policy
+          </Link>
+          <button
+            onClick={() => { setOpen(false); signOut() }}
+            className="flex items-center gap-3 px-4 h-11 w-full text-left font-body text-sm transition-colors"
+            style={{ color: 'var(--text-2)' }}
+            onMouseEnter={e => (e.currentTarget.style.background = 'var(--brand-subtle)')}
+            onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+          >
+            <LogOut className="size-4" />
+            Sign Out
+          </button>
+        </div>
+      )}
+    </div>
+  )
+}
+
 /* ─── Navbar ───────────────────────────────────────────────────────────────── */
 export function Navbar() {
+  const { isSignedIn, isLoaded } = useUser()
   const [scrolled,    setScrolled]    = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
 
@@ -154,38 +248,50 @@ export function Navbar() {
           ))}
         </nav>
 
-        {/* ── Right: Countdown + CTA + Hamburger ── */}
+        {/* ── Right: Countdown + CTA + Auth + Hamburger ── */}
         <div className="flex shrink-0 items-center gap-2.5">
           <CountdownPill />
 
-          {/* Register Now — desktop/tablet only */}
-          <Link
-            href="/register/stage-1"
-            className={cn(
-              'hidden sm:inline-flex items-center justify-center gap-1.5',
-              'h-[34px] px-4 rounded-[3px]',
-              'font-heading font-bold text-[11px] md:text-[14px]  tracking-[0.12em] uppercase',
-              'transition-all duration-150',
-            )}
-            style={{
-              background: 'var(--brand)',
-              color:       '#000',
-              boxShadow:   'var(--shadow-brand-sm)',
-            }}
-            onMouseEnter={(e) => {
-              const el = e.currentTarget as HTMLElement
-              el.style.background = 'var(--brand-bright)'
-              el.style.boxShadow  = 'var(--shadow-brand)'
-            }}
-            onMouseLeave={(e) => {
-              const el = e.currentTarget as HTMLElement
-              el.style.background = 'var(--brand)'
-              el.style.boxShadow  = 'var(--shadow-brand-sm)'
-            }}
-          >
-            <Zap className="size-3 shrink-0" />
-            Register Now
-          </Link>
+          {/* Auth-aware CTA — desktop/tablet only */}
+          {isLoaded && (
+            isSignedIn ? (
+              <div className="hidden sm:flex items-center gap-3">
+                <Link
+                  href="/register"
+                  className="inline-flex items-center justify-center gap-1.5 h-[34px] px-4 rounded-[3px] font-heading font-bold text-[11px] md:text-[13px] tracking-[0.12em] uppercase transition-all duration-150"
+                  style={{ background: 'var(--brand)', color: '#000', boxShadow: 'var(--shadow-brand-sm)' }}
+                  onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.background = 'var(--brand-bright)'; el.style.boxShadow = 'var(--shadow-brand)' }}
+                  onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.background = 'var(--brand)'; el.style.boxShadow = 'var(--shadow-brand-sm)' }}
+                >
+                  <LayoutDashboard className="size-3.5 shrink-0" />
+                  My Registration
+                </Link>
+                <UserMenu />
+              </div>
+            ) : (
+              <div className="hidden sm:flex items-center gap-2">
+                <Link
+                  href="/sign-in"
+                  className="inline-flex items-center justify-center h-[34px] px-4 rounded-[3px] font-heading font-bold text-[11px] md:text-[13px] tracking-[0.12em] uppercase transition-all duration-150"
+                  style={{ border: '1.5px solid var(--border-soft)', color: 'var(--text-2)' }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--border-brand)'; (e.currentTarget as HTMLElement).style.color = 'var(--text-brand)' }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--border-soft)'; (e.currentTarget as HTMLElement).style.color = 'var(--text-2)' }}
+                >
+                  Sign In
+                </Link>
+                <Link
+                  href="/register/stage-1"
+                  className="inline-flex items-center justify-center gap-1.5 h-[34px] px-4 rounded-[3px] font-heading font-bold text-[11px] md:text-[14px] tracking-[0.12em] uppercase transition-all duration-150"
+                  style={{ background: 'var(--brand)', color: '#000', boxShadow: 'var(--shadow-brand-sm)' }}
+                  onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.background = 'var(--brand-bright)'; el.style.boxShadow = 'var(--shadow-brand)' }}
+                  onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.background = 'var(--brand)'; el.style.boxShadow = 'var(--shadow-brand-sm)' }}
+                >
+                  <Zap className="size-3 shrink-0" />
+                  Register Now
+                </Link>
+              </div>
+            )
+          )}
 
           {/* ── Hamburger — mobile only ── */}
           {/*
@@ -305,26 +411,50 @@ export function Navbar() {
 
               {/* ── CTA ── */}
               <div
-                className="p-4 shrink-0 border-t"
+                className="p-4 shrink-0 border-t flex flex-col gap-2"
                 style={{ borderColor: 'var(--border-faint)' }}
               >
-                <Link
-                  href="/register/stage-1"
-                  onClick={() => setMobileOpen(false)}
-                  className="flex items-center justify-center gap-2 w-full h-[52px] rounded-[3px] active:scale-[0.98] transition-transform duration-100"
-                  style={{
-                    background: 'var(--brand)',
-                    color:       '#000',
-                    boxShadow:   '0 0 20px rgba(255,184,0,0.25)',
-                  }}
-                >
-                  <Zap className="size-4 shrink-0" />
-                  <span className="font-heading font-bold text-[14px] tracking-[0.08em] uppercase">
-                    Register Now — Free
-                  </span>
-                </Link>
+                {isLoaded && isSignedIn ? (
+                  <>
+                    <Link
+                      href="/register"
+                      onClick={() => setMobileOpen(false)}
+                      className="flex items-center justify-center gap-2 w-full h-[52px] rounded-[3px] active:scale-[0.98] transition-transform duration-100"
+                      style={{ background: 'var(--brand)', color: '#000', boxShadow: '0 0 20px rgba(255,184,0,0.25)' }}
+                    >
+                      <LayoutDashboard className="size-4 shrink-0" />
+                      <span className="font-heading font-bold text-[14px] tracking-[0.08em] uppercase">
+                        My Registration
+                      </span>
+                    </Link>
+                  </>
+                ) : (
+                  <>
+                    <Link
+                      href="/register/stage-1"
+                      onClick={() => setMobileOpen(false)}
+                      className="flex items-center justify-center gap-2 w-full h-[52px] rounded-[3px] active:scale-[0.98] transition-transform duration-100"
+                      style={{ background: 'var(--brand)', color: '#000', boxShadow: '0 0 20px rgba(255,184,0,0.25)' }}
+                    >
+                      <Zap className="size-4 shrink-0" />
+                      <span className="font-heading font-bold text-[14px] tracking-[0.08em] uppercase">
+                        Register Now — Free
+                      </span>
+                    </Link>
+                    <Link
+                      href="/sign-in"
+                      onClick={() => setMobileOpen(false)}
+                      className="flex items-center justify-center gap-2 w-full h-[44px] rounded-[3px] active:scale-[0.98] transition-transform duration-100"
+                      style={{ border: '1.5px solid var(--border-soft)', color: 'var(--text-2)' }}
+                    >
+                      <span className="font-heading font-semibold text-[13px] tracking-[0.08em] uppercase">
+                        Sign In
+                      </span>
+                    </Link>
+                  </>
+                )}
                 <p
-                  className="mt-2.5 text-center font-mono text-[12px] tracking-wider"
+                  className="text-center font-mono text-[12px] tracking-wider"
                   style={{ color: 'var(--text-4)' }}
                 >
                   DEADLINE: MAY 25 · SPOTS FILLING FAST

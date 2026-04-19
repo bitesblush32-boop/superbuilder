@@ -131,8 +131,8 @@ export default async function RegisterLayout({
         />
       </div>
 
-      {/* Stage 2 sub-progress — only visible during stage 2 */}
-      {stageData.currentStage === 2 && (
+      {/* Learn sub-progress (Domain → Quiz) — visible during stage 2 after orientation */}
+      {stageData.currentStage === 2 && stageData.orientationComplete && (
         <div
           className="shrink-0 border-b"
           style={{ borderColor: 'var(--border-faint)', background: 'var(--bg-inset)' }}
@@ -146,14 +146,14 @@ export default async function RegisterLayout({
         </div>
       )}
 
-      {/* Team banner — visible during stage 2 so students can manage teams */}
-      {stageData.currentStage === 2 && (
+      {/* Team manage link — visible during stage 2 after orientation, not during team step */}
+      {stageData.currentStage === 2 && stageData.orientationComplete && (
         <div
           className="shrink-0 flex items-center justify-between px-4 sm:px-6 py-2"
           style={{ background: 'var(--bg-raised)', borderBottom: '1px solid var(--border-faint)' }}
         >
           <p className="text-xs font-body" style={{ color: 'var(--text-4)' }}>
-            Want to build with friends?
+            Building with friends?
           </p>
           <Link
             href="/register/team"
