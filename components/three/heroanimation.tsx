@@ -1,8 +1,8 @@
 'use client'
 
-import { useMemo, useRef } from 'react'
+import { useMemo, useRef, Suspense } from 'react'
 import { Canvas, useFrame, extend } from '@react-three/fiber'
-import { OrbitControls, Effects } from '@react-three/drei'
+import { OrbitControls, Effects, Svg, Text3D, Float, Center } from '@react-three/drei'
 import { UnrealBloomPass } from 'three-stdlib'
 import * as THREE from 'three'
 import { cn } from '@/lib/utils'
@@ -28,13 +28,6 @@ const TRAIL_LEN   = 25
 const TILT_X      = [0.44, 1.13, 1.45] as const
 const TILT_Z      = [0.17, 0.73, -0.38] as const
 
-// Nucleus branded shapes
-const STAR_OUTER  = 4.2   // 5-pointed star outer tip radius
-const STAR_INNER  = 1.9   // 5-pointed star inner notch radius
-const ZERO_R      = 5.6   // major radius of "0" torus (zero.pro)
-const ZERO_TUBE   = 0.65  // tube thickness of "0"
-const ZERO_TILT   = 0.42  // ~24° tilt on X axis for 3D depth
-
 /* ─── ParticleSwarm ─────────────────────────────────────────────────────────── */
 function ParticleSwarm({ count }: { count: number }) {
   const meshRef  = useRef<THREE.InstancedMesh>(null)
@@ -57,16 +50,14 @@ function ParticleSwarm({ count }: { count: number }) {
   }, [count])
 
   const parts = useMemo(() => {
-    const nucleusCount       = Math.floor(count * 0.12)
+    // Set nucleus to 0 to remove the solid white center
+    const nucleusCount       = 0
     const electronTrailCount = Math.floor(count * 0.20)
     const trailPerRing       = Math.floor(electronTrailCount / 3)
-    const ringCount          = count - nucleusCount - electronTrailCount
+    const ringCount          = count - electronTrailCount
     const ringSize           = Math.floor(ringCount / 3)
-    // Nucleus sub-groups: star (SB ⭐) + zero ring (0 from zero.pro) + core glow
-    const starCount  = Math.floor(nucleusCount * 0.38)
-    const zeroCount  = Math.floor(nucleusCount * 0.42)
-    const coreCount  = nucleusCount - starCount - zeroCount
-    return { nucleusCount, ringCount, ringSize, trailPerRing, starCount, zeroCount, coreCount }
+    const coreCount          = 0
+    return { nucleusCount, ringCount, ringSize, trailPerRing, coreCount }
   }, [count])
 
   useFrame((state) => {
@@ -74,66 +65,27 @@ function ParticleSwarm({ count }: { count: number }) {
     if (!mesh) return
 
     const t = state.clock.getElapsedTime() * ORBIT_SPEED
-    const { nucleusCount, ringCount, ringSize, trailPerRing,
-            starCount, zeroCount, coreCount } = parts
+    const { nucleusCount, ringCount, ringSize, trailPerRing, coreCount } = parts
 
     for (let i = 0; i < count; i++) {
 
       /* ────────────────────────────────────────────────────────────────────────
-         NUCLEUS — branded: ⭐ Super Builders star  +  0 zero.pro ring  +  core
+         NUCLEUS — Core glow behind the SVG / Text component
       ──────────────────────────────────────────────────────────────────────── */
       if (i < nucleusCount) {
-
-        /* ── Star (Super Builders ⭐) — 5-pointed, slowly rotating ── */
-        if (i < starCount) {
-          const norm    = i / starCount
-          const seg     = Math.floor(norm * 10)        // 10 half-edges for 5-pt star
-          const segFrac = (norm * 10) % 1
-          const r1      = seg % 2 === 0 ? STAR_OUTER : STAR_INNER
-          const r2      = seg % 2 === 0 ? STAR_INNER : STAR_OUTER
-          const r       = r1 + (r2 - r1) * segFrac
-          // base angle: -π/2 so first tip points straight up
-          const baseAngle = (seg     / 10) * Math.PI * 2 - Math.PI / 2
-          const nextAngle = ((seg + 1) / 10) * Math.PI * 2 - Math.PI / 2
-          const angle   = baseAngle + (nextAngle - baseAngle) * segFrac + t * 0.12
-          const zWobble = Math.sin(t * 1.8 + i * 0.35) * 0.45
-          target.set(Math.cos(angle) * r, Math.sin(angle) * r, zWobble)
-          const pulse = 0.75 + 0.25 * Math.sin(t * 3.5 + i * 0.2)
-          // Bright gold-yellow — the "trophy" colour
-          pColor.setRGB(1.0 * pulse, 0.87 * pulse, 0.18 * pulse)
-
-        /* ── Zero ring (zero.pro "0") — tilted torus, slow spin ── */
-        } else if (i < starCount + zeroCount) {
-          const ri    = i - starCount
-          const phi   = (ri / zeroCount) * Math.PI * 2          // around big ring
-          const theta = (ri / zeroCount) * Math.PI * 16         // wrap tube 8× for thickness
-          const spin  = phi + t * 0.09
-          // Torus surface point
-          const rx    = (ZERO_R + Math.cos(theta) * ZERO_TUBE) * Math.cos(spin)
-          const ry    = (ZERO_R + Math.cos(theta) * ZERO_TUBE) * Math.sin(spin)
-          const rz    = Math.sin(theta) * ZERO_TUBE
-          // Tilt ~24° on X so it reads as a 3D ring, not a flat disc
-          const ct = Math.cos(ZERO_TILT), st = Math.sin(ZERO_TILT)
-          target.set(rx, ry * ct - rz * st, ry * st + rz * ct)
-          const bright = 0.55 + 0.3 * Math.sin(t * 2.2 + phi * 3)
-          // Brand gold #FFB800
-          pColor.setRGB(1.0 * bright, 0.722 * bright, 0.0)
-
-        /* ── Core glow — dense bright cluster at centre ── */
-        } else {
-          const ri     = i - starCount - zeroCount
-          const golden = 2.399963
-          const theta  = Math.acos(1 - 2 * (ri + 0.5) / Math.max(coreCount, 1))
-          const phi    = golden * ri + t * 1.4
-          const r      = 1.1 + 0.5 * Math.sin(t * 4.5 + ri * 0.4)
-          target.set(
-            Math.sin(theta) * Math.cos(phi) * r,
-            Math.sin(theta) * Math.sin(phi) * r,
-            Math.cos(theta) * r,
-          )
-          // Near-white warm gold — the energy source
-          pColor.setRGB(1.0, 0.93, 0.48)
-        }
+        const ri     = i
+        const golden = 2.399963
+        const theta  = Math.acos(1 - 2 * (ri + 0.5) / Math.max(coreCount, 1))
+        const phi    = golden * ri + t * 1.4
+        // Slightly larger & more pulsating base core logic
+        const r      = 1.5 + 0.8 * Math.sin(t * 4.5 + ri * 0.4)
+        target.set(
+          Math.sin(theta) * Math.cos(phi) * r,
+          Math.sin(theta) * Math.sin(phi) * r,
+          Math.cos(theta) * r,
+        )
+        // Near-white warm gold — the energy source
+        pColor.setRGB(1.0, 0.93, 0.48)
 
       /* ────────────────────────────────────────────────────────────────────────
          RING ELECTRONS
@@ -243,6 +195,31 @@ function CSSAtomFallback({ className }: { className?: string }) {
   )
 }
 
+/* ─── Solid 3D branding ──────────────────────────────────────────────────────── */
+function BrandLogo() {
+  return (
+    <Float speed={2} rotationIntensity={0.8} floatIntensity={1.5}>
+      <Center position={[0, 4, 0]}>
+        <Svg src="/logo.svg" scale={0.05} fillMaterial={{ side: THREE.DoubleSide }} strokeMaterial={{ side: THREE.DoubleSide }} />
+      </Center>
+      <Center position={[0, -4.5, 0]}>
+        <Text3D
+          font="https://unpkg.com/three/examples/fonts/helvetiker_bold.typeface.json"
+          size={3}
+          height={0.5}
+          curveSegments={12}
+          bevelEnabled
+          bevelThickness={0.05}
+          bevelSize={0.02}
+        >
+          x Super Builders
+          <meshBasicMaterial attach="material" color="#FFB800" side={THREE.DoubleSide} />
+        </Text3D>
+      </Center>
+    </Float>
+  )
+}
+
 /* ─── Canvas wrapper ────────────────────────────────────────────────────────── */
 function ThreeHeroAnimation({ count, className }: { count: number; className?: string }) {
   return (
@@ -254,6 +231,9 @@ function ThreeHeroAnimation({ count, className }: { count: number; className?: s
       >
         <fog attach="fog" args={['#000000', 0.01]} />
         <ParticleSwarm count={count} />
+        <Suspense fallback={null}>
+          <BrandLogo />
+        </Suspense>
         <OrbitControls
           autoRotate
           autoRotateSpeed={0.6}
