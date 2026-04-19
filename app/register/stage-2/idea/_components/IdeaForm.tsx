@@ -282,7 +282,7 @@ function DomainCard({
         >
           {domain.label}
         </p>
-        <p className="text-[11px] font-body mt-0.5 leading-tight" style={{ color: 'var(--text-4)' }}>
+        <p className="text-[13px] font-body mt-0.5 leading-tight" style={{ color: 'var(--text-4)' }}>
           {domain.teaser}
         </p>
       </div>
@@ -343,7 +343,7 @@ function SidePanel({ domain }: { domain: DomainValue | undefined }) {
 
           {/* Bottom decoration */}
           <div
-            className="rounded-xl px-3 py-2.5 text-[11px] font-mono"
+            className="rounded-xl px-3 py-2.5 text-[13px] font-mono"
             style={{
               background: 'var(--brand-subtle)',
               border: '1px solid var(--border-brand)',
@@ -494,7 +494,7 @@ export function IdeaForm({ lockedDomain }: { lockedDomain: DomainValue }) {
                   </p>
                 </div>
                 <div
-                  className="flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-mono"
+                  className="flex items-center gap-1 rounded-full px-2.5 py-1 text-[13px] font-mono"
                   style={{ background: 'var(--bg-float)', border: '1px solid var(--border-subtle)', color: 'var(--text-4)' }}
                 >
                   <Lock size={10} />

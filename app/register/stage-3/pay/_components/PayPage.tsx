@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Script from 'next/script'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useRegistrationStore } from '@/lib/store/registration'
@@ -54,114 +54,9 @@ interface RazorpayOptions {
   modal?:         { ondismiss?: () => void }
 }
 
-function applyDiscount(price: number, pct: number): number {
-  return pct > 0 ? Math.floor(price * (1 - pct / 100)) : price
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-
-function TeamStatusCard({
-  teamData,
-  discountPct,
-}: {
-  teamData: TeamData
-  discountPct: number
-}) {
-  const paidCount    = teamData.members.filter(m => m.isPaid).length
-  const pendingCount = teamData.memberCount - paidCount
-
-  return (
-    <div
-      className="rounded-2xl p-5 flex flex-col gap-4"
-      style={{
-        background: discountPct > 0 ? 'rgba(34,197,94,0.06)' : 'var(--bg-card)',
-        border:     discountPct > 0 ? '1px solid rgba(34,197,94,0.3)' : '1px solid var(--border-faint)',
-      }}
-    >
-      {/* Header */}
-      <div className="flex items-start justify-between">
-        <div>
-          <p className="font-mono text-[11px] tracking-[0.15em] uppercase mb-1" style={{ color: 'var(--text-3)' }}>
-            Your Team
-          </p>
-          <p className="font-heading font-bold text-lg" style={{ color: 'var(--text-1)' }}>
-            {teamData.name}
-          </p>
-        </div>
-        <span
-          className="font-mono text-[11px] px-3 h-7 rounded-full flex items-center shrink-0 ml-3"
-          style={{
-            background: discountPct > 0 ? 'rgba(34,197,94,0.12)' : 'var(--bg-float)',
-            color:      discountPct > 0 ? 'var(--green)' : 'var(--text-4)',
-            border:     discountPct > 0 ? '1px solid rgba(34,197,94,0.3)' : '1px solid var(--border-subtle)',
-          }}
-        >
-          {teamData.memberCount} / 4 members
-        </span>
-      </div>
-
-      {/* Member list */}
-      <div className="flex flex-col gap-2">
-        {teamData.members.map(m => (
-          <div key={m.id} className="flex items-center gap-3">
-            <div
-              className="w-8 h-8 rounded-full flex items-center justify-center font-display text-xs shrink-0"
-              style={{ background: 'var(--bg-float)', color: 'var(--brand)' }}
-            >
-              {m.fullName.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()}
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-body truncate" style={{ color: 'var(--text-1)' }}>
-                {m.fullName.split(' ')[0]}
-                {m.teamRole === 'leader' && (
-                  <span className="ml-1.5 font-mono text-[10px]" style={{ color: 'var(--text-4)' }}>
-                    Leader
-                  </span>
-                )}
-              </p>
-              <p className="font-mono text-[11px]" style={{ color: 'var(--text-4)' }}>
-                Grade {m.grade} · {m.city ?? 'India'}
-              </p>
-            </div>
-            <span
-              className="font-mono text-[11px] shrink-0"
-              style={{ color: m.isPaid ? 'var(--green)' : 'var(--text-4)' }}
-            >
-              {m.isPaid ? '✓ Paid' : 'Pending'}
-            </span>
-          </div>
-        ))}
-      </div>
-
-      {/* Discount status */}
-      {discountPct > 0 ? (
-        <div
-          className="rounded-xl px-4 py-3 flex items-center gap-3"
-          style={{ background: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.2)' }}
-        >
-          <span className="text-xl">🎉</span>
-          <div>
-            <p className="font-heading font-bold text-sm" style={{ color: 'var(--green)' }}>
-              {discountPct}% team discount applied!
-            </p>
-            <p className="font-body text-xs" style={{ color: 'var(--text-3)' }}>
-              {paidCount} of {teamData.memberCount} members have paid · {pendingCount} pending
-            </p>
-          </div>
-        </div>
-      ) : teamData.memberCount === 2 ? (
-        <p className="font-body text-xs text-center" style={{ color: 'var(--text-4)' }}>
-          Add 1 more teammate for 10% off, or 2 more for 20% off.
-        </p>
-      ) : null}
-    </div>
-  )
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-
-export function PayPage({ studentId, fullName, email, phone, defaultTier, teamData, discountPct }: PayPageProps) {
-  const router = useRouter()
+export function PayPage({ studentId, fullName, email, phone, defaultTier }: PayPageProps) {
+  const router       = useRouter()
+  const searchParams = useSearchParams()
   const { tier: storeTier, isEmi, setTier } = useRegistrationStore()
 
   // Prefer Zustand (set on select page), fall back to DB value
@@ -174,9 +69,11 @@ export function PayPage({ studentId, fullName, email, phone, defaultTier, teamDa
 
   const [emiEnabled, setEmiEnabled]   = useState(isEmi)
   const [loading, setLoading]         = useState(false)
-  // Check on mount whether the Razorpay script is already loaded (e.g. returning from tier select)
-  const [scriptReady, setScriptReady] = useState(() => typeof window !== 'undefined' && typeof window.Razorpay !== 'undefined')
-  const [error, setError]             = useState<string | null>(null)
+  const [scriptReady, setScriptReady] = useState(false)
+  // Pre-populate error from callback redirect (e.g. net banking failure)
+  const [error, setError] = useState<string | null>(
+    searchParams.get('error') ? decodeURIComponent(searchParams.get('error')!) : null
+  )
 
   const PREMIUM_PRICE  = TIERS.premium.priceMin // 2499
   const EMI_FIRST      = TIERS.premium.emiFirst  // 999
@@ -331,7 +228,7 @@ export function PayPage({ studentId, fullName, email, phone, defaultTier, teamDa
                   <p className="font-body text-xs font-semibold" style={{ color: emiEnabled ? 'var(--brand)' : 'var(--text-2)' }}>
                     Pay in 2 instalments
                   </p>
-                  <p className="font-mono text-[11px]" style={{ color: 'var(--text-3)' }}>
+                  <p className="font-mono text-[13px]" style={{ color: 'var(--text-3)' }}>
                     ₹{EMI_FIRST} now · ₹{EMI_REST} in 1 week
                   </p>
                 </div>

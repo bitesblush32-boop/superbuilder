@@ -398,7 +398,7 @@ export function Navbar() {
                       el.style.background = 'transparent'
                     }}
                   >
-                    <span className="font-body font-semibold text-[11px] tracking-wide uppercase">
+                    <span className="font-body font-semibold text-[13px] tracking-wide uppercase">
                       {link.label}
                     </span>
                     <ChevronRight

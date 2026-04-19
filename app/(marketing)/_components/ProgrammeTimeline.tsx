@@ -239,7 +239,7 @@ function VerticalTimeline({ phases }: { phases: PhaseEntry[] }) {
                   {phase.name}
                 </p>
                 <p
-                  className="font-mono text-[11px] mb-0.5"
+                  className="font-mono text-[13px] mb-0.5"
                   style={{ color: s.dateColor }}
                 >
                   {phase.dates}
@@ -364,7 +364,7 @@ function WorkshopCard({
         className="flex items-start gap-2 mb-4 relative z-10"
       >
         <span
-          className="mt-px flex-shrink-0 text-[11px]"
+          className="mt-px flex-shrink-0 text-[13px]"
           style={{ color: accent }}
           aria-hidden="true"
         >
