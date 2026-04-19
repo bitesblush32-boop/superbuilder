@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation'
 import { verifyAdminSession } from '@/lib/auth/adminAuth'
 import { AdminSidebar, AdminMobileTopBar } from '../_components/AdminNav'
+import Link from 'next/link'
 
 export const dynamic = 'force-dynamic'
 
@@ -35,16 +36,16 @@ export default async function AdminProtectedLayout({ children }: { children: Rea
             <span className="text-xs font-mono" style={{ color: 'var(--text-3)' }}>
               {adminEmail}
             </span>
-            <a
+            <Link
               href="/"
-              className="text-xs px-3 py-1.5 rounded border transition-colors duration-150"
+              className="flex justify-center items-center text-xs px-3 rounded border transition-colors duration-150"
               style={{
                 color:       'var(--text-brand)',
                 borderColor: 'var(--border-brand)',
               }}
             >
               View Site ↗
-            </a>
+            </Link>
             <form action="/api/admin/auth/logout" method="POST">
               <button
                 type="submit"
