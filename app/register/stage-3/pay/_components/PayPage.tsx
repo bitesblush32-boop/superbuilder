@@ -10,12 +10,24 @@ import { TIERS } from '@/lib/content/programme'
 type Bez = [number, number, number, number]
 const EASE_OUT: Bez = [0.16, 1, 0.3, 1]
 
+interface TeamMember {
+  id: string; fullName: string; grade: string; city: string | null
+  teamRole: string | null; isPaid: boolean; tier: string | null
+}
+
+interface TeamData {
+  id: string; name: string; code: string; memberCount: number
+  members: TeamMember[]
+}
+
 interface PayPageProps {
   studentId:   string
   fullName:    string
   email:       string
   phone:       string
   defaultTier: 'pro' | 'premium' | null
+  teamData:    TeamData | null
+  discountPct: number  // 0, 10, or 20
 }
 
 // Feature summaries for the summary card
@@ -42,7 +54,113 @@ interface RazorpayOptions {
   modal?:         { ondismiss?: () => void }
 }
 
-export function PayPage({ studentId, fullName, email, phone, defaultTier }: PayPageProps) {
+function applyDiscount(price: number, pct: number): number {
+  return pct > 0 ? Math.floor(price * (1 - pct / 100)) : price
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+
+function TeamStatusCard({
+  teamData,
+  discountPct,
+}: {
+  teamData: TeamData
+  discountPct: number
+}) {
+  const paidCount    = teamData.members.filter(m => m.isPaid).length
+  const pendingCount = teamData.memberCount - paidCount
+
+  return (
+    <div
+      className="rounded-2xl p-5 flex flex-col gap-4"
+      style={{
+        background: discountPct > 0 ? 'rgba(34,197,94,0.06)' : 'var(--bg-card)',
+        border:     discountPct > 0 ? '1px solid rgba(34,197,94,0.3)' : '1px solid var(--border-faint)',
+      }}
+    >
+      {/* Header */}
+      <div className="flex items-start justify-between">
+        <div>
+          <p className="font-mono text-[11px] tracking-[0.15em] uppercase mb-1" style={{ color: 'var(--text-3)' }}>
+            Your Team
+          </p>
+          <p className="font-heading font-bold text-lg" style={{ color: 'var(--text-1)' }}>
+            {teamData.name}
+          </p>
+        </div>
+        <span
+          className="font-mono text-[11px] px-3 h-7 rounded-full flex items-center shrink-0 ml-3"
+          style={{
+            background: discountPct > 0 ? 'rgba(34,197,94,0.12)' : 'var(--bg-float)',
+            color:      discountPct > 0 ? 'var(--green)' : 'var(--text-4)',
+            border:     discountPct > 0 ? '1px solid rgba(34,197,94,0.3)' : '1px solid var(--border-subtle)',
+          }}
+        >
+          {teamData.memberCount} / 4 members
+        </span>
+      </div>
+
+      {/* Member list */}
+      <div className="flex flex-col gap-2">
+        {teamData.members.map(m => (
+          <div key={m.id} className="flex items-center gap-3">
+            <div
+              className="w-8 h-8 rounded-full flex items-center justify-center font-display text-xs shrink-0"
+              style={{ background: 'var(--bg-float)', color: 'var(--brand)' }}
+            >
+              {m.fullName.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()}
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-body truncate" style={{ color: 'var(--text-1)' }}>
+                {m.fullName.split(' ')[0]}
+                {m.teamRole === 'leader' && (
+                  <span className="ml-1.5 font-mono text-[10px]" style={{ color: 'var(--text-4)' }}>
+                    Leader
+                  </span>
+                )}
+              </p>
+              <p className="font-mono text-[11px]" style={{ color: 'var(--text-4)' }}>
+                Grade {m.grade} · {m.city ?? 'India'}
+              </p>
+            </div>
+            <span
+              className="font-mono text-[11px] shrink-0"
+              style={{ color: m.isPaid ? 'var(--green)' : 'var(--text-4)' }}
+            >
+              {m.isPaid ? '✓ Paid' : 'Pending'}
+            </span>
+          </div>
+        ))}
+      </div>
+
+      {/* Discount status */}
+      {discountPct > 0 ? (
+        <div
+          className="rounded-xl px-4 py-3 flex items-center gap-3"
+          style={{ background: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.2)' }}
+        >
+          <span className="text-xl">🎉</span>
+          <div>
+            <p className="font-heading font-bold text-sm" style={{ color: 'var(--green)' }}>
+              {discountPct}% team discount applied!
+            </p>
+            <p className="font-body text-xs" style={{ color: 'var(--text-3)' }}>
+              {paidCount} of {teamData.memberCount} members have paid · {pendingCount} pending
+            </p>
+          </div>
+        </div>
+      ) : teamData.memberCount === 2 ? (
+        <p className="font-body text-xs text-center" style={{ color: 'var(--text-4)' }}>
+          Add 1 more teammate for 10% off, or 2 more for 20% off.
+        </p>
+      ) : null}
+    </div>
+  )
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+
+export function PayPage({ studentId, fullName, email, phone, defaultTier, teamData, discountPct }: PayPageProps) {
   const router = useRouter()
   const { tier: storeTier, isEmi, setTier } = useRegistrationStore()
 
@@ -63,13 +181,14 @@ export function PayPage({ studentId, fullName, email, phone, defaultTier }: PayP
   const EMI_FIRST      = TIERS.premium.emiFirst  // 999
   const EMI_REST       = PREMIUM_PRICE - EMI_FIRST
 
-  const displayPrice = !tier
-    ? 0
-    : tier === 'pro'
-    ? TIERS.pro.priceMin
-    : emiEnabled ? EMI_FIRST : PREMIUM_PRICE
+  const basePrice = !tier ? 0
+    : tier === 'pro'    ? TIERS.pro.priceMin
+    : emiEnabled        ? EMI_FIRST
+    : PREMIUM_PRICE
 
-  const amountPaise = displayPrice * 100
+  const displayPrice = applyDiscount(basePrice, discountPct)
+  const savedAmount  = basePrice - displayPrice
+  const amountPaise  = displayPrice * 100
 
   async function handlePay() {
     if (!tier || !scriptReady) return
@@ -137,6 +256,16 @@ export function PayPage({ studentId, fullName, email, phone, defaultTier }: PayP
       />
 
       <div className="flex flex-col gap-6 max-w-lg mx-auto pb-8">
+        {/* Team status card — shown if student is in a team */}
+        {teamData && (
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0, transition: { duration: 0.4, ease: EASE_OUT } }}
+          >
+            <TeamStatusCard teamData={teamData} discountPct={discountPct} />
+          </motion.div>
+        )}
+
         {/* Tier summary card */}
         <motion.div
           className="rounded-2xl p-5"
@@ -216,7 +345,7 @@ export function PayPage({ studentId, fullName, email, phone, defaultTier }: PayP
           animate={{ opacity: 1, y: 0, transition: { duration: 0.4, ease: EASE_OUT, delay: 0.1 } }}
         >
           {/* Price display */}
-          <div className="flex items-baseline gap-2 px-1">
+          <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 px-1">
             <span className="font-display text-5xl tracking-tight" style={{ color: 'var(--text-1)' }}>
               ₹{displayPrice.toLocaleString('en-IN')}
             </span>
@@ -226,6 +355,21 @@ export function PayPage({ studentId, fullName, email, phone, defaultTier }: PayP
               </span>
             )}
           </div>
+
+          {/* Savings badge */}
+          {discountPct > 0 && savedAmount > 0 && (
+            <div className="flex items-center gap-2 px-1">
+              <span className="font-body text-sm line-through" style={{ color: 'var(--text-4)' }}>
+                ₹{basePrice.toLocaleString('en-IN')}
+              </span>
+              <span
+                className="font-mono text-xs px-2 py-0.5 rounded-full"
+                style={{ background: 'rgba(34,197,94,0.12)', color: 'var(--green)' }}
+              >
+                You save ₹{savedAmount.toLocaleString('en-IN')}
+              </span>
+            </div>
+          )}
 
           {/* Error message */}
           <AnimatePresence>

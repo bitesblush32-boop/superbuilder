@@ -16,6 +16,7 @@ import {
   generateReferralCode,
 } from '@/lib/db/queries/students'
 import { createParent } from '@/lib/db/queries/parents'
+import { createTeam, joinTeam, leaveTeam, getTeamWithMembers } from '@/lib/db/queries/teams'
 import type { BadgeId } from '@/lib/gamification/badges'
 import { CORRECT_ANSWERS, SHORT_ANSWER_MIN } from '@/lib/content/quizQuestions'
 
@@ -118,7 +119,6 @@ export async function submitStage1(data: unknown): Promise<{
     phone:           form.phone,
     codingExp:       form.codingExp,
     interests:       form.interests,
-    teamPreference:  form.teamPreference,
     availabilityHrs: form.availabilityHrs,
     deviceAccess:    form.deviceAccess,
     tshirtSize:      form.tshirtSize,
@@ -145,8 +145,10 @@ export async function submitStage1(data: unknown): Promise<{
   // Award Explorer badge + 50 XP, then advance to stage 2
   await addBadgeToStudent(student.id, 'explorer', 50)
   await updateStudentStage(student.id, '2')
-  
-  revalidatePath('/register')
+  // NOTE: no revalidatePath here — it would trigger a page re-render that runs
+  // getStudentOrRedirect(1), detects stage=2, and redirects before the badge
+  // unlock + team selection screens can show. The /register layout is
+  // force-dynamic so it always fetches fresh data on the next navigation.
 
   return { success: true, badgeAwarded: 'EXPLORER' }
 }
@@ -288,4 +290,86 @@ export async function submitIdea(data: unknown): Promise<{
   revalidatePath('/register')
 
   return { success: true, badgeAwarded: 'IDEA_LAUNCHER' }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// createStudentTeam
+// Called after Stage 1 completes — student picks "create team"
+// ─────────────────────────────────────────────────────────────────────────────
+export async function createStudentTeam(teamName: string): Promise<{
+  success: boolean
+  error?: string
+  teamCode?: string
+}> {
+  const { userId } = await auth()
+  if (!userId) return { success: false, error: 'Not authenticated' }
+
+  const student = await getStudentByClerkId(userId)
+  if (!student) return { success: false, error: 'Student not found' }
+  if (student.teamId) return { success: false, error: 'Already in a team' }
+  if (!teamName.trim() || teamName.trim().length < 2)
+    return { success: false, error: 'Team name must be at least 2 characters' }
+
+  const team = await createTeam(student.id, teamName)
+  return { success: true, teamCode: team.code }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// joinStudentTeam
+// Called after Stage 1 completes — student picks "join team"
+// ─────────────────────────────────────────────────────────────────────────────
+export async function joinStudentTeam(code: string): Promise<{
+  success: boolean
+  error?: string
+  teamName?: string
+  memberCount?: number
+}> {
+  const { userId } = await auth()
+  if (!userId) return { success: false, error: 'Not authenticated' }
+
+  const student = await getStudentByClerkId(userId)
+  if (!student) return { success: false, error: 'Student not found' }
+
+  const result = await joinTeam(student.id, code)
+  if (!result.success) return result
+  return {
+    success: true,
+    teamName: result.team?.name,
+    memberCount: result.team?.memberCount,
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// leaveStudentTeam
+// Called from the team management page — student leaves or dissolves their team
+// ─────────────────────────────────────────────────────────────────────────────
+export async function leaveStudentTeam(): Promise<{ success: boolean; error?: string }> {
+  const { userId } = await auth()
+  if (!userId) return { success: false, error: 'Not authenticated' }
+
+  const student = await getStudentByClerkId(userId)
+  if (!student) return { success: false, error: 'Student not found' }
+
+  return leaveTeam(student.id)
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// getMyTeamInfo
+// Returns current student's team info (for team management page)
+// ─────────────────────────────────────────────────────────────────────────────
+export async function getMyTeamInfo(): Promise<{
+  student: { id: string; teamId: string | null; teamRole: string | null; fullName: string } | null
+  team: Awaited<ReturnType<typeof getTeamWithMembers>>
+}> {
+  const { userId } = await auth()
+  if (!userId) return { student: null, team: null }
+
+  const student = await getStudentByClerkId(userId)
+  if (!student) return { student: null, team: null }
+
+  const team = student.teamId ? await getTeamWithMembers(student.teamId) : null
+  return {
+    student: { id: student.id, teamId: student.teamId, teamRole: student.teamRole, fullName: student.fullName },
+    team,
+  }
 }

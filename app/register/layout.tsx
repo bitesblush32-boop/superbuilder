@@ -146,6 +146,31 @@ export default async function RegisterLayout({
         </div>
       )}
 
+      {/* Team banner — visible during stage 2 so students can manage teams */}
+      {stageData.currentStage === 2 && (
+        <div
+          className="shrink-0 flex items-center justify-between px-4 sm:px-6 py-2"
+          style={{ background: 'var(--bg-raised)', borderBottom: '1px solid var(--border-faint)' }}
+        >
+          <p className="text-xs font-body" style={{ color: 'var(--text-4)' }}>
+            Want to build with friends?
+          </p>
+          <Link
+            href="/register/team"
+            className="flex items-center gap-1.5 text-xs font-heading font-semibold px-3 rounded-lg transition-all active:scale-95"
+            style={{
+              minHeight: '32px',
+              background: 'rgba(255,184,0,0.08)',
+              border:     '1px solid rgba(255,184,0,0.25)',
+              color:      'var(--text-brand)',
+            }}
+          >
+            <span aria-hidden="true">👥</span>
+            Team Settings
+          </Link>
+        </div>
+      )}
+
       {/* Page content */}
       <main className="flex-1 mx-auto w-full max-w-xl px-4 py-8 sm:py-10">
         {children}

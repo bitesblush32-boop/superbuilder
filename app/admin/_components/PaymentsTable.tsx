@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { useRouter, useSearchParams, usePathname } from 'next/navigation'
 import type { PaymentRow } from '@/lib/db/queries/admin'
 
@@ -51,7 +51,7 @@ export function PaymentsTable({ payments, total, currentPage }: Props) {
           <table className="w-full text-sm border-collapse">
             <thead>
               <tr style={{ background: 'var(--bg-raised)' }}>
-                {['Student', 'Tier', 'Amount', 'Status', 'Razorpay ID', 'Date'].map(h => (
+                {['Student', 'Tier', 'Amount', 'Discount', 'Status', 'Razorpay ID', 'Date'].map(h => (
                   <th
                     key={h}
                     className="px-4 py-3 text-left text-xs uppercase tracking-wider font-medium whitespace-nowrap"
@@ -64,9 +64,8 @@ export function PaymentsTable({ payments, total, currentPage }: Props) {
             </thead>
             <tbody>
               {payments.map(p => (
-                <>
+                <React.Fragment key={p.id}>
                   <tr
-                    key={p.id}
                     onClick={() => setExpanded(expanded === p.id ? null : p.id)}
                     className="cursor-pointer transition-colors duration-100"
                     style={{ borderBottom: '1px solid var(--border-faint)' }}
@@ -93,6 +92,18 @@ export function PaymentsTable({ payments, total, currentPage }: Props) {
                       {p.isEmi && <span className="ml-1 text-xs" style={{ color: 'var(--text-4)' }}>EMI</span>}
                     </td>
                     <td className="px-4 py-3">
+                      {p.discountPct > 0 ? (
+                        <span
+                          className="font-mono text-xs px-2 py-0.5 rounded-full"
+                          style={{ background: 'rgba(34,197,94,0.1)', color: 'var(--green)' }}
+                        >
+                          {p.discountPct}% off
+                        </span>
+                      ) : (
+                        <span style={{ color: 'var(--text-4)' }}>—</span>
+                      )}
+                    </td>
+                    <td className="px-4 py-3">
                       <span
                         className="text-xs px-2 py-0.5 rounded-full font-medium capitalize"
                         style={{ background: STATUS_BG[p.status], color: STATUS_COLORS[p.status] }}
@@ -112,7 +123,7 @@ export function PaymentsTable({ payments, total, currentPage }: Props) {
                   {/* Expanded row */}
                   {expanded === p.id && (
                     <tr key={`${p.id}-expanded`} style={{ background: 'var(--bg-inset)' }}>
-                      <td colSpan={6} className="px-4 py-4">
+                      <td colSpan={7} className="px-4 py-4">
                         <div className="grid grid-cols-3 gap-4 text-xs">
                           <div>
                             <p style={{ color: 'var(--text-4)' }}>Order ID</p>
@@ -136,7 +147,7 @@ export function PaymentsTable({ payments, total, currentPage }: Props) {
                       </td>
                     </tr>
                   )}
-                </>
+                </React.Fragment>
               ))}
             </tbody>
           </table>

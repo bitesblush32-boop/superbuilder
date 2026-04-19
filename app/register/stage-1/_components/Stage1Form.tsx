@@ -2,6 +2,7 @@
 
 import React, {
   useState,
+  useEffect,
   useMemo,
   useCallback,
   forwardRef,
@@ -11,32 +12,22 @@ import { useForm, Controller, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ArrowLeft, ChevronRight, Loader2, Check } from 'lucide-react'
+import { State, City } from 'country-state-city'
 import { stage1Schema, type Stage1FormData } from '@/lib/validation/stage1'
-import { submitStage1 } from '@/lib/actions/registration'
+import { submitStage1, createStudentTeam, joinStudentTeam } from '@/lib/actions/registration'
 import { BadgeUnlock } from '@/components/gamification/BadgeUnlock'
 import type { BadgeId } from '@/lib/gamification/badges'
+import { SchoolAutocomplete } from './SchoolAutocomplete'
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const INDIAN_CITIES = [
-  'Agra','Ahmedabad','Ajmer','Aligarh','Allahabad','Amritsar','Aurangabad',
-  'Bangalore','Bareilly','Bhopal','Bhubaneswar','Bikaner','Chennai','Coimbatore',
-  'Dehradun','Delhi','Dhanbad','Durgapur','Faridabad','Ghaziabad','Gorakhpur',
-  'Gurgaon','Guwahati','Gwalior','Hyderabad','Indore','Jabalpur','Jaipur',
-  'Jalandhar','Jammu','Jodhpur','Kanpur','Kochi','Kolkata','Kozhikode',
-  'Lucknow','Ludhiana','Madurai','Mangalore','Meerut','Mumbai','Mysore',
-  'Nagpur','Nashik','Navi Mumbai','Noida','Patna','Pune','Raipur','Rajkot',
-  'Ranchi','Salem','Shimla','Srinagar','Surat','Thane','Thiruvananthapuram',
-  'Tiruchirappalli','Vadodara','Varanasi','Vijayawada','Visakhapatnam',
-]
+// Pre-built at module load (server + client) — no API key needed
+const _rawStates = State.getStatesOfCountry('IN')
+const INDIAN_STATES = _rawStates.sort((a, b) => a.name.localeCompare(b.name))
+const STATE_ISO_MAP: Record<string, string> = Object.fromEntries(
+  INDIAN_STATES.map(s => [s.name, s.isoCode])
+)
 
-const INDIAN_STATES = [
-  'Andhra Pradesh','Assam','Bihar','Chandigarh','Chhattisgarh','Delhi','Goa',
-  'Gujarat','Haryana','Himachal Pradesh','Jammu & Kashmir','Jharkhand',
-  'Karnataka','Kerala','Madhya Pradesh','Maharashtra','Manipur','Meghalaya',
-  'Mizoram','Nagaland','Odisha','Punjab','Rajasthan','Sikkim','Tamil Nadu',
-  'Telangana','Tripura','Uttar Pradesh','Uttarakhand','West Bengal',
-]
 
 type PillOpt = { value: string; label: string; emoji?: string }
 
@@ -71,12 +62,6 @@ const INTEREST_OPTS: PillOpt[] = [
   { value: 'Art & Design', label: 'Art & Design',  emoji: '🎨' },
   { value: 'Web Dev',      label: 'Web Dev',       emoji: '💻' },
   { value: 'Robotics',     label: 'Robotics',      emoji: '🦾' },
-]
-
-const TEAM_OPTS: PillOpt[] = [
-  { value: 'solo',          label: 'Solo',         emoji: '🦅' },
-  { value: 'team',          label: 'Open to Team', emoji: '🤝' },
-  { value: 'no_preference', label: 'Either works', emoji: '✌️' },
 ]
 
 const AVAIL_OPTS: PillOpt[] = [
@@ -426,19 +411,379 @@ function CTAButton({
 
 // ─── Main exported form ───────────────────────────────────────────────────────
 
+// ─── CopyButton ───────────────────────────────────────────────────────────────
+
+function CopyButton({ text }: { text: string }) {
+  const [copied, setCopied] = useState(false)
+  return (
+    <button
+      type="button"
+      onClick={() => {
+        navigator.clipboard.writeText(text).then(() => {
+          setCopied(true)
+          setTimeout(() => setCopied(false), 2000)
+        })
+      }}
+      className="flex items-center gap-2 px-5 rounded-xl font-heading font-semibold text-sm transition-all active:scale-95"
+      style={{
+        minHeight: '44px',
+        background: copied ? 'rgba(34,197,94,0.12)' : 'var(--bg-float)',
+        border: `1px solid ${copied ? 'rgba(34,197,94,0.4)' : 'var(--border-soft)'}`,
+        color: copied ? 'var(--green)' : 'var(--text-2)',
+      }}
+    >
+      {copied ? '✓ Copied!' : '📋 Copy Code'}
+    </button>
+  )
+}
+
+// ─── TeamSelectionScreen ──────────────────────────────────────────────────────
+
+function TeamSelectionScreen({
+  studentName,
+  onComplete,
+}: {
+  studentName: string
+  onComplete: () => void
+}) {
+  type Mode = 'choosing' | 'create_form' | 'join_form' | 'created' | 'joined' | 'skipped'
+  const [mode, setMode]       = useState<Mode>('choosing')
+  const [teamName, setTeamName] = useState('')
+  const [joinCode, setJoinCode] = useState('')
+  const [loading, setLoading]   = useState(false)
+  const [error, setError]       = useState<string | null>(null)
+  const [result, setResult]     = useState<{
+    teamCode?: string; teamName?: string; memberCount?: number
+  } | null>(null)
+
+  // SCREEN 1 — solo / create / join choice
+  if (mode === 'choosing') {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.38, ease: [0.16, 1, 0.3, 1] }}
+        className="flex flex-col gap-5"
+      >
+        <div>
+          <h2
+            className="font-display leading-none tracking-wide mb-2"
+            style={{ fontSize: '2.8rem', color: 'var(--text-1)' }}
+          >
+            SOLO OR SQUAD? 🤝
+          </h2>
+
+        </div>
+
+        <div className="flex flex-col gap-3">
+          {/* Solo */}
+          <button
+            type="button"
+            onClick={() => { setMode('skipped'); setTimeout(onComplete, 600) }}
+            className="w-full rounded-2xl p-5 text-left transition-all active:scale-[0.98] flex items-start gap-4"
+            style={{ background: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}
+          >
+            <span className="text-3xl">🦅</span>
+            <div>
+              <p className="font-heading font-bold text-base mb-0.5" style={{ color: 'var(--text-1)' }}>
+                Go Solo
+              </p>
+              <p className="font-body text-xs" style={{ color: 'var(--text-3)' }}>
+                Build independently. Full prize if you win. No discount.
+              </p>
+            </div>
+          </button>
+
+          {/* Create Team */}
+          <button
+            type="button"
+            onClick={() => setMode('create_form')}
+            className="w-full rounded-2xl p-5 text-left transition-all active:scale-[0.98] flex items-start gap-4"
+            style={{
+              background: 'rgba(255,184,0,0.06)',
+              border: '2px solid rgba(255,184,0,0.4)',
+            }}
+          >
+            <span className="text-3xl">⚡</span>
+            <div>
+              <p className="font-heading font-bold text-base mb-0.5" style={{ color: 'var(--text-brand)' }}>
+                Create a Team
+              </p>
+              <p className="font-body text-xs" style={{ color: 'var(--text-3)' }}>
+                Give your team a name → get a code → share with 2–3 friends.
+              </p>
+              <div className="flex flex-wrap gap-2 mt-2">
+                <span
+                  className="font-mono text-[11px] px-2 py-0.5 rounded-full"
+                  style={{ background: 'rgba(34,197,94,0.12)', color: 'var(--green)' }}
+                >
+                  Team of 3 → 10% off
+                </span>
+                <span
+                  className="font-mono text-[11px] px-2 py-0.5 rounded-full"
+                  style={{ background: 'rgba(34,197,94,0.12)', color: 'var(--green)' }}
+                >
+                  Team of 4 → 20% off
+                </span>
+              </div>
+            </div>
+          </button>
+
+          {/* Join Team */}
+          <button
+            type="button"
+            onClick={() => setMode('join_form')}
+            className="w-full rounded-2xl p-5 text-left transition-all active:scale-[0.98] flex items-start gap-4"
+            style={{ background: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}
+          >
+            <span className="text-3xl">🔗</span>
+            <div>
+              <p className="font-heading font-bold text-base mb-0.5" style={{ color: 'var(--text-1)' }}>
+                Join a Team
+              </p>
+              <p className="font-body text-xs" style={{ color: 'var(--text-3)' }}>
+                A friend already created a team? Enter their code to join.
+              </p>
+            </div>
+          </button>
+        </div>
+
+        <p className="font-mono text-[11px] text-center" style={{ color: 'var(--text-4)' }}>
+          You can update your team on your dashboard until May 25
+        </p>
+      </motion.div>
+    )
+  }
+
+  // SCREEN 2a — create team name
+  if (mode === 'create_form') {
+    const handleCreate = async () => {
+      if (teamName.trim().length < 2) { setError('Team name must be at least 2 characters'); return }
+      setLoading(true); setError(null)
+      const res = await createStudentTeam(teamName)
+      setLoading(false)
+      if (!res.success) { setError(res.error ?? 'Something went wrong'); return }
+      setResult({ teamCode: res.teamCode })
+      setMode('created')
+    }
+    return (
+      <motion.div
+        initial={{ opacity: 0, x: 40 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.32, ease: [0.16, 1, 0.3, 1] }}
+        className="flex flex-col gap-5"
+      >
+        <button
+          type="button"
+          onClick={() => { setMode('choosing'); setError(null) }}
+          className="flex items-center gap-1 text-sm"
+          style={{ minHeight: '44px', color: 'var(--text-3)' }}
+        >
+          ← Back
+        </button>
+        <h2
+          className="font-display leading-none tracking-wide"
+          style={{ fontSize: '2.2rem', color: 'var(--text-1)' }}
+        >
+          NAME YOUR TEAM ⚡
+        </h2>
+        <p className="font-body text-sm" style={{ color: 'var(--text-3)' }}>
+          Choose something memorable. Your teammates will see this name.
+        </p>
+        <input
+          type="text"
+          value={teamName}
+          onChange={e => setTeamName(e.target.value)}
+          onKeyDown={e => e.key === 'Enter' && handleCreate()}
+          placeholder="e.g. Byte Brigade, AI Avengers..."
+          inputMode="text"
+          autoCapitalize="words"
+          maxLength={50}
+          className="w-full rounded-xl px-4 font-body outline-none"
+          style={{
+            minHeight: '52px',
+            background: 'var(--bg-inset)',
+            border: `1px solid ${error ? 'rgba(248,113,113,0.45)' : 'var(--border-subtle)'}`,
+            color: 'var(--text-1)',
+            fontSize: '16px',
+          }}
+        />
+        {error && (
+          <p className="text-xs font-body" style={{ color: 'var(--red)' }}>⚠ {error}</p>
+        )}
+        <CTAButton onClick={handleCreate} disabled={loading || teamName.trim().length < 2} loading={loading}>
+          Create Team →
+        </CTAButton>
+      </motion.div>
+    )
+  }
+
+  // SCREEN 2b — join with code
+  if (mode === 'join_form') {
+    const handleJoin = async () => {
+      if (joinCode.trim().length < 5) { setError('Enter a valid team code'); return }
+      setLoading(true); setError(null)
+      const res = await joinStudentTeam(joinCode)
+      setLoading(false)
+      if (!res.success) { setError(res.error ?? 'Invalid code'); return }
+      setResult({ teamName: res.teamName, memberCount: res.memberCount })
+      setMode('joined')
+    }
+    return (
+      <motion.div
+        initial={{ opacity: 0, x: 40 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.32, ease: [0.16, 1, 0.3, 1] }}
+        className="flex flex-col gap-5"
+      >
+        <button
+          type="button"
+          onClick={() => { setMode('choosing'); setError(null) }}
+          className="flex items-center gap-1 text-sm"
+          style={{ minHeight: '44px', color: 'var(--text-3)' }}
+        >
+          ← Back
+        </button>
+        <h2
+          className="font-display leading-none tracking-wide"
+          style={{ fontSize: '2.2rem', color: 'var(--text-1)' }}
+        >
+          ENTER TEAM CODE 🔗
+        </h2>
+        <p className="font-body text-sm" style={{ color: 'var(--text-3)' }}>
+          Ask your team leader for their code. It looks like SB-XXXX.
+        </p>
+        <input
+          type="text"
+          value={joinCode}
+          onChange={e => setJoinCode(e.target.value.toUpperCase())}
+          onKeyDown={e => e.key === 'Enter' && handleJoin()}
+          placeholder="SB-XXXX"
+          inputMode="text"
+          autoCapitalize="characters"
+          autoComplete="off"
+          maxLength={10}
+          className="w-full rounded-xl px-4 font-mono outline-none tracking-widest text-center"
+          style={{
+            minHeight: '56px',
+            background: 'var(--bg-inset)',
+            border: `1px solid ${error ? 'rgba(248,113,113,0.45)' : 'var(--border-subtle)'}`,
+            color: 'var(--text-brand)',
+            fontSize: '20px',
+            letterSpacing: '0.15em',
+          }}
+        />
+        {error && (
+          <p className="text-xs font-body" style={{ color: 'var(--red)' }}>⚠ {error}</p>
+        )}
+        <CTAButton onClick={handleJoin} disabled={loading || joinCode.trim().length < 5} loading={loading}>
+          Join Team →
+        </CTAButton>
+      </motion.div>
+    )
+  }
+
+  // SCREEN 3a — team created, show code to copy
+  if (mode === 'created') {
+    return (
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+        className="flex flex-col gap-5 items-center text-center"
+      >
+        <div className="text-6xl">🎉</div>
+        <h2
+          className="font-display leading-none tracking-wide"
+          style={{ fontSize: '2.4rem', color: 'var(--text-brand)' }}
+        >
+          TEAM CREATED!
+        </h2>
+        <p className="font-body text-sm" style={{ color: 'var(--text-3)' }}>
+          Share this code with your teammates. They paste it after completing Stage 1.
+        </p>
+        <div
+          className="w-full rounded-2xl p-5 flex flex-col gap-3 items-center"
+          style={{ background: 'var(--bg-card)', border: '2px solid rgba(255,184,0,0.4)' }}
+        >
+          <p className="font-mono text-xs tracking-[0.2em] uppercase" style={{ color: 'var(--text-4)' }}>
+            Your Team Code
+          </p>
+          <p
+            className="font-mono font-bold tracking-[0.25em]"
+            style={{ fontSize: '2.4rem', color: 'var(--brand)' }}
+          >
+            {result?.teamCode}
+          </p>
+          <CopyButton text={result?.teamCode ?? ''} />
+        </div>
+        <p className="font-body text-xs" style={{ color: 'var(--text-4)' }}>
+          Team discount unlocks at payment when 3+ members have joined.
+        </p>
+        <CTAButton onClick={onComplete}>
+          Continue to Stage 2 🚀
+        </CTAButton>
+      </motion.div>
+    )
+  }
+
+  // SCREEN 3b — joined successfully
+  if (mode === 'joined') {
+    return (
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+        className="flex flex-col gap-5 items-center text-center"
+      >
+        <div className="text-6xl">🤝</div>
+        <h2
+          className="font-display leading-none tracking-wide"
+          style={{ fontSize: '2.4rem', color: 'var(--text-brand)' }}
+        >
+          YOU&apos;RE IN THE TEAM!
+        </h2>
+        <div
+          className="w-full rounded-2xl p-4"
+          style={{ background: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}
+        >
+          <p className="font-heading font-bold text-lg mb-1" style={{ color: 'var(--text-1)' }}>
+            {result?.teamName}
+          </p>
+          <p className="font-mono text-xs" style={{ color: 'var(--text-3)' }}>
+            {result?.memberCount} of 4 members joined
+          </p>
+        </div>
+        <CTAButton onClick={onComplete}>
+          Continue to Stage 2 🚀
+        </CTAButton>
+      </motion.div>
+    )
+  }
+
+  return null
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+
+type TeamPhase = 'choosing' | 'creating' | 'joining' | 'done'
+
 export function Stage1Form() {
   const router = useRouter()
-  const [subStep, setSubStep]       = useState<1 | 2>(1)
-  const [direction, setDirection]   = useState<1 | -1>(1)
-  const [submitting, setSubmitting] = useState(false)
-  const [serverError, setServerError] = useState<string | null>(null)
+  const [subStep, setSubStep]           = useState<1 | 2>(1)
+  const [direction, setDirection]       = useState<1 | -1>(1)
+  const [submitting, setSubmitting]     = useState(false)
+  const [serverError, setServerError]   = useState<string | null>(null)
   const [pendingBadge, setPendingBadge] = useState<BadgeId | null>(null)
+  // null = badge not yet dismissed; 'choosing'+ = team selection screen active
+  const [teamPhase, setTeamPhase]       = useState<TeamPhase | null>(null)
 
   const {
     register,
     control,
     trigger,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<Stage1FormData>({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -452,7 +797,7 @@ export function Stage1Form() {
   const [
     fullName, dateOfBirth, gender, grade,
     schoolName, city, state, phone,
-    codingExp, interests, teamPreference,
+    codingExp, interests,
     availabilityHrs, deviceAccess, tshirtSize,
     whyJoin, whatToBuild,
   ] = useWatch({
@@ -460,7 +805,7 @@ export function Stage1Form() {
     name: [
       'fullName', 'dateOfBirth', 'gender', 'grade',
       'schoolName', 'city', 'state', 'phone',
-      'codingExp', 'interests', 'teamPreference',
+      'codingExp', 'interests',
       'availabilityHrs', 'deviceAccess', 'tshirtSize',
       'whyJoin', 'whatToBuild',
     ],
@@ -475,14 +820,29 @@ export function Stage1Form() {
     phone && /^[6-9]\d{9}$/.test(phone) &&
     codingExp &&
     interests?.length >= 1 &&
-    teamPreference && availabilityHrs && deviceAccess && tshirtSize &&
+    availabilityHrs && deviceAccess && tshirtSize &&
     whyJoin?.length >= 20 &&
     whatToBuild?.length >= 20
   ), [
     fullName, dateOfBirth, gender, grade, schoolName, city, state, phone,
-    codingExp, interests, teamPreference, availabilityHrs, deviceAccess,
+    codingExp, interests, availabilityHrs, deviceAccess,
     tshirtSize, whyJoin, whatToBuild,
   ])
+
+  // Reset city when state changes so stale value doesn't persist
+  useEffect(() => {
+    setValue('city', '', { shouldValidate: false, shouldDirty: false })
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state])
+
+  // Derive city options from country-state-city package
+  const citiesForState = useMemo(() => {
+    const iso = STATE_ISO_MAP[state as string]
+    if (!iso) return []
+    return City.getCitiesOfState('IN', iso)
+      .map(c => c.name)
+      .sort((a, b) => a.localeCompare(b))
+  }, [state])
 
   // ── Reactive "Submit" disabled check for sub-step 2 ────────────────────────
   const [
@@ -516,7 +876,7 @@ export function Stage1Form() {
     const valid = await trigger([
       'fullName', 'dateOfBirth', 'gender', 'grade',
       'schoolName', 'city', 'state', 'phone',
-      'codingExp', 'interests', 'teamPreference',
+      'codingExp', 'interests',
       'availabilityHrs', 'deviceAccess', 'tshirtSize',
       'whyJoin', 'whatToBuild',
     ])
@@ -560,8 +920,8 @@ export function Stage1Form() {
 
   const handleBadgeDismiss = useCallback(() => {
     setPendingBadge(null)
-    router.push('/register') // register/page.tsx will redirect to stage-2/quiz
-  }, [router])
+    setTeamPhase('choosing') // show team selection screen before continuing
+  }, [])
 
   // ── Input style helpers ─────────────────────────────────────────────────────
   const inputCls = 'w-full rounded-xl px-4 font-body transition-colors outline-none focus:outline-none placeholder:opacity-40'
@@ -575,9 +935,27 @@ export function Stage1Form() {
 
   // ─────────────────────────────────────────────────────────────────────────────
 
+  const studentFirstName = useWatch({ control, name: 'fullName' })?.split(' ')[0] ?? ''
+
   return (
     <>
       <BadgeUnlock badge={pendingBadge} onDismiss={handleBadgeDismiss} />
+
+      <AnimatePresence mode="wait">
+        {teamPhase !== null ? (
+          <motion.div
+            key="team"
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <TeamSelectionScreen
+              studentName={studentFirstName}
+              onComplete={() => router.push('/register')}
+            />
+          </motion.div>
+        ) : (
+          <motion.div key="form" initial={{ opacity: 1 }} exit={{ opacity: 0 }}>
 
       <form onSubmit={onSubmit} noValidate>
         {/* Overflow hidden only on the clipping wrapper — scroll container lives outside */}
@@ -662,36 +1040,7 @@ export function Stage1Form() {
 
                   {/* Card 2 · School */}
                   <FormCard icon="🏫" title="Your School" index={1}>
-                    <div>
-                      <FieldLabel required>School Name</FieldLabel>
-                      <TextInput
-                        {...register('schoolName')}
-                        placeholder="Full name of your school"
-                        inputMode="text"
-                        autoComplete="organization"
-                        autoCapitalize="words"
-                        hasError={!!errors.schoolName}
-                      />
-                      <FieldError message={errors.schoolName?.message} />
-                    </div>
-
-                    <div>
-                      <FieldLabel required>City</FieldLabel>
-                      <TextInput
-                        {...register('city')}
-                        list="sb-cities"
-                        placeholder="Type to search city..."
-                        inputMode="text"
-                        autoComplete="address-level2"
-                        autoCapitalize="words"
-                        hasError={!!errors.city}
-                      />
-                      <datalist id="sb-cities">
-                        {INDIAN_CITIES.map(c => <option key={c} value={c} />)}
-                      </datalist>
-                      <FieldError message={errors.city?.message} />
-                    </div>
-
+                    {/* 1. State — fixed dropdown */}
                     <div>
                       <FieldLabel required>State</FieldLabel>
                       <select
@@ -701,10 +1050,51 @@ export function Stage1Form() {
                       >
                         <option value="">Select your state</option>
                         {INDIAN_STATES.map(s => (
-                          <option key={s} value={s}>{s}</option>
+                          <option key={s.isoCode} value={s.name}>{s.name}</option>
                         ))}
                       </select>
                       <FieldError message={errors.state?.message} />
+                    </div>
+
+                    {/* 2. City — filtered by state, fixed dropdown */}
+                    <div>
+                      <FieldLabel required>City</FieldLabel>
+                      <select
+                        {...register('city')}
+                        className={inputCls}
+                        disabled={!state}
+                        style={{
+                          ...inputStyle(!!errors.city),
+                          colorScheme: 'dark',
+                          opacity: !state ? 0.45 : 1,
+                          cursor: !state ? 'not-allowed' : 'pointer',
+                        }}
+                      >
+                        <option value="">{state ? 'Select your city' : 'Select state first'}</option>
+                        {citiesForState.map(c => (
+                          <option key={c} value={c}>{c}</option>
+                        ))}
+                      </select>
+                      <FieldError message={errors.city?.message} />
+                    </div>
+
+                    {/* 3. School — Google Places autocomplete with free-text fallback */}
+                    <div>
+                      <FieldLabel required>School Name</FieldLabel>
+                      <Controller
+                        control={control}
+                        name="schoolName"
+                        render={({ field }) => (
+                          <SchoolAutocomplete
+                            value={field.value ?? ''}
+                            onChange={field.onChange}
+                            onBlur={field.onBlur}
+                            cityName={(city as string) ?? ''}
+                            hasError={!!errors.schoolName}
+                          />
+                        )}
+                      />
+                      <FieldError message={errors.schoolName?.message} />
                     </div>
                   </FormCard>
 
@@ -792,23 +1182,6 @@ export function Stage1Form() {
                         )}
                       />
                       <FieldError message={errors.deviceAccess?.message} />
-                    </div>
-
-                    <div>
-                      <FieldLabel required>Team Preference</FieldLabel>
-                      <Controller
-                        control={control}
-                        name="teamPreference"
-                        render={({ field }) => (
-                          <PillSelector
-                            options={TEAM_OPTS}
-                            value={field.value}
-                            onChange={field.onChange}
-                            disabled={submitting}
-                          />
-                        )}
-                      />
-                      <FieldError message={errors.teamPreference?.message} />
                     </div>
 
                     <div>
@@ -1081,6 +1454,10 @@ export function Stage1Form() {
           </AnimatePresence>
         </div>
       </form>
+
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   )
 }

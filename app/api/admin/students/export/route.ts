@@ -1,13 +1,12 @@
-import { auth } from '@clerk/nextjs/server'
+import { getAdminSessionFromHeaders } from '@/lib/auth/adminAuth'
 import { exportStudentsCSV } from '@/lib/db/queries/admin'
 
 export const dynamic = 'force-dynamic'
 
 export async function GET(req: Request) {
-  const { userId, sessionClaims } = await auth()
-  if (!userId) return new Response('Unauthorized', { status: 401 })
-  const role = (sessionClaims?.publicMetadata as { role?: string } | undefined)?.role
-  if (role !== 'admin') return new Response('Forbidden', { status: 403 })
+  if (!getAdminSessionFromHeaders(req.headers)) {
+    return new Response('Unauthorized', { status: 401 })
+  }
 
   const { searchParams } = new URL(req.url)
 

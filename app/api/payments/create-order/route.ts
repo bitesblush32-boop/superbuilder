@@ -3,6 +3,11 @@ import Razorpay from 'razorpay'
 import { getStudentByClerkId } from '@/lib/db/queries/students'
 import { createPendingPayment } from '@/lib/db/queries/payments'
 import { getPricingConfig } from '@/lib/db/queries/config'
+import { getTeamWithMembers, getTeamDiscounts } from '@/lib/db/queries/teams'
+
+function applyDiscount(amount: number, pct: number): number {
+  return Math.floor(amount * (1 - pct / 100))
+}
 
 export async function POST(req: Request) {
   const rzp = new Razorpay({
@@ -31,33 +36,50 @@ export async function POST(req: Request) {
     return Response.json({ error: 'Invalid request body' }, { status: 400 })
   }
 
-  const pricing = await getPricingConfig()
-  const AMOUNT_MAP: Record<string, number> = {
+  const [pricing, teamDiscounts] = await Promise.all([
+    getPricingConfig(),
+    getTeamDiscounts(),
+  ])
+
+  const BASE_AMOUNT_MAP: Record<string, number> = {
     'pro-false':     pricing.pro.priceMin * 100,
     'premium-false': pricing.premium.priceMin * 100,
     'premium-true':  pricing.premium.emiFirst * 100,
   }
 
-  const amount = AMOUNT_MAP[`${tier}-${isEmi}`]
-  if (!amount) {
+  const baseAmount = BASE_AMOUNT_MAP[`${tier}-${isEmi}`]
+  if (!baseAmount) {
     return Response.json({ error: 'Invalid tier/EMI combination' }, { status: 400 })
   }
+
+  // Compute team discount server-side — never trust the client
+  let discountPct = 0
+  if (student.teamId) {
+    const teamData = await getTeamWithMembers(student.teamId)
+    const memberCount = teamData?.memberCount ?? 1
+    discountPct = memberCount >= 4 ? teamDiscounts.team4
+                : memberCount >= 3 ? teamDiscounts.team3
+                : 0
+  }
+
+  const amount = applyDiscount(baseAmount, discountPct)
 
   // Create Razorpay order
   const order = await rzp.orders.create({
     amount,
     currency: 'INR',
     receipt:  `sb_${student.id.slice(0, 8)}_${Date.now()}`,
-    notes:    { studentId: student.id, tier, isEmi: String(isEmi) },
+    notes:    { studentId: student.id, tier, isEmi: String(isEmi), discountPct: String(discountPct) },
   })
 
-  // Save pending payment record
+  // Save pending payment record (amount already discounted)
   await createPendingPayment({
     studentId:       student.id,
     razorpayOrderId: order.id,
     amount,
     tier,
     isEmi,
+    discountPct,
   })
 
   return Response.json({

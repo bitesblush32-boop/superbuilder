@@ -33,7 +33,9 @@ function calculate(target: Date): CountdownResult {
  * const { days, hours, mins, secs, expired } = useCountdown(HACKATHON_START)
  */
 export function useCountdown(target: Date): CountdownResult {
-  const tick = useCallback(() => calculate(target), [target])
+  // Extract primitive time to avoid infinite rerenders if target is a new Date reference on every render
+  const targetTime = target.getTime()
+  const tick = useCallback(() => calculate(new Date(targetTime)), [targetTime])
 
   const [countdown, setCountdown] = useState<CountdownResult>(tick)
 

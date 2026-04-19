@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useTransition } from 'react'
-import type { DatesConfig, PricingConfig, ScheduleItem, WorkshopEntry, PhaseEntry } from '@/lib/db/queries/config'
+import type { DatesConfig, ScheduleItem, WorkshopEntry, PhaseEntry } from '@/lib/db/queries/config'
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -391,128 +391,16 @@ function ContentTab({ items: initItems }: { items: ScheduleItem[] }) {
   )
 }
 
-// ── Pricing Tab ───────────────────────────────────────────────────────────────
-
-function FeatureList({
-  features, onChange,
-}: {
-  features: string[]
-  onChange: (list: string[]) => void
-}) {
-  return (
-    <div className="space-y-2">
-      {features.map((f, i) => (
-        <div key={i} className="flex items-center gap-2">
-          <input
-            value={f}
-            onChange={e => {
-              const n = [...features]; n[i] = e.target.value; onChange(n)
-            }}
-            className="flex-1 rounded-lg px-3 py-1.5 text-sm outline-none"
-            style={{ background: 'var(--bg-float)', border: '1px solid var(--border-subtle)', color: 'var(--text-1)' }}
-          />
-          <button
-            onClick={() => onChange(features.filter((_, j) => j !== i))}
-            className="text-xs px-2 py-1 rounded border shrink-0"
-            style={{ color: 'var(--red)', borderColor: 'rgba(248,113,113,0.25)' }}
-          >✕</button>
-        </div>
-      ))}
-      <button
-        onClick={() => onChange([...features, ''])}
-        className="text-xs px-3 py-1.5 rounded-lg border w-full"
-        style={{ color: 'var(--text-brand)', borderColor: 'var(--border-brand)', background: 'var(--brand-subtle)' }}
-      >
-        + Add Feature
-      </button>
-    </div>
-  )
-}
-
-function PricingTab({ pricing, onSave }: { pricing: PricingConfig; onSave: (p: PricingConfig) => Promise<void> }) {
-  const [p, setP]          = useState<PricingConfig>(pricing)
-  const [saving, setSaving] = useState(false)
-  const [saved,  setSaved]  = useState(false)
-
-  function setPro<K extends keyof PricingConfig['pro']>(k: K, v: PricingConfig['pro'][K]) {
-    setP(prev => ({ ...prev, pro: { ...prev.pro, [k]: v } }))
-    setSaved(false)
-  }
-  function setPremium<K extends keyof PricingConfig['premium']>(k: K, v: PricingConfig['premium'][K]) {
-    setP(prev => ({ ...prev, premium: { ...prev.premium, [k]: v } }))
-    setSaved(false)
-  }
-
-  async function handleSave() {
-    setSaving(true)
-    await onSave(p)
-    setSaving(false)
-    setSaved(true)
-    setTimeout(() => setSaved(false), 2500)
-  }
-
-  return (
-    <div className="space-y-8">
-      <div className="rounded-lg px-4 py-3 border text-sm" style={{ background: 'var(--amber-bg)', borderColor: 'rgba(251,191,36,0.3)', color: 'var(--amber)' }}>
-        ⚠️ Changing prices here updates the landing page AND the Razorpay order amounts. Pro payment = priceMin × 100 paise. Premium = priceMin × 100. EMI = emiFirst × 100.
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Pro */}
-        <section className="rounded-xl border p-5 space-y-4" style={{ background: 'var(--bg-card)', borderColor: 'var(--border-faint)' }}>
-          <h3 className="text-sm font-heading font-bold uppercase tracking-wider" style={{ color: 'var(--blue)' }}>
-            Pro Tier
-          </h3>
-          <div className="grid grid-cols-2 gap-3">
-            <Input label="Price Min (₹)" value={p.pro.priceMin} type="number" onChange={v => setPro('priceMin', Number(v))} />
-            <Input label="Price Max (₹)" value={p.pro.priceMax} type="number" onChange={v => setPro('priceMax', Number(v))} />
-          </div>
-          <div>
-            <p className="text-xs font-mono uppercase tracking-wider mb-2" style={{ color: 'var(--text-4)' }}>Features (included)</p>
-            <FeatureList features={p.pro.features} onChange={v => setPro('features', v)} />
-          </div>
-          <div>
-            <p className="text-xs font-mono uppercase tracking-wider mb-2" style={{ color: 'var(--text-4)' }}>Missing (not included)</p>
-            <FeatureList features={p.pro.missing} onChange={v => setPro('missing', v)} />
-          </div>
-        </section>
-
-        {/* Premium */}
-        <section className="rounded-xl border p-5 space-y-4" style={{ background: 'var(--bg-card)', borderColor: 'var(--border-brand)' }}>
-          <h3 className="text-sm font-heading font-bold uppercase tracking-wider" style={{ color: 'var(--text-brand)' }}>
-            Premium Tier ⭐
-          </h3>
-          <div className="grid grid-cols-3 gap-3">
-            <Input label="Price Min (₹)" value={p.premium.priceMin} type="number" onChange={v => setPremium('priceMin', Number(v))} />
-            <Input label="Price Max (₹)" value={p.premium.priceMax} type="number" onChange={v => setPremium('priceMax', Number(v))} />
-            <Input label="EMI First (₹)" value={p.premium.emiFirst} type="number" onChange={v => setPremium('emiFirst', Number(v))} />
-          </div>
-          <div>
-            <p className="text-xs font-mono uppercase tracking-wider mb-2" style={{ color: 'var(--text-4)' }}>Features (included)</p>
-            <FeatureList features={p.premium.features} onChange={v => setPremium('features', v)} />
-          </div>
-        </section>
-      </div>
-
-      <div className="flex justify-end">
-        <SaveBtn saving={saving} saved={saved} onClick={handleSave} />
-      </div>
-    </div>
-  )
-}
-
 // ── Main ─────────────────────────────────────────────────────────────────────
 
 export function ScheduleEditor({
   initialDates,
-  initialPricing,
   initialItems,
 }: {
-  initialDates:   DatesConfig
-  initialPricing: PricingConfig
-  initialItems:   ScheduleItem[]
+  initialDates: DatesConfig
+  initialItems: ScheduleItem[]
 }) {
-  const [tab, setTab] = useState<'timeline' | 'content' | 'pricing'>('timeline')
+  const [tab, setTab] = useState<'timeline' | 'content'>('timeline')
 
   async function saveDates(data: DatesConfig) {
     await fetch('/api/admin/config', {
@@ -521,25 +409,16 @@ export function ScheduleEditor({
     })
   }
 
-  async function savePricing(data: PricingConfig) {
-    await fetch('/api/admin/config', {
-      method: 'PUT', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ section: 'pricing', data }),
-    })
-  }
-
   return (
     <div>
       {/* Tabs */}
       <div className="flex border-b mb-6" style={{ borderColor: 'var(--border-faint)' }}>
-        <TabBtn label="📅 Timeline"  active={tab === 'timeline'} onClick={() => setTab('timeline')} />
-        <TabBtn label="🎬 Content"   active={tab === 'content'}  onClick={() => setTab('content')} />
-        <TabBtn label="💰 Pricing"   active={tab === 'pricing'}  onClick={() => setTab('pricing')} />
+        <TabBtn label="📅 Timeline" active={tab === 'timeline'} onClick={() => setTab('timeline')} />
+        <TabBtn label="🎬 Content"  active={tab === 'content'}  onClick={() => setTab('content')} />
       </div>
 
-      {tab === 'timeline' && <TimelineTab dates={initialDates}     onSave={saveDates}   />}
-      {tab === 'content'  && <ContentTab  items={initialItems}                          />}
-      {tab === 'pricing'  && <PricingTab  pricing={initialPricing} onSave={savePricing} />}
+      {tab === 'timeline' && <TimelineTab dates={initialDates} onSave={saveDates} />}
+      {tab === 'content'  && <ContentTab  items={initialItems}                    />}
     </div>
   )
 }
