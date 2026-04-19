@@ -54,6 +54,10 @@ interface RazorpayOptions {
   modal?:         { ondismiss?: () => void }
 }
 
+function applyDiscount(amount: number, pct: number): number {
+  return Math.floor(amount * (1 - pct / 100))
+}
+
 export function PayPage({ studentId, fullName, email, phone, defaultTier }: PayPageProps) {
   const router       = useRouter()
   const searchParams = useSearchParams()
