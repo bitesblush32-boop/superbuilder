@@ -15,3 +15,10 @@ export async function updateSettingAction(key: string, value: string): Promise<v
   if (isNaN(parsed) || parsed < 0 || parsed > 100000) throw new Error('Invalid value')
   await updateAppSetting(key, String(Math.floor(parsed)))
 }
+
+export async function updateStageAction(key: string, value: 'true' | 'false'): Promise<void> {
+  await verifyAdmin()
+  if (!key.startsWith('stage_') || !key.endsWith('_open')) throw new Error('Invalid key')
+  if (value !== 'true' && value !== 'false') throw new Error('Invalid value')
+  await updateAppSetting(key, value)
+}

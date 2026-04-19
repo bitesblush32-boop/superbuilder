@@ -72,7 +72,16 @@
       "Bash(cd \"C:\\\\Users\\\\Ravi Desai\\\\Downloads\\\\SuperBuilders\\\\super-builders\" && pnpm add country-state-city)",
       "Bash(cd \"C:\\\\Users\\\\Ravi Desai\\\\Downloads\\\\SuperBuilders\\\\super-builders\" && pnpm add -D @types/google.maps 2>&1 | tail -5)",
       "Bash(cd \"C:\\\\Users\\\\Ravi Desai\\\\Downloads\\\\SuperBuilders\\\\super-builders\" && npx tsc --noEmit --skipLibCheck 2>&1 | head -40)",
-      "Bash(npx tsc *)"
+      "Bash(npx tsc *)",
+      "Bash(find \"C:\\\\Users\\\\Ravi Desai\\\\Downloads\\\\SuperBuilders\\\\super-builders\\\\app\\\\register\" -type f -name \"*.tsx\" -o -name \"*.ts\" 2>/dev/null | head -20)",
+      "Bash(ls -la \"C:\\\\Users\\\\Ravi Desai\\\\Downloads\\\\SuperBuilders\\\\super-builders\\\\app\\\\admin\\\\\\(protected\\)\" 2>/dev/null | head -20)",
+      "Bash(find \"C:\\\\Users\\\\Ravi Desai\\\\Downloads\\\\SuperBuilders\\\\super-builders\\\\app\\\\admin\\\\\\(protected\\)\\\\teams\" -type f -name \"*.tsx\" -o -name \"*.ts\" 2>/dev/null | head -10)",
+      "Bash(cd \"C:\\\\Users\\\\Ravi Desai\\\\Downloads\\\\SuperBuilders\\\\super-builders\" && pnpm db:seed-settings 2>&1)",
+      "Bash(cd \"C:\\\\Users\\\\Ravi Desai\\\\Downloads\\\\SuperBuilders\\\\super-builders\" && pnpm type-check 2>&1 | head -60)",
+      "Bash(cd \"C:\\\\Users\\\\Ravi Desai\\\\Downloads\\\\SuperBuilders\\\\super-builders\" && set -a && source .env.local && set +a && pnpm db:migrate 2>&1)",
+      "Bash(cd \"C:\\\\Users\\\\Ravi Desai\\\\Downloads\\\\SuperBuilders\\\\super-builders\" && set -a && source .env.local && set +a && node -e \"\nconst { Pool } = require\\('pg'\\);\nconst pool = new Pool\\({ connectionString: process.env.DATABASE_URL, ssl: { rejectUnauthorized: false } }\\);\npool.query\\(\\\\\"SELECT key, value FROM app_settings WHERE key LIKE 'stage_%' ORDER BY key\\\\\"\\)\n  .then\\(r => { console.table\\(r.rows\\); pool.end\\(\\); }\\)\n  .catch\\(e => { console.error\\(e.message\\); pool.end\\(\\); }\\);\n\" 2>&1)",
+      "Bash(cd \"C:\\\\Users\\\\Ravi Desai\\\\Downloads\\\\SuperBuilders\\\\super-builders\" && python -c \"import sys; open\\('.graphify_python', 'w'\\).write\\(sys.executable\\)\" && python -c \"\nimport json\nfrom graphify.detect import detect\nfrom pathlib import Path\nresult = detect\\(Path\\('.'\\)\\)\nPath\\('.graphify_detect.json'\\).write_text\\(json.dumps\\(result\\)\\)\nprint\\(json.dumps\\({k: v for k, v in result.items\\(\\) if k != 'files'}, indent=2\\)\\)\n\" 2>&1)",
+      "Bash(cd \"C:\\\\Users\\\\Ravi Desai\\\\Downloads\\\\SuperBuilders\\\\super-builders\" && python -c \"\nimport json\nfrom pathlib import Path\nd = json.loads\\(Path\\('.graphify_detect.json'\\).read_text\\(\\)\\)\nfiles = d.get\\('files', {}\\)\nfor ftype, flist in files.items\\(\\):\n    if flist:\n        exts = list\\({Path\\(f\\).suffix for f in flist}\\)[:6]\n        print\\(f'  {ftype}: {len\\(flist\\)} files \\({\\\\\" \\\\\".join\\(exts\\)}\\)'\\)\n\" 2>&1)"
     ]
   }
 }

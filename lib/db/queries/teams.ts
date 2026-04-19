@@ -1,6 +1,6 @@
 import { db } from '@/lib/db'
 import { teams, students, appSettings } from '@/lib/db/schema'
-import { eq } from 'drizzle-orm'
+import { eq, inArray } from 'drizzle-orm'
 import { sql } from 'drizzle-orm'
 
 // Generate a team code like "SB-X7K2" — "SB-" prefix + 4 alphanumeric chars
@@ -130,4 +130,24 @@ export async function updateAppSetting(key: string, value: string): Promise<void
 
 export async function getAllSettings(): Promise<typeof appSettings.$inferSelect[]> {
   return db.select().from(appSettings)
+}
+
+// Returns which stages are currently open globally (admin-controlled)
+export async function getOpenStages(): Promise<Record<number, boolean>> {
+  const rows = await db.select().from(appSettings)
+    .where(inArray(appSettings.key, [
+      'stage_1_open','stage_2_open','stage_3_open','stage_4_open','stage_5_open'
+    ]))
+
+  const result: Record<number, boolean> = { 1: false, 2: false, 3: false, 4: false, 5: false }
+  for (const row of rows) {
+    const num = parseInt(row.key.replace('stage_', '').replace('_open', ''), 10)
+    result[num] = row.value === 'true'
+  }
+  return result
+}
+
+export async function isStageOpen(stageNum: number): Promise<boolean> {
+  const row = await getAppSetting(`stage_${stageNum}_open`)
+  return row === 'true'
 }

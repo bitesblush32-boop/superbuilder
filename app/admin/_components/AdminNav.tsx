@@ -7,6 +7,7 @@ import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 
 const NAV_ITEMS = [
   { href: '/admin', label: 'Overview', emoji: '📊' },
+  { href: '/admin/stages', label: 'Stage Control', emoji: '🎚️' },
   { href: '/admin/students', label: 'Students', emoji: '👥' },
   { href: '/admin/payments', label: 'Payments', emoji: '💳' },
   { href: '/admin/teams', label: 'Teams', emoji: '🤝' },

@@ -1,11 +1,16 @@
 import { redirect } from 'next/navigation'
 import { getStudentOrRedirect } from '@/lib/auth/getStudentOrRedirect'
+import { checkStageLock } from '@/lib/auth/stageLock'
+import { StageLocked } from '@/components/stage/StageLocked'
 import { getDatesConfig } from '@/lib/db/queries/config'
 import { OrientationClient } from './_components/OrientationClient'
 
 export const dynamic = 'force-dynamic'
 
 export default async function OrientationPage() {
+  const { isOpen } = await checkStageLock(2)
+  if (!isOpen) return <StageLocked stageNum={2} />
+
   const { student } = await getStudentOrRedirect(2)
 
   if (!student) redirect('/register/stage-1')
