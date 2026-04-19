@@ -1,6 +1,6 @@
-export const HACKATHON_START = new Date('2025-06-07T08:00:00+05:30')
-export const HACKATHON_END   = new Date('2025-06-08T08:00:00+05:30')
-export const REG_DEADLINE    = new Date('2025-05-25T23:59:59+05:30')
+export const HACKATHON_START = new Date('2026-06-07T08:00:00+05:30')
+export const HACKATHON_END = new Date('2026-06-08T08:00:00+05:30')
+export const REG_DEADLINE = new Date('2026-05-25T23:59:59+05:30')
 
 export const WORKSHOPS = [
   {
@@ -31,11 +31,11 @@ export const WORKSHOPS = [
 
 export const PHASES = [
   { num: 1, name: 'Application & Registration', dates: '[DATE]–May 25', milestone: 'Applications close' },
-  { num: 2, name: 'Orientation & Onboarding',   dates: 'May 26–Jun 1',  milestone: 'Welcome + Discord' },
-  { num: 3, name: 'Workshops ×3',               dates: 'May 26–Jun 5', milestone: '3 workshops' },
-  { num: 4, name: 'Build Phase',                dates: 'Jun 1–Jun 6',  milestone: 'Projects built' },
-  { num: 5, name: 'Hackathon + Showcase',       dates: 'Jun 7–8',      milestone: '24h hackathon' },
-  { num: 6, name: 'Winners + Certificates',     dates: 'Jun 9–10',     milestone: 'Prizes + certs' },
+  { num: 2, name: 'Orientation & Onboarding', dates: 'May 26–Jun 1', milestone: 'Welcome + Discord' },
+  { num: 3, name: 'Workshops ×3', dates: 'May 26–Jun 5', milestone: '3 workshops' },
+  { num: 4, name: 'Build Phase', dates: 'Jun 1–Jun 6', milestone: 'Projects built' },
+  { num: 5, name: 'Hackathon + Showcase', dates: 'Jun 7–8', milestone: '24h hackathon' },
+  { num: 6, name: 'Winners + Certificates', dates: 'Jun 9–10', milestone: 'Prizes + certs' },
 ] as const
 
 export const TIERS = {
@@ -77,9 +77,9 @@ export const TIERS = {
 } as const
 
 export const JUDGING = [
-  { criterion: 'Innovation & Originality',      weight: 25, desc: 'Is the idea unique and thoughtful?' },
+  { criterion: 'Innovation & Originality', weight: 25, desc: 'Is the idea unique and thoughtful?' },
   { criterion: 'Impact & Problem-Solution Fit', weight: 25, desc: 'Does it solve a real problem?' },
-  { criterion: 'Technical Implementation',      weight: 25, desc: 'Does it work? How well is AI used?' },
-  { criterion: 'Presentation',                  weight: 15, desc: 'Is the demo video clear and compelling?' },
-  { criterion: 'Completeness',                  weight: 10, desc: 'Fully filled and documented?' },
+  { criterion: 'Technical Implementation', weight: 25, desc: 'Does it work? How well is AI used?' },
+  { criterion: 'Presentation', weight: 15, desc: 'Is the demo video clear and compelling?' },
+  { criterion: 'Completeness', weight: 10, desc: 'Fully filled and documented?' },
 ] as const

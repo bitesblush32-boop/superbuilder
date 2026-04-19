@@ -22,7 +22,7 @@ Landing Page → Registration → AI Quiz → Payment → Dashboard → Build �
 | Organiser | zer0.pro |
 | Audience | Students Class 8–12 (age 13–18) + Parents (payment decision-makers) |
 | Format | 100% online |
-| Season | 1 — 2025 |
+| Season | 1 — 2026 |
 | Target | 2,000–3,000 paid students |
 | Prize pool | ₹1,00,000+ |
 | Registration deadline | May 25 |
@@ -684,9 +684,9 @@ export type BadgeId = keyof typeof BADGES
 
 ```typescript
 // lib/content/programme.ts
-export const HACKATHON_START = new Date('2025-06-07T08:00:00+05:30')
-export const HACKATHON_END   = new Date('2025-06-08T08:00:00+05:30')
-export const REG_DEADLINE    = new Date('2025-05-25T23:59:59+05:30')
+export const HACKATHON_START = new Date('2026-06-07T08:00:00+05:30')
+export const HACKATHON_END   = new Date('2026-06-08T08:00:00+05:30')
+export const REG_DEADLINE    = new Date('2026-05-25T23:59:59+05:30')
 
 export const WORKSHOPS = [
   { id: 1, title: 'AI Fundamentals + Tools Overview',   outcome: 'Use 3+ AI tools confidently', duration: 90, dateRange: 'May 26–Jun 1', badge: 'WARRIOR' as const },
@@ -896,10 +896,10 @@ const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').mat
 export const metadata: Metadata = {
   title: 'Super Builders — AI Hackathon for School Students | zer0.pro',
   description: "India's #1 AI programme for Class 8–12 students. 3-week online programme + 24-hour hackathon. ₹1,00,000+ prizes. Register before May 25.",
-  keywords: ['AI hackathon India', 'school hackathon 2025', 'Class 8 12 coding', 'zer0.pro', 'online AI programme teens'],
+  keywords: ['AI hackathon India', 'school hackathon 2026', 'Class 8 12 coding', 'zer0.pro', 'online AI programme teens'],
   openGraph: {
     title: 'Super Builders — Build AI. Win ₹1 Lakh.',
-    description: 'Online AI hackathon for Indian school students. Jun 7–8, 2025.',
+    description: 'Online AI hackathon for Indian school students. Jun 7–8, 2026.',
     images: [{ url: '/og/super-builders.jpg', width: 1200, height: 630 }],
   },
   twitter: { card: 'summary_large_image' },
@@ -913,12 +913,12 @@ JSON-LD structured data (add as `<script type="application/ld+json">` in the pag
   "@context": "https://schema.org",
   "@type": "Event",
   "name": "Super Builders — School Edition",
-  "startDate": "2025-06-07T08:00:00+05:30",
-  "endDate": "2025-06-08T08:00:00+05:30",
+  "startDate": "2026-06-07T08:00:00+05:30",
+  "endDate": "2026-06-08T08:00:00+05:30",
   "eventStatus": "https://schema.org/EventScheduled",
   "eventAttendanceMode": "https://schema.org/OnlineEventAttendanceMode",
   "organizer": { "@type": "Organization", "name": "zer0.pro", "url": "https://zer0.pro" },
-  "offers": { "@type": "Offer", "price": "1499", "priceCurrency": "INR", "validThrough": "2025-05-25" }
+  "offers": { "@type": "Offer", "price": "1499", "priceCurrency": "INR", "validThrough": "2026-05-25" }
 }
 ```
 
@@ -1186,4 +1186,4 @@ Fonts available in `/mnt/skills/examples/canvas-design/canvas-fonts/`:
 
 ---
 
-*Super Builders × zer0.pro · CLAUDE.md v2.0 · Railway + PostgreSQL · Teen-first Design · Season 1 · 2025*
+*Super Builders × zer0.pro · CLAUDE.md v2.0 · Railway + PostgreSQL · Teen-first Design · Season 1 · 2026*

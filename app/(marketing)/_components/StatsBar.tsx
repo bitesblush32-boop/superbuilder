@@ -16,50 +16,50 @@ const EASE_OUT = [0.16, 1, 0.3, 1] as const
 
 const STATS = [
   {
-    id:      'registered',
-    numeric: true  as const,
-    to:      2847,
-    prefix:  '',
-    suffix:  '',
-    label:   'Registered',
-    accent:  '#FFB800',
+    id: 'registered',
+    numeric: true as const,
+    to: 2847,
+    prefix: '',
+    suffix: '',
+    label: 'Registered',
+    accent: '#FFB800',
   },
   {
-    id:      'cities',
-    numeric: true  as const,
-    to:      38,
-    prefix:  '',
-    suffix:  '+',
-    label:   'Cities',
-    accent:  '#22C55E',
+    id: 'cities',
+    numeric: true as const,
+    to: 38,
+    prefix: '',
+    suffix: '+',
+    label: 'Cities',
+    accent: '#22C55E',
   },
   {
-    id:      'prize',
-    numeric: true  as const,
-    to:      100000,
-    prefix:  '₹',
-    suffix:  '+',
-    label:   'Prize Pool',
-    accent:  '#C084FC',
+    id: 'prize',
+    numeric: true as const,
+    to: 100000,
+    prefix: '₹',
+    suffix: '+',
+    label: 'Prize Pool',
+    accent: '#C084FC',
   },
   {
-    id:      'date',
+    id: 'date',
     numeric: false as const,
     display: 'Jun 7–8',
-    label:   '2025 Hackathon',
-    accent:  '#60A5FA',
+    label: '2026 Hackathon',
+    accent: '#60A5FA',
   },
 ] as const
 
 /* ─── Variants ───────────────────────────────────────────────────────────────── */
 const containerVariants: Variants = {
   hidden: {},
-  show:   { transition: { staggerChildren: 0.1 } },
+  show: { transition: { staggerChildren: 0.1 } },
 }
 
 const statVariants: Variants = {
   hidden: { opacity: 0, y: 14 },
-  show:   { opacity: 1, y: 0, transition: { duration: 0.55, ease: EASE_OUT } },
+  show: { opacity: 1, y: 0, transition: { duration: 0.55, ease: EASE_OUT } },
 }
 
 /* ─── CountUp ────────────────────────────────────────────────────────────────── */
@@ -69,14 +69,14 @@ function CountUp({
   suffix = '',
   accent,
 }: {
-  to:      number
+  to: number
   prefix?: string
   suffix?: string
-  accent:  string
+  accent: string
 }) {
-  const ref     = useRef<HTMLSpanElement>(null)
-  const inView  = useInView(ref, { once: true, margin: '-40px' })
-  const count   = useMotionValue(0)
+  const ref = useRef<HTMLSpanElement>(null)
+  const inView = useInView(ref, { once: true, margin: '-40px' })
+  const count = useMotionValue(0)
 
   // Format with Indian locale: 100000 → "1,00,000"
   const display = useTransform(count, (v) =>
@@ -114,8 +114,8 @@ export function StatsBar() {
     <section
       className="relative w-full border-y overflow-hidden"
       style={{
-        background:   'var(--bg-raised)',
-        borderColor:  'var(--border-faint)',
+        background: 'var(--bg-raised)',
+        borderColor: 'var(--border-faint)',
       }}
       id="stats"
       aria-label="Programme statistics"
@@ -147,7 +147,7 @@ export function StatsBar() {
               'flex flex-col items-center justify-center py-10 px-6 relative',
               // Mobile 2×2: left-column gets right border, top-row gets bottom border
               i % 2 === 0 && i < 3 && 'border-r',
-              i < 2          && 'border-b md:border-b-0',
+              i < 2 && 'border-b md:border-b-0',
               // Desktop 1×4: all except last get right border
               i >= 1 && i < 3 && 'md:border-r',
             )}

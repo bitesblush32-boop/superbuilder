@@ -51,45 +51,45 @@ const COLUMNS = [
   {
     heading: 'Programme',
     links: [
-      { label: 'Timeline',  href: '#programme' },
+      { label: 'Timeline', href: '#programme' },
       { label: 'Workshops', href: '#workshops' },
-      { label: 'Prizes',    href: '#prizes'    },
-      { label: 'Domains',   href: '#domains'   },
+      { label: 'Prizes', href: '#prizes' },
+      { label: 'Domains', href: '#domains' },
     ],
   },
   {
     heading: 'Register',
     links: [
-      { label: 'Apply Now',   href: '/register/stage-1' },
-      { label: 'Tiers & Pricing', href: '#tiers'        },
-      { label: 'FAQ',         href: '#faq'              },
-      { label: 'For Parents', href: '#parents'          },
+      { label: 'Apply Now', href: '/register/stage-1' },
+      { label: 'Tiers & Pricing', href: '#tiers' },
+      { label: 'FAQ', href: '#faq' },
+      { label: 'For Parents', href: '#parents' },
     ],
   },
   {
     heading: 'Community',
     links: [
-      { label: 'Discord Server',    href: '#discord'   },
-      { label: 'WhatsApp Group',    href: '#whatsapp'  },
-      { label: 'Instagram',         href: '#instagram' },
-      { label: 'Mentors',           href: '#mentors'   },
+      { label: 'Discord Server', href: '#discord' },
+      { label: 'WhatsApp Group', href: '#whatsapp' },
+      { label: 'Instagram', href: '#instagram' },
+      { label: 'Mentors', href: '#mentors' },
     ],
   },
   {
     heading: 'Platform',
     links: [
-      { label: 'Dashboard',    href: '/dashboard'   },
-      { label: 'Leaderboard',  href: '/dashboard/leaderboard' },
-      { label: 'Certificate',  href: '/dashboard/certificate' },
-      { label: 'Verify Cert',  href: '/verify'      },
+      { label: 'Dashboard', href: '/dashboard' },
+      { label: 'Leaderboard', href: '/dashboard/leaderboard' },
+      { label: 'Certificate', href: '/dashboard/certificate' },
+      { label: 'Verify Cert', href: '/verify' },
     ],
   },
 ] as const
 
 /* ─── Social links ─────────────────────────────────────────────────────────── */
 const SOCIALS = [
-  { label: 'Discord',   href: '#discord',   Icon: DiscordIcon   },
-  { label: 'WhatsApp',  href: '#whatsapp',  Icon: WhatsAppIcon  },
+  { label: 'Discord', href: '#discord', Icon: DiscordIcon },
+  { label: 'WhatsApp', href: '#whatsapp', Icon: WhatsAppIcon },
   { label: 'Instagram', href: '#instagram', Icon: InstagramIcon },
 ] as const
 
@@ -144,7 +144,7 @@ export function Footer() {
               className="font-mono text-[12px] leading-relaxed tracking-wide uppercase"
               style={{ color: 'var(--text-4)' }}
             >
-              School Edition · Season 01 · 2025
+              School Edition · Season 01 · 2026
               <br />
               An online AI hackathon by{' '}
               <a
@@ -184,7 +184,7 @@ export function Footer() {
                   color: 'var(--text-4)',
                 }}
               >
-                JUN 7–8, 2025
+                JUN 7–8, 2026
               </span>
             </div>
           </div>
@@ -262,7 +262,7 @@ export function Footer() {
             className="font-mono text-[9px] tracking-widest uppercase"
             style={{ color: 'var(--text-4)' }}
           >
-            © 2025 zer0.pro · All rights reserved
+            © 2026 zer0.pro · All rights reserved
           </p>
 
           <div className="flex items-center gap-4">

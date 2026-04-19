@@ -6,21 +6,21 @@ import { useState } from 'react'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 
 const NAV_ITEMS = [
-  { href: '/admin',           label: 'Overview',  emoji: '📊' },
-  { href: '/admin/students',  label: 'Students',  emoji: '👥' },
-  { href: '/admin/payments',  label: 'Payments',  emoji: '💳' },
-  { href: '/admin/teams',     label: 'Teams',     emoji: '🤝' },
-  { href: '/admin/projects',  label: 'Projects',  emoji: '📁' },
-  { href: '/admin/judging',   label: 'Judging',   emoji: '⚖️' },
-  { href: '/admin/comms',     label: 'Comms',     emoji: '📢' },
-  { href: '/admin/schedule',  label: 'Schedule',  emoji: '📅' },
-  { href: '/admin/settings',  label: 'Pricing',   emoji: '💰' },
+  { href: '/admin', label: 'Overview', emoji: '📊' },
+  { href: '/admin/students', label: 'Students', emoji: '👥' },
+  { href: '/admin/payments', label: 'Payments', emoji: '💳' },
+  { href: '/admin/teams', label: 'Teams', emoji: '🤝' },
+  { href: '/admin/projects', label: 'Projects', emoji: '📁' },
+  { href: '/admin/judging', label: 'Judging', emoji: '⚖️' },
+  { href: '/admin/comms', label: 'Comms', emoji: '📢' },
+  { href: '/admin/schedule', label: 'Schedule', emoji: '📅' },
+  { href: '/admin/settings', label: 'Pricing', emoji: '💰' },
 ]
 
 function NavItem({ href, label, emoji, onClick }: {
-  href:    string
-  label:   string
-  emoji:   string
+  href: string
+  label: string
+  emoji: string
   onClick?: () => void
 }) {
   const pathname = usePathname()
@@ -32,8 +32,8 @@ function NavItem({ href, label, emoji, onClick }: {
       onClick={onClick}
       className="flex items-center gap-3 px-4 min-h-[44px] text-sm font-medium transition-all duration-150 rounded-r-none"
       style={{
-        color:       isActive ? 'var(--text-brand)' : 'var(--text-3)',
-        background:  isActive ? 'var(--brand-subtle)' : 'transparent',
+        color: isActive ? 'var(--text-brand)' : 'var(--text-3)',
+        background: isActive ? 'var(--brand-subtle)' : 'transparent',
         borderRight: isActive ? '2px solid var(--brand)' : '2px solid transparent',
       }}
     >
@@ -69,7 +69,7 @@ export function AdminSidebar() {
     <aside
       className="hidden md:flex flex-col w-[220px] shrink-0 min-h-screen border-r"
       style={{
-        background:  'var(--bg-card)',
+        background: 'var(--bg-card)',
         borderColor: 'var(--border-faint)',
       }}
     >
@@ -94,7 +94,7 @@ export function AdminSidebar() {
       <div className="pb-2 border-t" style={{ borderColor: 'var(--border-faint)' }}>
         <SignOutButton />
         <p className="px-4 pb-3 text-xs" style={{ color: 'var(--text-4)' }}>
-          Season 1 · 2025
+          Season 1 · 2026
         </p>
       </div>
     </aside>
@@ -108,7 +108,7 @@ export function AdminMobileTopBar({ adminEmail }: { adminEmail: string }) {
     <div
       className="md:hidden flex items-center justify-between px-4 h-14 border-b shrink-0"
       style={{
-        background:  'var(--bg-card)',
+        background: 'var(--bg-card)',
         borderColor: 'var(--border-faint)',
       }}
     >
@@ -126,21 +126,21 @@ export function AdminMobileTopBar({ adminEmail }: { adminEmail: string }) {
               className="block w-5 h-0.5 transition-all duration-200"
               style={{
                 background: 'var(--text-2)',
-                transform:  open ? 'translateY(6.5px) rotate(45deg)' : 'none',
+                transform: open ? 'translateY(6.5px) rotate(45deg)' : 'none',
               }}
             />
             <span
               className="block w-5 h-0.5 transition-all duration-200"
               style={{
                 background: 'var(--text-2)',
-                opacity:    open ? 0 : 1,
+                opacity: open ? 0 : 1,
               }}
             />
             <span
               className="block w-5 h-0.5 transition-all duration-200"
               style={{
                 background: 'var(--text-2)',
-                transform:  open ? 'translateY(-6.5px) rotate(-45deg)' : 'none',
+                transform: open ? 'translateY(-6.5px) rotate(-45deg)' : 'none',
               }}
             />
           </button>
@@ -150,7 +150,7 @@ export function AdminMobileTopBar({ adminEmail }: { adminEmail: string }) {
           side="bottom"
           className="p-0 rounded-t-2xl border-t"
           style={{
-            background:  'var(--bg-card)',
+            background: 'var(--bg-card)',
             borderColor: 'var(--border-subtle)',
           }}
         >

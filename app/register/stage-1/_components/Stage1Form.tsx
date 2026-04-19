@@ -32,82 +32,82 @@ const STATE_ISO_MAP: Record<string, string> = Object.fromEntries(
 type PillOpt = { value: string; label: string; emoji?: string }
 
 const GENDER_OPTS: PillOpt[] = [
-  { value: 'male',              label: 'Male' },
-  { value: 'female',            label: 'Female' },
-  { value: 'non_binary',        label: 'Non-binary' },
+  { value: 'male', label: 'Male' },
+  { value: 'female', label: 'Female' },
+  { value: 'non_binary', label: 'Non-binary' },
   { value: 'prefer_not_to_say', label: 'Prefer not to say' },
 ]
 
 const GRADE_OPTS: PillOpt[] = [
-  { value: '8', label: 'Class 8' }, { value: '9',  label: 'Class 9' },
+  { value: '8', label: 'Class 8' }, { value: '9', label: 'Class 9' },
   { value: '10', label: 'Class 10' }, { value: '11', label: 'Class 11' },
   { value: '12', label: 'Class 12' },
 ]
 
 const CODING_EXP_OPTS: PillOpt[] = [
-  { value: 'none',         label: 'None',         emoji: '👋' },
-  { value: 'beginner',     label: 'Beginner',     emoji: '🌱' },
+  { value: 'none', label: 'None', emoji: '👋' },
+  { value: 'beginner', label: 'Beginner', emoji: '🌱' },
   { value: 'intermediate', label: 'Intermediate', emoji: '⚡' },
-  { value: 'advanced',     label: 'Advanced',     emoji: '🚀' },
+  { value: 'advanced', label: 'Advanced', emoji: '🚀' },
 ]
 
 const INTEREST_OPTS: PillOpt[] = [
-  { value: 'AI',           label: 'AI & ML',      emoji: '🤖' },
-  { value: 'Gaming',       label: 'Gaming',        emoji: '🎮' },
-  { value: 'Health',       label: 'Health',        emoji: '🏥' },
-  { value: 'Education',    label: 'Education',     emoji: '📚' },
-  { value: 'Finance',      label: 'Finance',       emoji: '💰' },
-  { value: 'Social Impact',label: 'Social Impact', emoji: '🌍' },
-  { value: 'Environment',  label: 'Environment',   emoji: '🌱' },
-  { value: 'Art & Design', label: 'Art & Design',  emoji: '🎨' },
-  { value: 'Web Dev',      label: 'Web Dev',       emoji: '💻' },
-  { value: 'Robotics',     label: 'Robotics',      emoji: '🦾' },
+  { value: 'AI', label: 'AI & ML', emoji: '🤖' },
+  { value: 'Gaming', label: 'Gaming', emoji: '🎮' },
+  { value: 'Health', label: 'Health', emoji: '🏥' },
+  { value: 'Education', label: 'Education', emoji: '📚' },
+  { value: 'Finance', label: 'Finance', emoji: '💰' },
+  { value: 'Social Impact', label: 'Social Impact', emoji: '🌍' },
+  { value: 'Environment', label: 'Environment', emoji: '🌱' },
+  { value: 'Art & Design', label: 'Art & Design', emoji: '🎨' },
+  { value: 'Web Dev', label: 'Web Dev', emoji: '💻' },
+  { value: 'Robotics', label: 'Robotics', emoji: '🦾' },
 ]
 
 const AVAIL_OPTS: PillOpt[] = [
-  { value: 'less_than_5',  label: '< 5h/week' },
-  { value: '5_to_10',      label: '5–10h/week' },
-  { value: '10_to_20',     label: '10–20h/week' },
+  { value: 'less_than_5', label: '< 5h/week' },
+  { value: '5_to_10', label: '5–10h/week' },
+  { value: '10_to_20', label: '10–20h/week' },
   { value: 'more_than_20', label: '20+h/week' },
 ]
 
 const DEVICE_OPTS: PillOpt[] = [
   { value: 'smartphone', label: 'Smartphone', emoji: '📱' },
-  { value: 'laptop',     label: 'Laptop',     emoji: '💻' },
-  { value: 'desktop',    label: 'Desktop',    emoji: '🖥️' },
-  { value: 'tablet',     label: 'Tablet',     emoji: '📲' },
-  { value: 'multiple',   label: 'Multiple',   emoji: '🔌' },
+  { value: 'laptop', label: 'Laptop', emoji: '💻' },
+  { value: 'desktop', label: 'Desktop', emoji: '🖥️' },
+  { value: 'tablet', label: 'Tablet', emoji: '📲' },
+  { value: 'multiple', label: 'Multiple', emoji: '🔌' },
 ]
 
 const TSHIRT_OPTS: PillOpt[] = [
   { value: 'XS', label: 'XS' }, { value: 'S', label: 'S' },
-  { value: 'M',  label: 'M' },  { value: 'L', label: 'L' },
+  { value: 'M', label: 'M' }, { value: 'L', label: 'L' },
   { value: 'XL', label: 'XL' }, { value: 'XXL', label: 'XXL' },
 ]
 
 const RELATIONSHIP_OPTS: PillOpt[] = [
-  { value: 'mother',   label: 'Mother',   emoji: '👩' },
-  { value: 'father',   label: 'Father',   emoji: '👨' },
+  { value: 'mother', label: 'Mother', emoji: '👩' },
+  { value: 'father', label: 'Father', emoji: '👨' },
   { value: 'guardian', label: 'Guardian', emoji: '👤' },
 ]
 
 // ─── Motion variants ──────────────────────────────────────────────────────────
 // Framer Motion v12 requires typed bezier tuples, not plain number[]
 type Bez = [number, number, number, number]
-const EASE_OUT:    Bez = [0.16, 1, 0.3, 1]
+const EASE_OUT: Bez = [0.16, 1, 0.3, 1]
 const EASE_IN_OUT: Bez = [0.87, 0, 0.13, 1]
 
 const SLIDE = {
-  enter:  (d: number) => ({ x: d > 0 ? '100%' : '-100%', opacity: 0 }),
+  enter: (d: number) => ({ x: d > 0 ? '100%' : '-100%', opacity: 0 }),
   center: { x: 0, opacity: 1, transition: { duration: 0.38, ease: EASE_OUT } },
-  exit:   (d: number) => ({
+  exit: (d: number) => ({
     x: d > 0 ? '-40%' : '40%', opacity: 0,
     transition: { duration: 0.25, ease: EASE_IN_OUT },
   }),
 }
 
 const CARD_APPEAR = {
-  hidden:  { opacity: 0, y: 18 },
+  hidden: { opacity: 0, y: 18 },
   visible: (i: number) => ({
     opacity: 1, y: 0,
     transition: { delay: i * 0.07, duration: 0.42, ease: EASE_OUT },
@@ -417,10 +417,10 @@ function CTAButton({
 
 export function Stage1Form() {
   const router = useRouter()
-  const [subStep, setSubStep]           = useState<1 | 2>(1)
-  const [direction, setDirection]       = useState<1 | -1>(1)
-  const [submitting, setSubmitting]     = useState(false)
-  const [serverError, setServerError]   = useState<string | null>(null)
+  const [subStep, setSubStep] = useState<1 | 2>(1)
+  const [direction, setDirection] = useState<1 | -1>(1)
+  const [submitting, setSubmitting] = useState(false)
+  const [serverError, setServerError] = useState<string | null>(null)
   const [pendingBadge, setPendingBadge] = useState<BadgeId | null>(null)
 
   const {
@@ -477,7 +477,7 @@ export function Stage1Form() {
   // Reset city when state changes so stale value doesn't persist
   useEffect(() => {
     setValue('city', '', { shouldValidate: false, shouldDirty: false })
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state])
 
   // Derive city options from country-state-city package
@@ -1002,7 +1002,7 @@ export function Stage1Form() {
                             <span className="font-semibold block mb-1" style={{ color: 'var(--text-1)' }}>
                               Parental Consent ✅
                             </span>
-                            I consent to my child participating in Super Builders — School Edition 2025, including live workshops, the 24-hour hackathon, and communications from zer0.pro.
+                            I consent to my child participating in Super Builders — School Edition 2026, including live workshops, the 24-hour hackathon, and communications from zer0.pro.
                           </ConsentCard>
                         )}
                       />

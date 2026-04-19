@@ -29,12 +29,12 @@ const stagger: Variants = {
 
 const fadeUp: Variants = {
   hidden: { opacity: 0, y: 28 },
-  show:   { opacity: 1, y: 0, transition: { duration: 0.6, ease: EASE_OUT } },
+  show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: EASE_OUT } },
 }
 
 const fadeIn: Variants = {
   hidden: { opacity: 0 },
-  show:   { opacity: 1, transition: { duration: 0.9, ease: 'easeOut' } },
+  show: { opacity: 1, transition: { duration: 0.9, ease: 'easeOut' } },
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -43,10 +43,10 @@ const fadeIn: Variants = {
 type PillColor = 'brand' | 'green' | 'blue' | 'purple'
 
 const PILL_STYLES: Record<PillColor, { border: string; bg: string; text: string }> = {
-  brand:  { border: 'rgba(255,184,0,0.4)',   bg: 'rgba(255,184,0,0.07)',  text: '#FFB800' },
-  green:  { border: 'rgba(34,197,94,0.3)',   bg: 'rgba(34,197,94,0.08)',  text: '#22C55E' },
-  blue:   { border: 'rgba(96,165,250,0.3)',  bg: 'rgba(96,165,250,0.08)', text: '#60A5FA' },
-  purple: { border: 'rgba(192,132,252,0.3)', bg: 'rgba(192,132,252,0.08)',text: '#C084FC' },
+  brand: { border: 'rgba(255,184,0,0.4)', bg: 'rgba(255,184,0,0.07)', text: '#FFB800' },
+  green: { border: 'rgba(34,197,94,0.3)', bg: 'rgba(34,197,94,0.08)', text: '#22C55E' },
+  blue: { border: 'rgba(96,165,250,0.3)', bg: 'rgba(96,165,250,0.08)', text: '#60A5FA' },
+  purple: { border: 'rgba(192,132,252,0.3)', bg: 'rgba(192,132,252,0.08)', text: '#C084FC' },
 }
 
 function Pill({ label, color }: { label: string; color: PillColor }) {
@@ -138,7 +138,7 @@ function PerspectiveGrid() {
 ═══════════════════════════════════════════════════════════════════════════ */
 export function HeroSection() {
   const { days: hackDays, expired: hackStarted } = useCountdown(HACKATHON_START)
-  const { days: regDays, expired: regClosed }    = useCountdown(REG_DEADLINE)
+  const { days: regDays, expired: regClosed } = useCountdown(REG_DEADLINE)
 
   const daysLabel = regClosed
     ? hackStarted
@@ -204,7 +204,7 @@ export function HeroSection() {
             className="font-mono text-[12px] tracking-[0.28em] uppercase mb-5"
             style={{ color: 'var(--text-brand)' }}
           >
-            ZER0.PRO PRESENTS · SEASON 1 · 2025
+            ZER0.PRO PRESENTS · SEASON 1 · 2026
           </motion.p>
 
           {/* Headline */}
@@ -245,10 +245,10 @@ export function HeroSection() {
             variants={fadeUp}
             className="flex flex-wrap justify-center md:justify-start gap-2 mb-8"
           >
-            <Pill label="Class 8–12"          color="brand"  />
-            <Pill label="100% Online"          color="green"  />
+            <Pill label="Class 8–12" color="brand" />
+            <Pill label="100% Online" color="green" />
             <Pill label="₹1,00,000+ Prize Pool" color="purple" />
-            <Pill label="Jun 7–8, 2025"        color="blue"   />
+            <Pill label="Jun 7–8, 2026" color="blue" />
           </motion.div>
 
           {/* CTA buttons */}
@@ -291,12 +291,12 @@ export function HeroSection() {
                 onMouseEnter={(e) => {
                   const el = e.currentTarget as HTMLElement
                   el.style.borderColor = 'var(--border-brand)'
-                  el.style.color       = 'var(--text-brand)'
+                  el.style.color = 'var(--text-brand)'
                 }}
                 onMouseLeave={(e) => {
                   const el = e.currentTarget as HTMLElement
                   el.style.borderColor = 'var(--border-subtle)'
-                  el.style.color       = 'var(--text-2)'
+                  el.style.color = 'var(--text-2)'
                 }}
               >
                 For Parents →
@@ -313,9 +313,9 @@ export function HeroSection() {
             <div className="flex flex-wrap justify-center md:justify-start gap-x-5 gap-y-1.5">
               {[
                 { value: '2,847', label: 'Registered' },
-                { value: '38',    label: 'Cities'     },
-                { value: daysLabel, label: ''          },
-                { value: '₹1L+',  label: 'Prize Pool' },
+                { value: '38', label: 'Cities' },
+                { value: daysLabel, label: '' },
+                { value: '₹1L+', label: 'Prize Pool' },
               ].map(({ value, label }, i) => (
                 <span
                   key={i}

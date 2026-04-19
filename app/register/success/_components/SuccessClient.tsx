@@ -9,15 +9,15 @@ import type { BadgeId } from '@/lib/gamification/badges'
 // ─── Motion ───────────────────────────────────────────────────────────────────
 
 type Bez = [number, number, number, number]
-const EASE_OUT:    Bez = [0.16, 1, 0.3, 1]
+const EASE_OUT: Bez = [0.16, 1, 0.3, 1]
 const EASE_SPRING: Bez = [0.34, 1.56, 0.64, 1]
 
 interface SuccessClientProps {
-  firstName:    string
-  fullName:     string
+  firstName: string
+  fullName: string
   referralCode: string
-  tier:         'pro' | 'premium'
-  xp:           number
+  tier: 'pro' | 'premium'
+  xp: number
 }
 
 // ─── ICS helper ───────────────────────────────────────────────────────────────
@@ -28,9 +28,9 @@ function downloadWorkshop1ICS() {
     'VERSION:2.0',
     'PRODID:-//Super Builders//EN',
     'BEGIN:VEVENT',
-    'UID:sb-workshop-1-2025@superbuilder.org',
-    'DTSTART:20250526T123000Z',      // May 26 6pm IST = 12:30 UTC
-    'DTEND:20250526T151500Z',        // + 90 min
+    'UID:sb-workshop-1-2026@superbuilder.org',
+    'DTSTART:20260526T123000Z',      // May 26 6pm IST = 12:30 UTC
+    'DTEND:20260526T151500Z',        // + 90 min
     'SUMMARY:🚀 Super Builders — Workshop 1: AI Fundamentals + Tools',
     'DESCRIPTION:Use 3+ AI tools confidently. Join via the Discord link in your dashboard.',
     'LOCATION:Online (Discord)',
@@ -40,9 +40,9 @@ function downloadWorkshop1ICS() {
   ].join('\r\n')
 
   const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' })
-  const url  = URL.createObjectURL(blob)
-  const a    = document.createElement('a')
-  a.href     = url
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
   a.download = 'sb-workshop-1.ics'
   a.click()
   URL.revokeObjectURL(url)
@@ -53,11 +53,11 @@ function downloadWorkshop1ICS() {
 export function SuccessClient({ firstName, referralCode, tier, xp }: SuccessClientProps) {
   const router = useRouter()
 
-  const [pendingBadge, setPendingBadge]   = useState<BadgeId | null>(null)
-  const [cardsVisible, setCardsVisible]   = useState(false)
-  const [copied, setCopied]               = useState(false)
-  const confettiFired                     = useRef(false)
-  const badgeTimerRef                     = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const [pendingBadge, setPendingBadge] = useState<BadgeId | null>(null)
+  const [cardsVisible, setCardsVisible] = useState(false)
+  const [copied, setCopied] = useState(false)
+  const confettiFired = useRef(false)
+  const badgeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   // 1. Fire confetti immediately on mount
   useEffect(() => {
@@ -70,12 +70,12 @@ export function SuccessClient({ firstName, referralCode, tier, xp }: SuccessClie
       // Initial burst — centre
       confetti({
         particleCount: 120,
-        spread:        80,
-        origin:        { y: 0.45 },
-        colors:        ['#FFB800', '#FFCF40', '#FFD700', '#ffffff', '#FFA500'],
-        gravity:       1.0,
-        scalar:        1.1,
-        ticks:         250,
+        spread: 80,
+        origin: { y: 0.45 },
+        colors: ['#FFB800', '#FFCF40', '#FFD700', '#ffffff', '#FFA500'],
+        gravity: 1.0,
+        scalar: 1.1,
+        ticks: 250,
       })
 
       // Delayed side cannons
@@ -136,8 +136,8 @@ export function SuccessClient({ firstName, referralCode, tier, xp }: SuccessClie
         aria-hidden="true"
         className="pointer-events-none fixed inset-0 z-0 opacity-[0.025]"
         style={{
-          backgroundImage:    'linear-gradient(rgba(255,184,0,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255,184,0,0.5) 1px, transparent 1px)',
-          backgroundSize:     '40px 40px',
+          backgroundImage: 'linear-gradient(rgba(255,184,0,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255,184,0,0.5) 1px, transparent 1px)',
+          backgroundSize: '40px 40px',
         }}
       />
 
@@ -155,8 +155,8 @@ export function SuccessClient({ firstName, referralCode, tier, xp }: SuccessClie
             className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 mb-5 font-mono text-xs font-bold"
             style={{
               background: 'rgba(255,184,0,0.12)',
-              border:     '1px solid rgba(255,184,0,0.35)',
-              color:      'var(--brand)',
+              border: '1px solid rgba(255,184,0,0.35)',
+              color: 'var(--brand)',
             }}
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0, transition: { duration: 0.5, delay: 0.15, ease: EASE_OUT } }}
@@ -171,7 +171,7 @@ export function SuccessClient({ firstName, referralCode, tier, xp }: SuccessClie
             style={{ color: 'var(--brand)', fontSize: 'clamp(52px, 15vw, 88px)' }}
             initial={{ scale: 0.72, opacity: 0 }}
             animate={{
-              scale:   1,
+              scale: 1,
               opacity: 1,
               transition: { type: 'spring' as const, stiffness: 340, damping: 22, delay: 0.2 },
             }}
@@ -194,7 +194,7 @@ export function SuccessClient({ firstName, referralCode, tier, xp }: SuccessClie
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0, transition: { duration: 0.4, ease: EASE_OUT, delay: 0.5 } }}
           >
-            {tier === 'premium' ? 'Premium' : 'Pro'} · Season 1 · Jun 7–8, 2025
+            {tier === 'premium' ? 'Premium' : 'Pro'} · Season 1 · Jun 7–8, 2026
           </motion.p>
         </motion.div>
 
@@ -243,8 +243,8 @@ export function SuccessClient({ firstName, referralCode, tier, xp }: SuccessClie
                       className="rounded-lg px-4 py-3 mb-3 text-center font-mono text-xl font-bold tracking-[0.2em]"
                       style={{
                         background: 'var(--bg-float)',
-                        border:     '1px solid var(--border-subtle)',
-                        color:      'var(--brand)',
+                        border: '1px solid var(--border-subtle)',
+                        color: 'var(--brand)',
                       }}
                     >
                       {referralCode}
@@ -253,8 +253,8 @@ export function SuccessClient({ firstName, referralCode, tier, xp }: SuccessClie
                       className="w-full rounded-xl py-3 font-heading font-semibold text-sm tracking-wide min-h-[44px] transition-all active:scale-[0.97]"
                       style={{
                         background: copied ? 'rgba(52,211,153,0.15)' : 'var(--bg-float)',
-                        border:     copied ? '1px solid rgba(52,211,153,0.4)' : '1px solid var(--border-soft)',
-                        color:      copied ? '#34D399' : 'var(--text-2)',
+                        border: copied ? '1px solid rgba(52,211,153,0.4)' : '1px solid var(--border-soft)',
+                        color: copied ? '#34D399' : 'var(--text-2)',
                       }}
                       onClick={copyReferralCode}
                     >
@@ -324,10 +324,10 @@ export function SuccessClient({ firstName, referralCode, tier, xp }: SuccessClie
               </p>
               <div className="flex flex-wrap gap-3">
                 {[
-                  { label: '3 Workshops',  sub: 'AI · Domain · Build', color: '#60A5FA' },
+                  { label: '3 Workshops', sub: 'AI · Domain · Build', color: '#60A5FA' },
                   { label: '24h Hackathon', sub: 'Jun 7–8 · Build something real', color: 'var(--brand)' },
-                  { label: '₹1,00,000+',  sub: 'Prize pool',           color: '#34D399' },
-                  { label: '9 Badges',    sub: 'Unlock through the journey', color: '#A78BFA' },
+                  { label: '₹1,00,000+', sub: 'Prize pool', color: '#34D399' },
+                  { label: '9 Badges', sub: 'Unlock through the journey', color: '#A78BFA' },
                 ].map(({ label, sub, color }) => (
                   <div
                     key={label}
@@ -348,9 +348,9 @@ export function SuccessClient({ firstName, referralCode, tier, xp }: SuccessClie
       <div
         className="fixed bottom-0 left-0 right-0 px-4 py-4 safe-bottom z-20"
         style={{
-          background:   'rgba(10,10,10,0.95)',
+          background: 'rgba(10,10,10,0.95)',
           backdropFilter: 'blur(10px)',
-          borderTop:    '1px solid var(--border-faint)',
+          borderTop: '1px solid var(--border-faint)',
         }}
       >
         <div className="max-w-xl mx-auto">
@@ -379,9 +379,9 @@ function OnboardCard({ children, delay }: { children: React.ReactNode; delay: nu
       style={{ background: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}
       initial={{ opacity: 0, y: 24, scale: 0.97 }}
       animate={{
-        opacity:    1,
-        y:          0,
-        scale:      1,
+        opacity: 1,
+        y: 0,
+        scale: 1,
         transition: { duration: 0.45, ease: [0.16, 1, 0.3, 1] as Bez, delay },
       }}
     >

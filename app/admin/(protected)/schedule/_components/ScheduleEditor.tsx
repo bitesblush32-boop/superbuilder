@@ -11,12 +11,12 @@ function gcalLink(item: ScheduleItem) {
     : ''
   const end = item.scheduledAt && item.durationMins
     ? new Date(new Date(item.scheduledAt).getTime() + item.durationMins * 60000)
-        .toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z'
+      .toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z'
     : start
   const params = new URLSearchParams({
-    action:  'TEMPLATE',
-    text:    item.title,
-    dates:   `${start}/${end}`,
+    action: 'TEMPLATE',
+    text: item.title,
+    dates: `${start}/${end}`,
     details: `${item.description ?? ''}\n\nJoin: ${item.url ?? ''}`,
     location: item.url ?? '',
   })
@@ -24,25 +24,25 @@ function gcalLink(item: ScheduleItem) {
 }
 
 const TYPE_COLORS: Record<string, string> = {
-  video:    'var(--blue)',
-  meeting:  'var(--green)',
+  video: 'var(--blue)',
+  meeting: 'var(--green)',
   resource: 'var(--amber)',
 }
 
 const STAGE_OPTIONS = [
-  { value: '1',         label: 'Stage 1 — Apply' },
-  { value: '2',         label: 'Stage 2 — Learn + Quiz' },
-  { value: '3',         label: 'Stage 3 — Pay' },
-  { value: '4',         label: 'Stage 4 — Build' },
+  { value: '1', label: 'Stage 1 — Apply' },
+  { value: '2', label: 'Stage 2 — Learn + Quiz' },
+  { value: '3', label: 'Stage 3 — Pay' },
+  { value: '4', label: 'Stage 4 — Build' },
   { value: 'dashboard', label: 'Dashboard' },
-  { value: 'all',       label: 'All Stages' },
+  { value: 'all', label: 'All Stages' },
 ]
 
 const SECTION_OPTIONS = [
-  { value: 'general',     label: 'General' },
-  { value: 'workshop_1',  label: 'Workshop 1' },
-  { value: 'workshop_2',  label: 'Workshop 2' },
-  { value: 'workshop_3',  label: 'Workshop 3' },
+  { value: 'general', label: 'General' },
+  { value: 'workshop_1', label: 'Workshop 1' },
+  { value: 'workshop_2', label: 'Workshop 2' },
+  { value: 'workshop_3', label: 'Workshop 3' },
   { value: 'orientation', label: 'Orientation' },
 ]
 
@@ -54,7 +54,7 @@ function TabBtn({ label, active, onClick }: { label: string; active: boolean; on
       onClick={onClick}
       className="px-4 py-2.5 text-sm font-heading font-semibold tracking-wide transition-colors"
       style={{
-        color:        active ? 'var(--text-brand)' : 'var(--text-3)',
+        color: active ? 'var(--text-brand)' : 'var(--text-3)',
         borderBottom: active ? '2px solid var(--brand)' : '2px solid transparent',
       }}
     >
@@ -81,9 +81,9 @@ function Input({
         placeholder={placeholder}
         className="rounded-lg px-3 py-2 text-sm outline-none focus:ring-1 w-full"
         style={{
-          background:  'var(--bg-float)',
-          border:      '1px solid var(--border-subtle)',
-          color:       'var(--text-1)',
+          background: 'var(--bg-float)',
+          border: '1px solid var(--border-subtle)',
+          color: 'var(--text-1)',
         }}
       />
     </div>
@@ -109,9 +109,9 @@ function SaveBtn({ saving, saved, onClick }: { saving: boolean; saved: boolean; 
 // ── Timeline Tab ─────────────────────────────────────────────────────────────
 
 function TimelineTab({ dates, onSave }: { dates: DatesConfig; onSave: (d: DatesConfig) => Promise<void> }) {
-  const [d, setD]          = useState<DatesConfig>(dates)
+  const [d, setD] = useState<DatesConfig>(dates)
   const [saving, setSaving] = useState(false)
-  const [saved,  setSaved]  = useState(false)
+  const [saved, setSaved] = useState(false)
 
   function setField<K extends keyof DatesConfig>(k: K, v: DatesConfig[K]) {
     setD(prev => ({ ...prev, [k]: v }))
@@ -150,13 +150,13 @@ function TimelineTab({ dates, onSave }: { dates: DatesConfig; onSave: (d: DatesC
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Input label="Reg Deadline ISO" value={d.regDeadlineISO}
-            onChange={v => setField('regDeadlineISO', v)} placeholder="2025-05-25T23:59:59+05:30" />
+            onChange={v => setField('regDeadlineISO', v)} placeholder="2026-05-25T23:59:59+05:30" />
           <Input label="Reg Deadline Display (shown in text)" value={d.regDeadlineDisplay}
             onChange={v => setField('regDeadlineDisplay', v)} placeholder="May 25" />
           <Input label="Hackathon Start ISO" value={d.hackathonStartISO}
-            onChange={v => setField('hackathonStartISO', v)} placeholder="2025-06-07T08:00:00+05:30" />
+            onChange={v => setField('hackathonStartISO', v)} placeholder="2026-06-07T08:00:00+05:30" />
           <Input label="Hackathon End ISO" value={d.hackathonEndISO}
-            onChange={v => setField('hackathonEndISO', v)} placeholder="2025-06-08T08:00:00+05:30" />
+            onChange={v => setField('hackathonEndISO', v)} placeholder="2026-06-08T08:00:00+05:30" />
           <Input label="Results Display (shown in text)" value={d.resultsDisplay}
             onChange={v => setField('resultsDisplay', v)} placeholder="Jun 9–10" />
         </div>
@@ -215,10 +215,10 @@ const BLANK_ITEM = {
 }
 
 function ContentTab({ items: initItems }: { items: ScheduleItem[] }) {
-  const [items,    setItems]    = useState<ScheduleItem[]>(initItems)
-  const [form,     setForm]     = useState(BLANK_ITEM)
-  const [adding,   setAdding]   = useState(false)
-  const [, startT]              = useTransition()
+  const [items, setItems] = useState<ScheduleItem[]>(initItems)
+  const [form, setForm] = useState(BLANK_ITEM)
+  const [adding, setAdding] = useState(false)
+  const [, startT] = useTransition()
 
   function setFormField(k: string, v: string | boolean | number) {
     setForm(p => ({ ...p, [k]: v }))
@@ -305,7 +305,7 @@ function ContentTab({ items: initItems }: { items: ScheduleItem[] }) {
                   onClick={() => handleToggle(item)}
                   className="text-xs px-2 py-1 rounded border transition-colors"
                   style={{
-                    color:       item.isVisible ? 'var(--text-brand)' : 'var(--text-4)',
+                    color: item.isVisible ? 'var(--text-brand)' : 'var(--text-4)',
                     borderColor: item.isVisible ? 'var(--border-brand)' : 'var(--border-faint)',
                   }}
                 >
@@ -414,11 +414,11 @@ export function ScheduleEditor({
       {/* Tabs */}
       <div className="flex border-b mb-6" style={{ borderColor: 'var(--border-faint)' }}>
         <TabBtn label="📅 Timeline" active={tab === 'timeline'} onClick={() => setTab('timeline')} />
-        <TabBtn label="🎬 Content"  active={tab === 'content'}  onClick={() => setTab('content')} />
+        <TabBtn label="🎬 Content" active={tab === 'content'} onClick={() => setTab('content')} />
       </div>
 
       {tab === 'timeline' && <TimelineTab dates={initialDates} onSave={saveDates} />}
-      {tab === 'content'  && <ContentTab  items={initialItems}                    />}
+      {tab === 'content' && <ContentTab items={initialItems} />}
     </div>
   )
 }
