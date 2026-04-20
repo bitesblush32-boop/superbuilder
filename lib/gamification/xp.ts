@@ -1,23 +1,21 @@
 import { db } from '@/lib/db'
 import { students } from '@/lib/db/schema'
 import { eq, sql } from 'drizzle-orm'
+import { redis } from '@/lib/redis'
 import type { BadgeId } from './badges'
-
-// TODO: import { redis } from '@/lib/redis' — wire in once Upstash env vars are set
 
 /**
  * Awards XP to a student.
- * Writes to PostgreSQL (persistent) and will write to Redis sorted set
- * (live leaderboard) once Upstash is configured.
+ * Writes to PostgreSQL (persistent) + Upstash Redis sorted set (live leaderboard).
  */
 export async function awardXP(studentId: string, points: number): Promise<void> {
-  await db
-    .update(students)
-    .set({ xpPoints: sql`xp_points + ${points}` })
-    .where(eq(students.id, studentId))
-
-  // TODO: uncomment once lib/redis/index.ts is wired up
-  // await redis.zincrby('leaderboard', points, studentId)
+  await Promise.all([
+    db
+      .update(students)
+      .set({ xpPoints: sql`xp_points + ${points}` })
+      .where(eq(students.id, studentId)),
+    redis.zincrby('leaderboard', points, studentId),
+  ])
 }
 
 /**
