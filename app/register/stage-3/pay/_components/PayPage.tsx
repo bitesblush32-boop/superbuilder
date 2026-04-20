@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Script from 'next/script'
 import { motion, AnimatePresence } from 'framer-motion'
