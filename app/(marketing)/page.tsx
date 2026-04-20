@@ -90,8 +90,8 @@ export default async function LandingPage() {
         {/* 4 — Programme timeline (phases + workshop cards) */}
         <ProgrammeTimeline phases={dates.phases} workshops={dates.workshops} />
 
-        {/* 5 — Tier comparison */}
-        <TierComparison pricing={pricing} />
+        {/* 5 — Tier comparison — temporarily hidden */}
+        {/* <TierComparison pricing={pricing} /> */}
 
         {/* 6 — Badge wall */}
         <BadgeWall />
