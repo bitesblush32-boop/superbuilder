@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
     const reason = encodeURIComponent(
       body['error[reason]'] ?? body['error[description]'] ?? 'Payment was not completed'
     )
-    return NextResponse.redirect(`${APP_URL}/register/stage-3/pay?error=${reason}`, { status: 303 })
+    return NextResponse.redirect(`${APP_URL}/dashboard/pay?error=${reason}`, { status: 303 })
   }
 
   // Verify HMAC — Razorpay signs orderId + "|" + paymentId
@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
 
   if (expected !== razorpay_signature) {
     return NextResponse.redirect(
-      `${APP_URL}/register/stage-3/pay?error=${encodeURIComponent('Payment verification failed. Contact support if money was deducted.')}`,
+      `${APP_URL}/dashboard/pay?error=${encodeURIComponent('Payment verification failed. Contact support if money was deducted.')}`,
       { status: 303 }
     )
   }
@@ -48,7 +48,7 @@ export async function POST(req: NextRequest) {
   const payment = await getPaymentByOrderId(razorpay_order_id)
   if (!payment) {
     return NextResponse.redirect(
-      `${APP_URL}/register/stage-3/pay?error=${encodeURIComponent('Payment record not found. Contact support.')}`,
+      `${APP_URL}/dashboard/pay?error=${encodeURIComponent('Payment record not found. Contact support.')}`,
       { status: 303 }
     )
   }

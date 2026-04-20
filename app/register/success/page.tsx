@@ -21,7 +21,7 @@ export default async function SuccessPage() {
     .limit(1)
 
   if (!student)         redirect('/dashboard/apply')
-  if (!student.isPaid)  redirect('/register/stage-3/pay')
+  if (!student.isPaid)  redirect('/dashboard/pay')
 
   const [parent] = await db
     .select({ fullName: parents.fullName, email: parents.email })

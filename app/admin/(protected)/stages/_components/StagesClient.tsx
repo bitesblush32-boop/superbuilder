@@ -15,28 +15,28 @@ const STAGE_META: Record<string, {
   color:       string
 }> = {
   stage_1_open: {
-    num: 1, name: 'Applications', emoji: '📝',
-    description: 'Students can access Stage 1 and fill in their application form.',
+    num: 1, name: 'Apply', emoji: '📝',
+    description: 'Students fill in personal info, parent consent, and create or join a team.',
     color: '#A78BFA',
   },
   stage_2_open: {
-    num: 2, name: 'Orientation & Quiz', emoji: '🧠',
-    description: 'Students can do orientation, pick their domain, take the quiz, and submit their idea.',
+    num: 2, name: 'Orientation & Learning', emoji: '🧠',
+    description: 'Orientation video, domain selection, AI quiz (domain-specific, 10 Qs), and idea pitch.',
     color: '#60A5FA',
   },
   stage_3_open: {
     num: 3, name: 'Payment', emoji: '💳',
-    description: 'Students can see tier pricing and complete payment via Razorpay.',
+    description: 'Engage questions + Razorpay payment (₹3,499 solo / ₹2,999/head team).',
     color: '#34D399',
   },
   stage_4_open: {
-    num: 4, name: 'Build Phase + Dashboard', emoji: '🚀',
-    description: 'Paid students can access their dashboard, workshops, and the project submission form.',
+    num: 4, name: 'Build Phase', emoji: '🚀',
+    description: 'Paid students access workshops, mentors, submit their project during the hackathon.',
     color: '#FFB800',
   },
   stage_5_open: {
     num: 5, name: 'Certificates', emoji: '🏆',
-    description: 'Students can download their certificate and view final results.',
+    description: 'Results published, leaderboard finalised, certificates available for download.',
     color: '#FFD700',
   },
 }

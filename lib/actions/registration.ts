@@ -5,8 +5,8 @@ import { auth, currentUser } from '@clerk/nextjs/server'
 import { db } from '@/lib/db'
 import { students, quizAttempts, ideaSubmissions } from '@/lib/db/schema'
 import { eq, count } from 'drizzle-orm'
-import { stage1Schema }            from '@/lib/validation/stage1'
-import { quizSchema, ideaSchema }  from '@/lib/validation/stage2'
+import { stage1Schema, personalInfoSchema } from '@/lib/validation/stage1'
+import { quizSchema, ideaSchema }           from '@/lib/validation/stage2'
 import {
   getStudentByClerkId,
   createStudent,
@@ -14,8 +14,9 @@ import {
   updateStudentStage,
   updateStudentEngageAnswers,
   generateReferralCode,
+  upsertStudentPersonalInfo as dbUpsertPersonalInfo,
 } from '@/lib/db/queries/students'
-import { createParent } from '@/lib/db/queries/parents'
+import { createParent, upsertParent } from '@/lib/db/queries/parents'
 import { createTeam, joinTeam, leaveTeam, getTeamWithMembers } from '@/lib/db/queries/teams'
 import type { BadgeId } from '@/lib/gamification/badges'
 import { CORRECT_ANSWERS, SHORT_ANSWER_MIN } from '@/lib/content/quizQuestions'
@@ -23,7 +24,58 @@ import { CORRECT_ANSWERS, SHORT_ANSWER_MIN } from '@/lib/content/quizQuestions'
 const VALID_DOMAINS = ['health','education','finance','environment','entertainment','social_impact'] as const
 
 // ─────────────────────────────────────────────────────────────────────────────
-// completeOrientation
+// upsertStudentPersonalInfo (NEW)
+// Called from Stage1Form when the user clicks "Next" on Step 1 → Step 2.
+// Saves personal info to DB without completing Stage 1 or awarding a badge.
+// Safe to call on a returning student — it simply updates their info.
+// ─────────────────────────────────────────────────────────────────────────────
+export async function upsertStudentPersonalInfo(data: unknown): Promise<{
+  success: boolean
+  error?: string
+}> {
+  const { userId } = await auth()
+  if (!userId) return { success: false, error: 'Not authenticated' }
+
+  const parsed = personalInfoSchema.safeParse(data)
+  if (!parsed.success) {
+    const first = parsed.error.issues[0]
+    return { success: false, error: first?.message ?? 'Validation error' }
+  }
+
+  const clerkUser = await currentUser()
+  const email     = clerkUser?.emailAddresses?.[0]?.emailAddress
+  if (!email) return { success: false, error: 'Unable to retrieve email from Clerk' }
+
+  // Use existing referral code or generate a fresh one for first-time saves
+  const existing     = await getStudentByClerkId(userId)
+  const referralCode = existing?.referralCode ?? generateReferralCode()
+  const referredBy   = existing?.referredBy   ?? parsed.data.referralCode ?? null
+
+  await dbUpsertPersonalInfo(userId, email, referralCode, {
+    fullName:        parsed.data.fullName,
+    dateOfBirth:     parsed.data.dateOfBirth,
+    gender:          parsed.data.gender,
+    grade:           parsed.data.grade,
+    schoolName:      parsed.data.schoolName,
+    city:            parsed.data.city,
+    state:           parsed.data.state,
+    phone:           parsed.data.phone,
+    codingExp:       parsed.data.codingExp,
+    interests:       parsed.data.interests,
+    availabilityHrs: parsed.data.availabilityHrs,
+    deviceAccess:    parsed.data.deviceAccess,
+    tshirtSize:      parsed.data.tshirtSize ?? null,
+    instagramHandle: parsed.data.instagramHandle ?? null,
+    linkedinHandle:  parsed.data.linkedinHandle  ?? null,
+    referredBy,
+  })
+
+  return { success: true }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// submitStage1
+// Creates student + parent records, awards Explorer badge, advances to stage 2
 // Marks orientationComplete = true on the student record
 // ─────────────────────────────────────────────────────────────────────────────
 export async function completeOrientation(): Promise<{ success: boolean }> {
@@ -91,21 +143,60 @@ export async function submitStage1(data: unknown): Promise<{
 
   const form = parsed.data
 
-  // Prevent duplicate submissions
-  const existing = await getStudentByClerkId(userId)
-  if (existing) {
-    return { success: false, error: 'Application already submitted' }
-  }
-
-  // Fetch verified email from Clerk
+  // Fetch verified email from Clerk (needed for both paths below)
   const clerkUser = await currentUser()
   const email     = clerkUser?.emailAddresses?.[0]?.emailAddress
   if (!email) return { success: false, error: 'Unable to retrieve your email from Clerk' }
 
-  // Generate unique referral code (collision unlikely; add DB retry loop for production)
-  const referralCode = generateReferralCode()
+  // Check if student already exists (returning user re-submitting Stage 1)
+  const existing = await getStudentByClerkId(userId)
 
-  // Insert student
+  if (existing) {
+    // Returning student — upsert personal info + upsert parent, then check stage
+    const referralCode = existing.referralCode ?? generateReferralCode()
+    await dbUpsertPersonalInfo(userId, email, referralCode, {
+      fullName:        form.fullName,
+      dateOfBirth:     form.dateOfBirth,
+      gender:          form.gender,
+      grade:           form.grade,
+      schoolName:      form.schoolName,
+      city:            form.city,
+      state:           form.state,
+      phone:           form.phone,
+      codingExp:       form.codingExp,
+      interests:       form.interests,
+      availabilityHrs: form.availabilityHrs,
+      deviceAccess:    form.deviceAccess,
+      tshirtSize:      form.tshirtSize ?? null,
+      instagramHandle: form.instagramHandle ?? null,
+      linkedinHandle:  form.linkedinHandle  ?? null,
+      referredBy:      existing.referredBy  ?? form.referralCode ?? null,
+    })
+
+    await upsertParent({
+      studentId:          existing.id,
+      fullName:           form.parent.parentName,
+      email:              form.parent.parentEmail,
+      phone:              form.parent.parentPhone,
+      relationship:       form.parent.relationship,
+      consentGiven:       form.parent.consentGiven as boolean,
+      safetyAcknowledged: form.parent.safetyAcknowledged as boolean,
+      emergencyContact:   form.parent.emergencyContact,
+    })
+
+    // If badge was already awarded (stage >= 2), skip badge/stage logic
+    if (parseInt(existing.currentStage, 10) >= 2) {
+      return { success: true } // no badgeAwarded — form navigates silently
+    }
+
+    // First-time completion for a student who had a partial Stage 1 save
+    await addBadgeToStudent(existing.id, 'explorer', 50)
+    await updateStudentStage(existing.id, '2')
+    return { success: true, badgeAwarded: 'EXPLORER' }
+  }
+
+  // Brand-new student path
+  const referralCode = generateReferralCode()
   const student = await createStudent({
     clerkId:         userId,
     email,

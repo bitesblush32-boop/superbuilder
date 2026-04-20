@@ -32,17 +32,17 @@ export default async function RegisterPage() {
   if (stage === '2') {
     if (!openStages[2]) redirect('/stage-locked?stage=2')
 
-    if (!student.orientationComplete) redirect('/register/stage-2/orientation')
-    if (!student.hackathonDomain)     redirect('/register/stage-2/domain')
+    if (!student.orientationComplete) redirect('/dashboard/orientation')
+    if (!student.hackathonDomain)     redirect('/dashboard/domain')
 
     const { quizPassed, ideaSubmitted } = await getStage2Checkpoint(student.id)
 
-    if (!quizPassed)    redirect('/register/stage-2/quiz')
-    if (!ideaSubmitted) redirect('/register/stage-2/idea')
+    if (!quizPassed)    redirect('/dashboard/quiz')
+    if (!ideaSubmitted) redirect('/dashboard/idea')
 
     // All stage 2 sub-steps complete
     if (!openStages[3]) redirect('/stage-locked?stage=3')
-    redirect('/register/stage-3/engage')
+    redirect('/dashboard/engage')
   }
 
   const stageNum = parseInt(stage, 10)
@@ -52,7 +52,7 @@ export default async function RegisterPage() {
 
   const STAGE_ROUTES: Record<string, string> = {
     '1': '/dashboard/apply',
-    '3': '/register/stage-3/engage',
+    '3': '/dashboard/engage',
     '4': '/dashboard',
     '5': '/dashboard',
   }

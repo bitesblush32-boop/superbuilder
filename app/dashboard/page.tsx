@@ -13,10 +13,11 @@ export const metadata = {
 
 const HACK_END = new Date('2026-06-08T08:00:00+05:30')
 
-// Next-step config per stage — shown as the primary action card
+// Next-step config per DB stage — shown as the primary action card
+// Visual stages: 1=Apply, 2=Orientation, 3=Domain&Quiz, 4=Payment, 5=Build, 6=Certs
 const NEXT_STEP: Record<number, { label: string; href: string; cta: string; emoji: string }> = {
-  2: { label: 'Stage 2 — Learn & Quiz', href: '/register/stage-2/orientation', cta: 'Start Orientation →', emoji: '🧠' },
-  3: { label: 'Stage 3 — Payment',      href: '/register/stage-3/engage',      cta: 'Continue to Payment →', emoji: '💳' },
+  2: { label: 'Stage 2 — Orientation & Learning', href: '/dashboard/orientation', cta: 'Start Orientation →', emoji: '🧠' },
+  3: { label: 'Stage 4 — Payment',                href: '/dashboard/engage',      cta: 'Continue to Payment →', emoji: '💳' },
 }
 
 export default async function DashboardPage() {

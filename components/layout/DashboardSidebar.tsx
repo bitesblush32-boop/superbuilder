@@ -51,7 +51,7 @@ function buildStages(
   return [
     {
       num: 1, label: 'Apply',
-      done: s1Done, active: currentStage === 1,
+      done: !!s1Done, active: currentStage === 1,
       locked: !stageLocks[1],
       href: null,
       subSteps: [
@@ -66,20 +66,20 @@ function buildStages(
       active: inOrient,
       locked: !stageLocks[2] || currentStage < 2,
       href: !progress.s2_orientation && currentStage >= 2 && stageLocks[2]
-        ? '/register/stage-2/orientation'
+        ? '/dashboard/orientation'
         : null,
       subSteps: [],
     },
     {
-      num: 3, label: 'Learn & Quiz',
-      done: s3SubDone,
+      num: 3, label: 'Domain & Quiz',
+      done: !!s3SubDone,
       active: inLearn,
       locked: !stageLocks[2] || currentStage < 2 || !progress.s2_orientation,
       href: null,
       subSteps: [
-        { label: 'Domain',     done: progress.s2_domain, href: '/register/stage-2/domain' },
-        { label: 'Quiz',       done: progress.s2_quiz,   href: '/register/stage-2/quiz'   },
-        { label: 'Idea Pitch', done: progress.s2_idea,   href: '/register/stage-2/idea'   },
+        { label: 'Domain',     done: progress.s2_domain, href: '/dashboard/domain' },
+        { label: 'Quiz',       done: progress.s2_quiz,   href: '/dashboard/quiz'   },
+        { label: 'Idea Pitch', done: progress.s2_idea,   href: '/dashboard/idea'   },
       ],
     },
     {
@@ -88,7 +88,7 @@ function buildStages(
       active: currentStage === 3,
       locked: !stageLocks[3] || currentStage < 3,
       href: !progress.s3_paid && currentStage >= 3 && stageLocks[3]
-        ? '/register/stage-3/engage'
+        ? '/dashboard/engage'
         : null,
       subSteps: [],
     },
@@ -138,21 +138,17 @@ function StageNode({
                      : stage.active ? 'var(--text-1)'
                      :                'var(--text-3)'
 
-  const RowElement = isNavigable ? Link : 'button'
+  const rowClass = "w-full flex items-center gap-3 px-4 min-h-[52px] transition-all duration-150 active:scale-[0.98] disabled:cursor-default"
+  const rowStyle = { background: isExpanded && hasSubSteps ? 'rgba(255,184,0,0.04)' : 'transparent' }
 
   return (
     <div className="relative">
-      <RowElement
-        {...(isNavigable
-          ? { href: stage.href! }
-          : {
-              onClick: hasSubSteps ? onToggle : undefined,
-              disabled: stage.locked && !hasSubSteps,
-              'aria-expanded': hasSubSteps ? isExpanded : undefined,
-            })}
-        className="w-full flex items-center gap-3 px-4 min-h-[52px] transition-all duration-150 active:scale-[0.98] disabled:cursor-default"
-        style={{ background: isExpanded && hasSubSteps ? 'rgba(255,184,0,0.04)' : 'transparent' }}
-      >
+      {isNavigable ? (
+        <Link
+          href={stage.href!}
+          className={rowClass}
+          style={rowStyle}
+        >
         {/* Stage circle */}
         <div className="relative shrink-0 z-10">
           <div
@@ -211,7 +207,75 @@ function StageNode({
             <ChevronDown size={14} style={{ color: 'var(--text-3)', flexShrink: 0 }} />
           </motion.div>
         ) : null}
-      </RowElement>
+        </Link>
+      ) : (
+        <button
+          onClick={hasSubSteps ? onToggle : undefined}
+          disabled={stage.locked && !hasSubSteps}
+          aria-expanded={hasSubSteps ? isExpanded : undefined}
+          className={rowClass}
+          style={rowStyle}
+        >
+          {/* Stage circle */}
+          <div className="relative shrink-0 z-10">
+            <div
+              className="w-8 h-8 rounded-full flex items-center justify-center border-2 transition-all duration-300"
+              style={{
+                background:  circleBg,
+                borderColor: circleBorder,
+                color:       circleColor,
+                boxShadow:   stage.active && !stage.done ? '0 0 14px rgba(255,184,0,0.5)' : 'none',
+              }}
+            >
+              {stage.done ? (
+                <span className="text-xs font-bold">✓</span>
+              ) : (
+                <span className="font-mono text-[11px] font-bold">{stage.num}</span>
+              )}
+            </div>
+
+            {/* Active pulse ring */}
+            {stage.active && !stage.done && (
+              <motion.div
+                className="absolute inset-0 rounded-full border-2"
+                style={{ borderColor: 'rgba(255,184,0,0.45)' }}
+                initial={{ scale: 1, opacity: 0.7 }}
+                animate={{ scale: 1.7, opacity: 0 }}
+                transition={{ duration: 1.8, repeat: Infinity, ease: 'easeOut' }}
+                aria-hidden="true"
+              />
+            )}
+          </div>
+
+          {/* Label */}
+          <div className="flex-1 text-left min-w-0">
+            <p
+              className="font-heading font-semibold text-[13px] leading-tight truncate"
+              style={{ color: labelColor }}
+            >
+              {stage.label}
+            </p>
+            {stage.active && !stage.done && (
+              <p className="font-mono text-[10px]" style={{ color: 'var(--text-brand)' }}>
+                ← You are here
+              </p>
+            )}
+          </div>
+
+          {/* Right: lock or chevron */}
+          {stage.locked ? (
+            <Lock size={13} style={{ color: 'var(--text-4)', flexShrink: 0 }} aria-hidden="true" />
+          ) : hasSubSteps ? (
+            <motion.div
+              animate={{ rotate: isExpanded ? 180 : 0 }}
+              transition={{ duration: 0.2 }}
+              aria-hidden="true"
+            >
+              <ChevronDown size={14} style={{ color: 'var(--text-3)', flexShrink: 0 }} />
+            </motion.div>
+          ) : null}
+        </button>
+      )}
 
       {/* Sub-steps */}
       <AnimatePresence initial={false}>

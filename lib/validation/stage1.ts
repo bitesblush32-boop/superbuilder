@@ -97,3 +97,7 @@ export const stage1Schema = z.object({
 })
 
 export type Stage1FormData = z.infer<typeof stage1Schema>
+
+// Personal info only — used for Step 1 → Step 2 auto-save (no parent fields)
+export const personalInfoSchema = stage1Schema.omit({ parent: true })
+export type PersonalInfoData = z.infer<typeof personalInfoSchema>

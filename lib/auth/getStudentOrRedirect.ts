@@ -22,10 +22,10 @@ const STAGE_ROUTES: Record<string, string> = {
  * Does NOT check quiz attempts (requires a separate DB query — handled in register/page.tsx).
  */
 export function getStage2SubRoute(student: Student): string {
-  if (!student.orientationComplete) return '/register/stage-2/orientation'
-  if (!student.hackathonDomain)     return '/register/stage-2/domain'
+  if (!student.orientationComplete) return '/dashboard/orientation'
+  if (!student.hackathonDomain)     return '/dashboard/domain'
   // quiz + idea sub-steps require extra queries — caller handles these
-  return '/register/stage-2/quiz'
+  return '/dashboard/quiz'
 }
 
 /**
@@ -99,12 +99,10 @@ export async function getStudentOrRedirect(requiredStage: number): Promise<{
 
   const studentStageNum = student ? parseInt(student.currentStage, 10) : 0
 
-  // Stage 1 — student may not exist yet (pre-registration)
+  // Stage 1 — student may not exist yet (pre-registration).
+  // Do NOT redirect forward here — allow backward navigation.
+  // The calling page (e.g. apply/page.tsx) controls its own access policy.
   if (requiredStage === 1) {
-    // If already past stage 1, send them to their current stage
-    if (student && studentStageNum > 1) {
-      redirect(STAGE_ROUTES[student.currentStage] ?? '/register')
-    }
     return { student: student ?? null, userId }
   }
 

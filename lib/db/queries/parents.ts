@@ -18,3 +18,34 @@ export async function getParentByStudentId(studentId: string): Promise<Parent | 
     .limit(1)
   return parent ?? null
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// upsertParent
+// INSERT parent if none exists for student, otherwise UPDATE in-place.
+// Called when the user submits the parent sub-step (Step 2) either fresh or as a re-edit.
+// ─────────────────────────────────────────────────────────────────────────────
+
+export async function upsertParent(data: NewParent): Promise<Parent> {
+  const now     = new Date()
+  const consentAt = data.consentGiven ? now : undefined
+
+  const [row] = await db
+    .insert(parents)
+    .values({ ...data, consentAt })
+    .onConflictDoUpdate({
+      target: parents.studentId,
+      set: {
+        fullName:           data.fullName,
+        email:              data.email,
+        phone:              data.phone,
+        relationship:       data.relationship,
+        consentGiven:       data.consentGiven,
+        consentAt:          data.consentGiven ? now : undefined,
+        safetyAcknowledged: data.safetyAcknowledged,
+        emergencyContact:   data.emergencyContact,
+      },
+    })
+    .returning()
+
+  return row
+}

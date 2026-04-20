@@ -14,7 +14,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { ArrowLeft, ChevronRight, Loader2, Check } from 'lucide-react'
 import { State, City } from 'country-state-city'
 import { stage1Schema, type Stage1FormData } from '@/lib/validation/stage1'
-import { submitStage1 } from '@/lib/actions/registration'
+import { submitStage1, upsertStudentPersonalInfo } from '@/lib/actions/registration'
 import { BadgeUnlock } from '@/components/gamification/BadgeUnlock'
 import type { BadgeId } from '@/lib/gamification/badges'
 import { SchoolAutocomplete } from './SchoolAutocomplete'
@@ -415,7 +415,13 @@ function CTAButton({
 // ─────────────────────────────────────────────────────────────────────────────
 
 
-export function Stage1Form({ initialStep = 1 }: { initialStep?: 1 | 2 }) {
+export function Stage1Form({
+  initialStep = 1,
+  initialData,
+}: {
+  initialStep?: 1 | 2
+  initialData?: Partial<Stage1FormData>
+}) {
   const router = useRouter()
   const [subStep, setSubStep] = useState<1 | 2>(initialStep)
   const [direction, setDirection] = useState<1 | -1>(1)
@@ -429,13 +435,17 @@ export function Stage1Form({ initialStep = 1 }: { initialStep?: 1 | 2 }) {
     trigger,
     handleSubmit,
     setValue,
+    getValues,
     formState: { errors },
   } = useForm<Stage1FormData>({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     resolver: zodResolver(stage1Schema) as any,
     mode: 'onBlur',
     reValidateMode: 'onChange',
-    defaultValues: { interests: [] },
+    defaultValues: {
+      interests: [],
+      ...initialData,
+    },
   })
 
   // ── Reactive "Next" disabled check for sub-step 1 ──────────────────────────
@@ -534,6 +544,11 @@ export function Stage1Form({ initialStep = 1 }: { initialStep?: 1 | 2 }) {
       }, 50)
       return
     }
+
+    // Auto-save Step 1 data to DB before advancing (fire-and-forget, non-blocking)
+    // Errors are silently captured — user still advances to Step 2
+    upsertStudentPersonalInfo(getValues()).catch(() => { /* handled server-side */ })
+
     setDirection(1)
     setSubStep(2)
     window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -551,8 +566,14 @@ export function Stage1Form({ initialStep = 1 }: { initialStep?: 1 | 2 }) {
     setServerError(null)
     try {
       const result = await submitStage1(data)
-      if (result.success && result.badgeAwarded) {
-        setPendingBadge(result.badgeAwarded)
+      if (result.success) {
+        if (result.badgeAwarded) {
+          // First-time submit: show badge modal, then navigate
+          setPendingBadge(result.badgeAwarded)
+        } else {
+          // Returning user re-submit: no badge, navigate directly
+          router.push('/dashboard/team-setup')
+        }
       } else {
         setServerError(result.error ?? 'Something went wrong. Please try again.')
       }

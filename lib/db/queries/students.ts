@@ -80,3 +80,91 @@ export async function addBadgeToStudent(
     })
     .where(eq(students.id, studentId))
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// upsertStudentPersonalInfo
+// INSERT or UPDATE personal info on conflict with clerk_id (unique).
+// Never touches currentStage, badges, or xpPoints — safe to call on re-entry.
+// ─────────────────────────────────────────────────────────────────────────────
+
+export interface PersonalInfoPayload {
+  fullName:         string
+  dateOfBirth?:     Date | null
+  gender?:          string | null
+  grade:            '8' | '9' | '10' | '11' | '12'
+  schoolName?:      string | null
+  city?:            string | null
+  state?:           string | null
+  phone?:           string | null
+  codingExp?:       string | null
+  interests?:       string[] | null
+  availabilityHrs?: string | null
+  deviceAccess?:    string | null
+  tshirtSize?:      string | null
+  instagramHandle?: string | null
+  linkedinHandle?:  string | null
+  referredBy?:      string | null
+  whyJoin?:         string | null
+  whatToBuild?:     string | null
+}
+
+export async function upsertStudentPersonalInfo(
+  clerkId:      string,
+  email:        string,
+  referralCode: string,
+  payload:      PersonalInfoPayload,
+): Promise<Student> {
+  const now = new Date()
+
+  const [row] = await db
+    .insert(students)
+    .values({
+      clerkId,
+      email,
+      referralCode,
+      fullName:        payload.fullName,
+      dateOfBirth:     payload.dateOfBirth ?? null,
+      gender:          payload.gender ?? null,
+      grade:           payload.grade,
+      schoolName:      payload.schoolName ?? null,
+      city:            payload.city ?? null,
+      state:           payload.state ?? null,
+      phone:           payload.phone ?? null,
+      codingExp:       payload.codingExp ?? null,
+      interests:       payload.interests ?? [],
+      availabilityHrs: payload.availabilityHrs ?? null,
+      deviceAccess:    payload.deviceAccess ?? null,
+      tshirtSize:      payload.tshirtSize ?? null,
+      instagramHandle: payload.instagramHandle ?? null,
+      linkedinHandle:  payload.linkedinHandle ?? null,
+      referredBy:      payload.referredBy ?? null,
+      currentStage:    '1',
+      createdAt:       now,
+      updatedAt:       now,
+    })
+    .onConflictDoUpdate({
+      target: students.clerkId,
+      set: {
+        fullName:        payload.fullName,
+        dateOfBirth:     payload.dateOfBirth ?? null,
+        gender:          payload.gender ?? null,
+        grade:           payload.grade,
+        schoolName:      payload.schoolName ?? null,
+        city:            payload.city ?? null,
+        state:           payload.state ?? null,
+        phone:           payload.phone ?? null,
+        codingExp:       payload.codingExp ?? null,
+        interests:       payload.interests ?? [],
+        availabilityHrs: payload.availabilityHrs ?? null,
+        deviceAccess:    payload.deviceAccess ?? null,
+        tshirtSize:      payload.tshirtSize ?? null,
+        instagramHandle: payload.instagramHandle ?? null,
+        linkedinHandle:  payload.linkedinHandle ?? null,
+        // referredBy intentionally NOT updated — only set on first insert
+        updatedAt:       now,
+      },
+    })
+    .returning()
+
+  return row
+}
