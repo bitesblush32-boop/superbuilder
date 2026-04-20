@@ -17,7 +17,7 @@ export default async function QuizPage() {
   if (!isOpen) return <StageLocked stageNum={2} />
 
   const { student } = await getStudentOrRedirect(2)
-  if (!student) redirect('/register/stage-1')
+  if (!student) redirect('/dashboard/apply')
 
   // Guard: must have completed prior sub-steps
   if (!student.orientationComplete) redirect('/register/stage-2/orientation')

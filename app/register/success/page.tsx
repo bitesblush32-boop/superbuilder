@@ -20,7 +20,7 @@ export default async function SuccessPage() {
     .where(eq(students.clerkId, userId))
     .limit(1)
 
-  if (!student)         redirect('/register/stage-1')
+  if (!student)         redirect('/dashboard/apply')
   if (!student.isPaid)  redirect('/register/stage-3/pay')
 
   const [parent] = await db

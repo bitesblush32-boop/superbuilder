@@ -14,7 +14,7 @@ export default async function IdeaPage() {
   if (!isOpen) return <StageLocked stageNum={2} />
 
   const { student } = await getStudentOrRedirect(2)
-  if (!student) redirect('/register/stage-1')
+  if (!student) redirect('/dashboard/apply')
   if (!student.hackathonDomain) redirect('/register/stage-2/domain')
 
   const { quizPassed } = await getStage2Checkpoint(student.id)

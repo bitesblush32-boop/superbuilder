@@ -468,7 +468,7 @@ export function TeamManageClient({ studentId: _studentId, studentName, teamRole,
     setLeaveConfirm(false)
   }, [leaveConfirm])
 
-  const goToStage2 = () => router.push('/register/stage-2/orientation')
+  const goToStage2 = () => router.push('/dashboard')
 
   // If student already made a team decision, show status + continue CTA
   const alreadyDecided = teamRole !== null

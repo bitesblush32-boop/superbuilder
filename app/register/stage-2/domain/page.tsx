@@ -12,7 +12,7 @@ export default async function DomainPage() {
 
   const { student } = await getStudentOrRedirect(2)
 
-  if (!student) redirect('/register/stage-1')
+  if (!student) redirect('/dashboard/apply')
   if (!student.orientationComplete) redirect('/register/stage-2/orientation')
   if (student.hackathonDomain)      redirect('/register/stage-2/quiz')
 

@@ -15,7 +15,7 @@ export default async function PayPageRoute() {
   if (!isOpen) return <StageLocked stageNum={3} />
 
   const { student } = await getStudentOrRedirect(3)
-  if (!student) redirect('/register/stage-1')
+  if (!student) redirect('/dashboard/apply')
 
   const [teamData, discounts] = await Promise.all([
     student.teamId ? getTeamWithMembers(student.teamId) : Promise.resolve(null),

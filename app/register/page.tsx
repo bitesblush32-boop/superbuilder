@@ -23,7 +23,7 @@ export default async function RegisterPage() {
   if (!student) {
     // New student — gate stage 1
     if (!openStages[1]) redirect('/stage-locked?stage=1')
-    redirect('/register/stage-1')
+    redirect('/dashboard/apply')
   }
 
   const stage = student.currentStage
@@ -51,11 +51,11 @@ export default async function RegisterPage() {
   if (stageNum === 3 && !openStages[3]) redirect('/stage-locked?stage=3')
 
   const STAGE_ROUTES: Record<string, string> = {
-    '1': '/register/stage-1',
+    '1': '/dashboard/apply',
     '3': '/register/stage-3/engage',
     '4': '/dashboard',
     '5': '/dashboard',
   }
 
-  redirect(STAGE_ROUTES[stage] ?? '/register/stage-1')
+  redirect(STAGE_ROUTES[stage] ?? '/dashboard/apply')
 }

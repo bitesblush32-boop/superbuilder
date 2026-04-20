@@ -25,7 +25,7 @@ const NAV_LINKS = [
 
 // ── Stage types ──────────────────────────────────────────────────────────────
 
-interface SubStep { label: string; done: boolean }
+interface SubStep { label: string; done: boolean; href?: string }
 interface Stage {
   num:      number
   label:    string
@@ -46,9 +46,9 @@ function buildStages(progress: DashboardProgress, currentStage: number): Stage[]
       done: s1Done, active: currentStage === 1, locked: false,
       href: null,
       subSteps: [
-        { label: 'Personal Info', done: progress.s1_personal },
-        { label: 'Parents Info',  done: progress.s1_parents  },
-        { label: 'Team Building', done: progress.s1_team     },
+        { label: 'Personal Info', done: progress.s1_personal, href: '/dashboard/apply'     },
+        { label: 'Parents Info',  done: progress.s1_parents,  href: '/dashboard/apply'     },
+        { label: 'Team Building', done: progress.s1_team,     href: '/dashboard/team-setup' },
       ],
     },
     {
@@ -56,10 +56,10 @@ function buildStages(progress: DashboardProgress, currentStage: number): Stage[]
       done: s2Done, active: currentStage === 2, locked: currentStage < 2,
       href: null,
       subSteps: [
-        { label: 'Orientation', done: progress.s2_orientation },
-        { label: 'Domain',      done: progress.s2_domain      },
-        { label: 'Quiz',        done: progress.s2_quiz        },
-        { label: 'Idea Pitch',  done: progress.s2_idea        },
+        { label: 'Orientation', done: progress.s2_orientation, href: '/register/stage-2/orientation' },
+        { label: 'Domain',      done: progress.s2_domain,      href: '/register/stage-2/domain'      },
+        { label: 'Quiz',        done: progress.s2_quiz,        href: '/register/stage-2/quiz'        },
+        { label: 'Idea Pitch',  done: progress.s2_idea,        href: '/register/stage-2/idea'        },
       ],
     },
     {
@@ -197,45 +197,57 @@ function StageNode({
             className="overflow-hidden"
           >
             <div className="pl-11 pr-4 pb-2 flex flex-col gap-0.5">
-              {stage.subSteps.map((sub, i) => {
-                // Sub-step is locked if stage is locked OR previous sub-step not done
-                const subLocked =
-                  stage.locked ||
-                  (i > 0 && !stage.subSteps[i - 1].done)
+              {stage.subSteps.map((sub) => {
+                // Sub-step is only locked if the entire stage is locked (admin gate)
+                const subLocked = stage.locked
+                const canNavigate = !subLocked && sub.href
 
-                return (
-                  <div key={sub.label} className="flex items-center gap-2.5 py-1.5 min-h-[36px]">
-                    {/* Sub-step dot */}
-                    <div
-                      className="w-[18px] h-[18px] rounded-full flex items-center justify-center shrink-0 border"
+                const dotEl = (
+                  <div
+                    className="w-[18px] h-[18px] rounded-full flex items-center justify-center shrink-0 border"
+                    style={{
+                      background:  sub.done ? 'var(--brand)' : 'var(--bg-float)',
+                      borderColor: sub.done ? 'var(--brand)' : 'var(--border-subtle)',
+                    }}
+                  >
+                    {sub.done && (
+                      <span className="text-[8px] font-bold text-black">✓</span>
+                    )}
+                  </div>
+                )
+
+                const labelEl = (
+                  <div className="relative flex-1 min-w-0 flex items-center gap-1.5">
+                    <p
+                      className="font-mono text-[11px] truncate transition-all duration-200"
                       style={{
-                        background:  sub.done ? 'var(--brand)' : 'var(--bg-float)',
-                        borderColor: sub.done ? 'var(--brand)' : 'var(--border-subtle)',
+                        color:  sub.done   ? 'var(--text-brand)'
+                              : subLocked  ? 'var(--text-4)'
+                              :              'var(--text-3)',
+                        filter:     subLocked ? 'blur(3px)' : 'none',
+                        userSelect: subLocked ? 'none' : 'auto',
                       }}
                     >
-                      {sub.done && (
-                        <span className="text-[8px] font-bold text-black">✓</span>
-                      )}
-                    </div>
+                      {sub.label}
+                    </p>
+                    {subLocked && (
+                      <Lock size={10} style={{ color: 'var(--text-4)', flexShrink: 0 }} aria-label={`${sub.label} locked`} />
+                    )}
+                  </div>
+                )
 
-                    {/* Sub-step label — blur when locked */}
-                    <div className="relative flex-1 min-w-0 flex items-center gap-1.5">
-                      <p
-                        className="font-mono text-[11px] truncate transition-all duration-200"
-                        style={{
-                          color:      sub.done   ? 'var(--text-brand)'
-                                    : subLocked  ? 'var(--text-4)'
-                                    :              'var(--text-3)',
-                          filter:     subLocked && !sub.done ? 'blur(3px)' : 'none',
-                          userSelect: subLocked && !sub.done ? 'none' : 'auto',
-                        }}
-                      >
-                        {sub.label}
-                      </p>
-                      {subLocked && !sub.done && (
-                        <Lock size={10} style={{ color: 'var(--text-4)', flexShrink: 0 }} aria-label={`${sub.label} locked`} />
-                      )}
-                    </div>
+                return canNavigate ? (
+                  <Link
+                    key={sub.label}
+                    href={sub.href!}
+                    className="flex items-center gap-2.5 py-1.5 min-h-[36px] rounded-lg px-1 -mx-1 transition-colors active:opacity-70"
+                    style={{ textDecoration: 'none' }}
+                  >
+                    {dotEl}{labelEl}
+                  </Link>
+                ) : (
+                  <div key={sub.label} className="flex items-center gap-2.5 py-1.5 min-h-[36px]">
+                    {dotEl}{labelEl}
                   </div>
                 )
               })}

@@ -565,7 +565,7 @@ export function Stage1Form() {
 
   const handleBadgeDismiss = useCallback(() => {
     setPendingBadge(null)
-    router.push('/register/team')
+    router.push('/dashboard/team-setup')
   }, [router])
 
   // ── Input style helpers ─────────────────────────────────────────────────────

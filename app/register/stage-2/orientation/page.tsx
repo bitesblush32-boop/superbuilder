@@ -13,7 +13,7 @@ export default async function OrientationPage() {
 
   const { student } = await getStudentOrRedirect(2)
 
-  if (!student) redirect('/register/stage-1')
+  if (!student) redirect('/dashboard/apply')
   if (student.orientationComplete) redirect('/register/stage-2/domain')
 
   const firstName   = student.fullName.split(' ')[0]
