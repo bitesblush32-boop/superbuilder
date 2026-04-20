@@ -123,6 +123,7 @@ function StageToggle({ setting }: { setting: Setting }) {
           style={{
             width: '56px',
             height: '30px',
+            minHeight: 'unset',  // prevent global min-height: 44px from stretching this
             background: isOpen
               ? `linear-gradient(135deg, ${meta.color}ee, ${meta.color}aa)`
               : 'var(--bg-float)',
@@ -186,16 +187,16 @@ function StageToggle({ setting }: { setting: Setting }) {
                 <button
                   onClick={() => toggle(false)}
                   disabled={saving}
-                  className="flex-1 sm:flex-none sm:w-36 h-10 rounded-xl font-heading font-bold text-sm tracking-wide active:scale-95 disabled:opacity-50 transition-all"
-                  style={{ background: 'var(--red)', color: '#fff', boxShadow: '0 2px 12px rgba(248,113,113,0.35)' }}
+                  className="flex-1 sm:flex-none sm:w-36 rounded-xl font-heading font-bold text-sm tracking-wide active:scale-95 disabled:opacity-50 transition-all"
+                  style={{ height: '40px', minHeight: 'unset', background: 'var(--red)', color: '#fff', boxShadow: '0 2px 12px rgba(248,113,113,0.35)' }}
                 >
                   {saving ? 'Closing…' : 'Yes, Close Stage'}
                 </button>
                 <button
                   onClick={() => setConfirmClose(false)}
                   disabled={saving}
-                  className="flex-1 sm:flex-none sm:w-24 h-10 rounded-xl font-heading font-semibold text-sm border active:scale-95 transition-all"
-                  style={{ borderColor: 'var(--border-subtle)', color: 'var(--text-2)' }}
+                  className="flex-1 sm:flex-none sm:w-24 rounded-xl font-heading font-semibold text-sm border active:scale-95 transition-all"
+                  style={{ height: '40px', minHeight: 'unset', borderColor: 'var(--border-subtle)', color: 'var(--text-2)' }}
                 >
                   Cancel
                 </button>
