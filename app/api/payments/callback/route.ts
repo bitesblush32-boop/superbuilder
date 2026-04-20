@@ -57,7 +57,7 @@ export async function POST(req: NextRequest) {
   if (payment.status !== 'captured') {
     await Promise.all([
       capturePayment({ razorpayOrderId: razorpay_order_id, razorpayPaymentId: razorpay_payment_id }),
-      confirmStudentPayment({ studentId: payment.studentId, tier: payment.tier }),
+      confirmStudentPayment({ studentId: payment.studentId }),
     ])
     await addBadgeToStudent(payment.studentId, 'builder', 200)
   }

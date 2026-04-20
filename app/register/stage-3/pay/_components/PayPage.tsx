@@ -167,7 +167,6 @@ export function PayPage({
           }
         },
         modal: { ondismiss: () => setLoading(false) },
-        modal: { ondismiss: () => setLoading(false) },
       })
 
       rzp.open()
