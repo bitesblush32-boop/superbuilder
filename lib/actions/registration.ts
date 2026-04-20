@@ -91,6 +91,7 @@ export async function completeOrientation(): Promise<{ success: boolean }> {
     .where(eq(students.id, student.id))
 
   revalidatePath('/register')
+  revalidatePath('/dashboard')
 
   return { success: true }
 }
@@ -119,6 +120,7 @@ export async function selectDomain(domain: string): Promise<{ success: boolean; 
     .where(eq(students.id, student.id))
 
   revalidatePath('/register')
+  revalidatePath('/dashboard')
   return { success: true }
 }
 
@@ -308,6 +310,9 @@ export async function submitQuiz(data: unknown): Promise<{
 
   // Award AI_CURIOUS badge + 100 XP on first pass
   await addBadgeToStudent(student.id, 'ai_curious', 100)
+  
+  // Force revalidate dashboard to reflect updated quiz completion
+  revalidatePath('/dashboard')
 
   return { passed: true, score, badgeAwarded: 'AI_CURIOUS' }
 }
@@ -379,6 +384,7 @@ export async function submitIdea(data: unknown): Promise<{
   await updateStudentStage(student.id, '3')
   
   revalidatePath('/register')
+  revalidatePath('/dashboard')
 
   return { success: true, badgeAwarded: 'IDEA_LAUNCHER' }
 }
@@ -402,6 +408,10 @@ export async function createStudentTeam(teamName: string): Promise<{
     return { success: false, error: 'Team name must be at least 2 characters' }
 
   const team = await createTeam(student.id, teamName)
+  
+  // Force revalidate dashboard to reflect updated teamRole
+  revalidatePath('/dashboard')
+  
   return { success: true, teamCode: team.code }
 }
 
@@ -423,6 +433,10 @@ export async function joinStudentTeam(code: string): Promise<{
 
   const result = await joinTeam(student.id, code)
   if (!result.success) return result
+  
+  // Force revalidate dashboard to reflect updated teamRole
+  revalidatePath('/dashboard')
+  
   return {
     success: true,
     teamName: result.team?.name,
@@ -445,6 +459,9 @@ export async function setTeamSolo(): Promise<{ success: boolean }> {
     .update(students)
     .set({ teamRole: 'solo', updatedAt: new Date() })
     .where(eq(students.id, student.id))
+
+  // Force revalidate dashboard to reflect updated teamRole
+  revalidatePath('/dashboard')
 
   return { success: true }
 }

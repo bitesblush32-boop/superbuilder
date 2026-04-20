@@ -68,3 +68,6 @@ context files
 .graphify_semantic.json
 .claude/settings.local.json
 .graphify_python
+.claude/BUG_FIX_DOMAIN_QUIZ_STUCK.md
+.gitignore
+.claude/BUG_FIX_SUMMARY.md

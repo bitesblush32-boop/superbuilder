@@ -412,7 +412,7 @@ export function IdeaForm({ lockedDomain }: { lockedDomain: DomainValue }) {
 
   const handleBadgeDismiss = useCallback(() => {
     setPendingBadge(null)
-    router.push('/register')
+    router.push('/dashboard/engage')
   }, [router])
 
   // Dynamic placeholder for problem statement based on domain

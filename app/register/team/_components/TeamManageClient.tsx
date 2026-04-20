@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Check, Loader2 } from 'lucide-react'
 import { createStudentTeam, joinStudentTeam, leaveStudentTeam, setTeamSolo } from '@/lib/actions/registration'
+import { useRegistrationStore } from '@/lib/store/registration'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -448,6 +449,7 @@ function NoTeamView({ studentName, onDone }: { studentName: string; onDone: () =
 
 export function TeamManageClient({ studentId: _studentId, studentName, teamRole, team: initialTeam }: Props) {
   const router = useRouter()
+  const { reset: resetRegistration } = useRegistrationStore()
   const [team, setTeam] = useState(initialTeam)
   const [leaving, setLeaving] = useState(false)
   const [leaveError, setLeaveError] = useState<string | null>(null)
@@ -467,7 +469,12 @@ export function TeamManageClient({ studentId: _studentId, studentName, teamRole,
     setLeaveConfirm(false)
   }, [leaveConfirm])
 
-  const goToStage2 = () => router.push('/dashboard')
+  const goToStage2 = () => {
+    // Reset the stage 1 substep in Zustand — ensures sidebar shows correct state after team completion
+    resetRegistration()
+    // Navigate directly to orientation to maintain consistent routing
+    router.push('/dashboard/orientation')
+  }
 
   // If student already made a team decision, show status + continue CTA
   const alreadyDecided = teamRole !== null
