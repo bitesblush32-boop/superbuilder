@@ -1,6 +1,18 @@
 import { DashboardSidebar }   from './DashboardSidebar'
 import { DashboardBottomNav } from './DashboardBottomNav'
 
+export interface DashboardProgress {
+  s1_personal:    boolean
+  s1_parents:     boolean
+  s1_team:        boolean
+  s2_orientation: boolean
+  s2_domain:      boolean
+  s2_quiz:        boolean
+  s2_idea:        boolean
+  s3_paid:        boolean
+  s5_cert:        boolean
+}
+
 export interface StudentData {
   id:                  string
   fullName:            string
@@ -14,6 +26,8 @@ export interface StudentData {
   orientationComplete: boolean
   hackathonDomain:     string | null
   teamId:              string | null
+  teamRole:            string | null
+  certificateUrl:      string | null
 }
 
 export type TeamData = {
@@ -25,30 +39,31 @@ export type TeamData = {
 
 interface DashboardShellProps {
   student:  StudentData
+  progress: DashboardProgress
   team:     TeamData
   children: React.ReactNode
 }
 
-export function DashboardShell({ student, team, children }: DashboardShellProps) {
+export function DashboardShell({ student, progress, team, children }: DashboardShellProps) {
   return (
     <div className="min-h-screen flex" style={{ background: 'var(--bg-base)' }}>
       {/* Desktop sidebar — hidden on mobile */}
       <aside
-        className="hidden md:flex flex-col w-[240px] shrink-0 fixed inset-y-0 left-0 z-30 border-r"
+        className="hidden md:flex flex-col w-[260px] shrink-0 fixed inset-y-0 left-0 z-30 border-r"
         style={{ background: 'var(--bg-card)', borderColor: 'var(--border-faint)' }}
       >
-        <DashboardSidebar student={student} team={team} />
+        <DashboardSidebar student={student} progress={progress} team={team} />
       </aside>
 
       {/* Main content — offset for sidebar on md+ */}
-      <div className="flex-1 md:ml-[240px] flex flex-col min-h-screen">
+      <div className="flex-1 md:ml-[260px] flex flex-col min-h-screen">
         {/* Mobile top bar */}
         <header
           className="md:hidden sticky top-0 z-20 flex items-center justify-between px-4 h-14 border-b shrink-0"
           style={{
-            background:           'rgba(10,10,10,0.92)',
-            backdropFilter:       'blur(12px)',
-            WebkitBackdropFilter: 'blur(12px)',
+            background:           'rgba(10,10,10,0.93)',
+            backdropFilter:       'blur(14px)',
+            WebkitBackdropFilter: 'blur(14px)',
             borderColor:          'var(--border-faint)',
           }}
         >

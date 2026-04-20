@@ -69,7 +69,7 @@ export const students = pgTable('students', {
   // TODO: teamPreference can be dropped in next migration cycle once team system is live
   teamPreference:  varchar('team_preference', { length: 20 }),
   teamId:          uuid('team_id').references(() => teams.id, { onDelete: 'set null' }),
-  teamRole:        varchar('team_role', { length: 20 }), // 'leader' | 'member' | null
+  teamRole:        varchar('team_role', { length: 20 }), // 'leader' | 'member' | 'solo' | null
   availabilityHrs: varchar('availability_hrs', { length: 20 }),
   deviceAccess:    varchar('device_access', { length: 20 }),
   tshirtSize:      varchar('tshirt_size', { length: 5 }),

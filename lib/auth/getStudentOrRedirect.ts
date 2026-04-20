@@ -6,11 +6,13 @@ import { eq, and } from 'drizzle-orm'
 
 export type Student = typeof students.$inferSelect
 
-// Maps pipeline_stage enum values to the entry page of that stage
+// Maps pipeline_stage enum values to where a student lands after completing each stage.
+// Dashboard is now the central hub from stage 2 onward — registration sub-pages are
+// reached by clicking the stage items in the sidebar, not by automatic routing.
 const STAGE_ROUTES: Record<string, string> = {
-  '1': '/register/stage-1',
-  '2': '/register/stage-2/orientation',
-  '3': '/register/stage-3/engage',
+  '1': '/dashboard/apply',
+  '2': '/dashboard',
+  '3': '/dashboard',
   '4': '/dashboard',
   '5': '/dashboard',
 }
@@ -108,7 +110,7 @@ export async function getStudentOrRedirect(requiredStage: number): Promise<{
 
   // Stage 2+ — student must exist and be at or past requiredStage
   if (!student) {
-    redirect('/register/stage-1')
+    redirect('/dashboard/apply')
   }
 
   if (studentStageNum < requiredStage) {
@@ -116,7 +118,7 @@ export async function getStudentOrRedirect(requiredStage: number): Promise<{
     if (student.currentStage === '2') {
       redirect(getStage2SubRoute(student))
     }
-    redirect(STAGE_ROUTES[student.currentStage] ?? '/register/stage-1')
+    redirect(STAGE_ROUTES[student.currentStage] ?? '/dashboard/apply')
   }
 
   return { student, userId }

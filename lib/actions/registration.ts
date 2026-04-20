@@ -340,6 +340,25 @@ export async function joinStudentTeam(code: string): Promise<{
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// setTeamSolo
+// Called when student chooses "Go Solo" on the team step
+// ─────────────────────────────────────────────────────────────────────────────
+export async function setTeamSolo(): Promise<{ success: boolean }> {
+  const { userId } = await auth()
+  if (!userId) return { success: false }
+
+  const student = await getStudentByClerkId(userId)
+  if (!student) return { success: false }
+
+  await db
+    .update(students)
+    .set({ teamRole: 'solo', updatedAt: new Date() })
+    .where(eq(students.id, student.id))
+
+  return { success: true }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // leaveStudentTeam
 // Called from the team management page — student leaves or dissolves their team
 // ─────────────────────────────────────────────────────────────────────────────

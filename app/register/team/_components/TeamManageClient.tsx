@@ -4,7 +4,7 @@ import { useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Check, Loader2 } from 'lucide-react'
-import { createStudentTeam, joinStudentTeam, leaveStudentTeam } from '@/lib/actions/registration'
+import { createStudentTeam, joinStudentTeam, leaveStudentTeam, setTeamSolo } from '@/lib/actions/registration'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -310,7 +310,10 @@ function NoTeamView({ studentName, onDone }: { studentName: string; onDone: () =
       {/* Solo */}
       <button
         type="button"
-        onClick={onDone}
+        onClick={async () => {
+          await setTeamSolo()
+          onDone()
+        }}
         className="w-full rounded-2xl p-5 text-left transition-all active:scale-[0.98] flex items-start gap-4"
         style={{ background: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}
       >
@@ -419,7 +422,7 @@ function NoTeamView({ studentName, onDone }: { studentName: string; onDone: () =
         <p className="font-mono font-bold tracking-[0.25em]" style={{ fontSize: '2.2rem', color: 'var(--brand)' }}>{result?.teamCode}</p>
         <CopyButton text={result?.teamCode ?? ''} />
       </div>
-      <CTAButton onClick={onDone}>Back to Registration →</CTAButton>
+      <CTAButton onClick={onDone}>Continue to Stage 2 →</CTAButton>
     </motion.div>
   )
 
@@ -435,7 +438,7 @@ function NoTeamView({ studentName, onDone }: { studentName: string; onDone: () =
         <p className="font-heading font-bold text-lg mb-1" style={{ color: 'var(--text-1)' }}>{result?.teamName}</p>
         <p className="font-mono text-xs" style={{ color: 'var(--text-3)' }}>{result?.memberCount} of 4 members joined</p>
       </div>
-      <CTAButton onClick={onDone}>Back to Registration →</CTAButton>
+      <CTAButton onClick={onDone}>Continue to Stage 2 →</CTAButton>
     </motion.div>
   )
 
@@ -446,8 +449,8 @@ function NoTeamView({ studentName, onDone }: { studentName: string; onDone: () =
 
 export function TeamManageClient({ studentId: _studentId, studentName, teamRole, team: initialTeam }: Props) {
   const router = useRouter()
-  const [team, setTeam]     = useState(initialTeam)
-  const [leaving, setLeaving] = useState(false)
+  const [team, setTeam]             = useState(initialTeam)
+  const [leaving, setLeaving]       = useState(false)
   const [leaveError, setLeaveError] = useState<string | null>(null)
   const [leaveConfirm, setLeaveConfirm] = useState(false)
 
@@ -465,31 +468,32 @@ export function TeamManageClient({ studentId: _studentId, studentName, teamRole,
     setLeaveConfirm(false)
   }, [leaveConfirm])
 
-  const goBack = () => router.push('/register')
+  const goToStage2 = () => router.push('/register/stage-2/orientation')
+
+  // If student already made a team decision, show status + continue CTA
+  const alreadyDecided = teamRole !== null
+  const isSolo         = teamRole === 'solo'
 
   return (
     <div className="flex flex-col gap-6 pb-12">
       {/* Header */}
       <div className="flex flex-col gap-1">
-        <button
-          type="button"
-          onClick={goBack}
-          className="flex items-center gap-1.5 text-sm mb-2 transition-colors w-fit"
-          style={{ minHeight: '44px', color: 'var(--text-3)' }}
+        <p
+          className="font-mono text-[11px] tracking-[0.15em] uppercase mb-1"
+          style={{ color: 'var(--text-brand)' }}
         >
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-            <path d="M11 7H3M3 7L6 4M3 7L6 10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-          Back to registration
-        </button>
+          Step 3 of 3 — Team Building
+        </p>
         <h1
           className="font-display leading-none tracking-wider"
           style={{ fontSize: '2.6rem', color: 'var(--text-1)' }}
         >
-          TEAM SETTINGS 🤝
+          {alreadyDecided ? (isSolo ? 'GOING SOLO 🦅' : 'TEAM SETTINGS 🤝') : 'TEAM BUILDING 🤝'}
         </h1>
         <p className="text-sm font-body" style={{ color: 'var(--text-3)' }}>
-          Manage your team. You can change this any time before May 25.
+          {alreadyDecided
+            ? 'Your team status is set. Continue to Stage 2 when ready.'
+            : 'Teams of 3–4 unlock discounts at payment. Individual stages are completed solo.'}
         </p>
       </div>
 
@@ -545,17 +549,67 @@ export function TeamManageClient({ studentId: _studentId, studentName, teamRole,
       {/* Main content */}
       <AnimatePresence mode="wait">
         {team ? (
-          <motion.div key="has-team" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+          <motion.div key="has-team" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex flex-col gap-5">
             <CurrentTeamView
               team={team}
               teamRole={teamRole}
               onLeave={handleLeave}
               leaving={leaving && leaveConfirm}
             />
+            {/* Continue CTA — always visible when in a team */}
+            <motion.button
+              onClick={goToStage2}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="w-full rounded-2xl font-heading font-bold text-base tracking-wide
+                         flex items-center justify-center gap-2.5 transition-all active:scale-[0.97]"
+              style={{
+                minHeight:  '56px',
+                background: 'linear-gradient(135deg, #FFB800, #FFCF40)',
+                color:      '#000',
+                boxShadow:  '0 0 32px rgba(255,184,0,0.25)',
+              }}
+            >
+              Continue to Stage 2 →
+            </motion.button>
+          </motion.div>
+        ) : isSolo ? (
+          /* Already chose solo — show status + continue */
+          <motion.div
+            key="is-solo"
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.38, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] }}
+            className="flex flex-col gap-5 items-center text-center"
+          >
+            <div className="text-5xl">🦅</div>
+            <div
+              className="w-full rounded-2xl p-5 border"
+              style={{ background: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}
+            >
+              <p className="font-mono text-xs tracking-[0.15em] uppercase mb-1" style={{ color: 'var(--text-4)' }}>Status</p>
+              <p className="font-heading font-bold text-lg" style={{ color: 'var(--text-1)' }}>Solo Builder</p>
+              <p className="font-body text-sm mt-1" style={{ color: 'var(--text-3)' }}>
+                You&apos;re building independently. Full prize if you win. Good luck! 🔥
+              </p>
+            </div>
+            <motion.button
+              onClick={goToStage2}
+              className="w-full rounded-2xl font-heading font-bold text-base tracking-wide
+                         flex items-center justify-center gap-2.5 transition-all active:scale-[0.97]"
+              style={{
+                minHeight:  '56px',
+                background: 'linear-gradient(135deg, #FFB800, #FFCF40)',
+                color:      '#000',
+                boxShadow:  '0 0 32px rgba(255,184,0,0.25)',
+              }}
+            >
+              Continue to Stage 2 →
+            </motion.button>
           </motion.div>
         ) : (
           <motion.div key="no-team" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-            <NoTeamView studentName={studentName} onDone={goBack} />
+            <NoTeamView studentName={studentName} onDone={goToStage2} />
           </motion.div>
         )}
       </AnimatePresence>

@@ -11,11 +11,11 @@ export default async function TeamPage() {
   if (!userId) redirect('/sign-in')
 
   const student = await getStudentByClerkId(userId)
-  if (!student) redirect('/register/stage-1')
+  if (!student) redirect('/dashboard/apply')
 
-  // Only accessible at stage 2 or later (stage 1 uses the inline team selection)
+  // Stage 1 sub-step 3 — team building. Allow stage >= 1.
   const stageNum = parseInt(student.currentStage, 10)
-  if (stageNum < 2) redirect('/register/stage-1')
+  if (stageNum < 1) redirect('/dashboard/apply')
 
   const team = student.teamId ? await getTeamWithMembers(student.teamId) : null
 

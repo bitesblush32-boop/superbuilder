@@ -13,9 +13,17 @@ export const metadata = {
 
 const HACK_END = new Date('2026-06-08T08:00:00+05:30')
 
+// Next-step config per stage — shown as the primary action card
+const NEXT_STEP: Record<number, { label: string; href: string; cta: string; emoji: string }> = {
+  2: { label: 'Stage 2 — Learn & Quiz', href: '/register/stage-2/orientation', cta: 'Start Orientation →', emoji: '🧠' },
+  3: { label: 'Stage 3 — Payment',      href: '/register/stage-3/engage',      cta: 'Continue to Payment →', emoji: '💳' },
+}
+
 export default async function DashboardPage() {
-  const { student } = await getStudentOrRedirect(4)
-  if (!student) redirect('/register')
+  // If no student record yet (just signed up), send them to the apply form
+  // which renders Stage 1 form inside the dashboard shell
+  const { student } = await getStudentOrRedirect(2)
+  if (!student) redirect('/dashboard/apply')
 
   const firstName    = student.fullName.split(' ')[0]
   const earnedBadges = (student.badges as string[]) ?? []
@@ -61,15 +69,17 @@ export default async function DashboardPage() {
             >
               Grade {student.grade}
             </span>
-            <span
-              className="font-mono text-[11px] px-2.5 py-1 rounded-full"
-              style={{
-                background: 'var(--bg-float)',
-                color: student.tier === 'premium' ? 'var(--brand)' : 'var(--text-3)',
-              }}
-            >
-              {student.tier === 'premium' ? '⭐ Premium' : '⚡ Pro'}
-            </span>
+            {student.tier && (
+              <span
+                className="font-mono text-[11px] px-2.5 py-1 rounded-full"
+                style={{
+                  background: 'var(--bg-float)',
+                  color: student.tier === 'premium' ? 'var(--brand)' : 'var(--text-3)',
+                }}
+              >
+                {student.tier === 'premium' ? '⭐ Premium' : '⚡ Pro'}
+              </span>
+            )}
             {student.city && (
               <span
                 className="font-mono text-[11px] px-2.5 py-1 rounded-full"
@@ -84,8 +94,39 @@ export default async function DashboardPage() {
         {/* B — XP + Badge shelf */}
         <XPSection xpPoints={student.xpPoints} earnedBadgeIds={earnedBadges} />
 
-        {/* C — Next action */}
-        <div
+        {/* B2 — Registration next step (stages 2 & 3 only) */}
+        {!student.isPaid && NEXT_STEP[parseInt(student.currentStage, 10)] && (() => {
+          const step = NEXT_STEP[parseInt(student.currentStage, 10)]!
+          return (
+            <div
+              className="rounded-2xl p-5"
+              style={{
+                background: 'linear-gradient(135deg, rgba(255,184,0,0.10), rgba(255,184,0,0.04))',
+                border: '2px solid rgba(255,184,0,0.4)',
+              }}
+            >
+              <p className="font-mono text-[10px] tracking-[0.2em] uppercase mb-2" style={{ color: 'var(--text-brand)' }}>
+                🎯 Next Step
+              </p>
+              <p className="font-display text-2xl tracking-wide mb-1" style={{ color: 'var(--text-1)' }}>
+                {step.emoji} {step.label.toUpperCase()}
+              </p>
+              <p className="font-body text-sm mb-4" style={{ color: 'var(--text-3)' }}>
+                Complete this step to unlock the full dashboard and hackathon access.
+              </p>
+              <Link
+                href={step.href}
+                className="inline-flex items-center gap-2 min-h-[48px] px-6 rounded-xl font-heading font-bold text-base tracking-wide transition-all active:scale-95"
+                style={{ background: 'linear-gradient(135deg, #FFB800, #FFCF40)', color: '#000', boxShadow: '0 0 24px rgba(255,184,0,0.25)' }}
+              >
+                {step.cta}
+              </Link>
+            </div>
+          )
+        })()}
+
+        {/* C — Hackathon action (only shown once paid/stage 4+) */}
+        {student.isPaid && <div
           className="rounded-2xl p-5 border"
           style={{
             background:  isLive ? 'rgba(255,184,0,0.07)' : 'var(--bg-card)',
@@ -155,9 +196,10 @@ export default async function DashboardPage() {
               </div>
             </>
           )}
-        </div>
+        </div>}
 
-        {/* D — Hackathon countdown */}
+        {/* D — Hackathon countdown (paid students only) */}
+        {student.isPaid && <>
         <div
           className="rounded-2xl p-5 border"
           style={{ background: 'var(--bg-card)', borderColor: 'var(--border-faint)' }}
@@ -198,6 +240,8 @@ export default async function DashboardPage() {
             </div>
           ))}
         </div>
+
+        </>}
 
       </div>
     </div>
