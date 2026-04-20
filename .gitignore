@@ -1,5 +1,6 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
+graphify-out
 # dependencies
 /node_modules
 /.pnp
@@ -58,3 +59,5 @@ lib/db/migrations/meta/0001_snapshot.json
 lib/db/migrations/meta/_journal.json
 lib/db/migrations/meta/_journal.json
 context files
+.graphify_ast.json
+.graphify_uncached.txt
