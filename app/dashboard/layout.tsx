@@ -3,7 +3,7 @@ import { auth }                 from '@clerk/nextjs/server'
 import { db }                   from '@/lib/db'
 import { students, parents, quizAttempts, ideaSubmissions } from '@/lib/db/schema'
 import { eq, and }              from 'drizzle-orm'
-import { getTeamWithMembers }   from '@/lib/db/queries/teams'
+import { getTeamWithMembers, getOpenStages } from '@/lib/db/queries/teams'
 import { DashboardShell }       from '@/components/layout/DashboardShell'
 
 export const dynamic = 'force-dynamic'
@@ -19,11 +19,10 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const { userId } = await auth()
   if (!userId) redirect('/sign-in')
 
-  const [student] = await db
-    .select()
-    .from(students)
-    .where(eq(students.clerkId, userId))
-    .limit(1)
+  const [[student], openStages] = await Promise.all([
+    db.select().from(students).where(eq(students.clerkId, userId)).limit(1),
+    getOpenStages(),
+  ])
 
   // No student record yet — show the dashboard shell with Stage 1 active.
   // /dashboard/apply page will render the Stage 1 form inside.
@@ -38,6 +37,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
           teamId: null, teamRole: null, certificateUrl: null,
         }}
         progress={EMPTY_PROGRESS}
+        stageLocks={openStages}
         team={null}
       >
         {children}
@@ -94,6 +94,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
         certificateUrl:      student.certificateUrl ?? null,
       }}
       progress={progress}
+      stageLocks={openStages}
       team={team ? {
         name:        team.name,
         code:        team.code,

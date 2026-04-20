@@ -38,13 +38,14 @@ export type TeamData = {
 } | null
 
 interface DashboardShellProps {
-  student:  StudentData
-  progress: DashboardProgress
-  team:     TeamData
-  children: React.ReactNode
+  student:    StudentData
+  progress:   DashboardProgress
+  team:       TeamData
+  stageLocks: Record<number, boolean>
+  children:   React.ReactNode
 }
 
-export function DashboardShell({ student, progress, team, children }: DashboardShellProps) {
+export function DashboardShell({ student, progress, team, stageLocks, children }: DashboardShellProps) {
   return (
     <div className="min-h-screen flex" style={{ background: 'var(--bg-base)' }}>
       {/* Desktop sidebar — hidden on mobile */}
@@ -52,7 +53,7 @@ export function DashboardShell({ student, progress, team, children }: DashboardS
         className="hidden md:flex flex-col w-[260px] shrink-0 fixed inset-y-0 left-0 z-30 border-r"
         style={{ background: 'var(--bg-card)', borderColor: 'var(--border-faint)' }}
       >
-        <DashboardSidebar student={student} progress={progress} team={team} />
+        <DashboardSidebar student={student} progress={progress} team={team} stageLocks={stageLocks} />
       </aside>
 
       {/* Main content — offset for sidebar on md+ */}

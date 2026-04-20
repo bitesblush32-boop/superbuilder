@@ -14,7 +14,11 @@ export const metadata = {
   description: 'Start your Super Builders application. Takes about 5 minutes.',
 }
 
-export default async function DashboardApplyPage() {
+export default async function DashboardApplyPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ step?: string }>
+}) {
   const { isOpen } = await checkStageLock(1)
   if (!isOpen) return <StageLocked stageNum={1} />
 
@@ -32,9 +36,12 @@ export default async function DashboardApplyPage() {
     redirect('/dashboard')
   }
 
+  const params      = await searchParams
+  const initialStep = params?.step === '2' ? 2 : 1
+
   return (
     <div className="max-w-2xl mx-auto px-4 pt-5 pb-12">
-      <Stage1Form />
+      <Stage1Form initialStep={initialStep} />
     </div>
   )
 }

@@ -36,47 +36,75 @@ interface Stage {
   subSteps: SubStep[]
 }
 
-function buildStages(progress: DashboardProgress, currentStage: number): Stage[] {
-  const s1Done = progress.s1_personal && progress.s1_parents && progress.s1_team
-  const s2Done = progress.s2_orientation && progress.s2_domain && progress.s2_quiz && progress.s2_idea
+function buildStages(
+  progress:    DashboardProgress,
+  currentStage: number,
+  stageLocks:  Record<number, boolean>,
+): Stage[] {
+  const s1Done    = progress.s1_personal && progress.s1_parents && progress.s1_team
+  const s3SubDone = progress.s2_domain && progress.s2_quiz && progress.s2_idea
+
+  // Within DB stage 2 — orientation comes first, then domain/quiz/idea
+  const inOrient = currentStage === 2 && !progress.s2_orientation
+  const inLearn  = currentStage === 2 &&  progress.s2_orientation
 
   return [
     {
       num: 1, label: 'Apply',
-      done: s1Done, active: currentStage === 1, locked: false,
+      done: s1Done, active: currentStage === 1,
+      locked: !stageLocks[1],
       href: null,
       subSteps: [
-        { label: 'Personal Info', done: progress.s1_personal, href: '/dashboard/apply'     },
-        { label: 'Parents Info',  done: progress.s1_parents,  href: '/dashboard/apply'     },
-        { label: 'Team Building', done: progress.s1_team,     href: '/dashboard/team-setup' },
+        { label: 'Personal Info', done: progress.s1_personal, href: '/dashboard/apply?step=1' },
+        { label: 'Parents Info',  done: progress.s1_parents,  href: '/dashboard/apply?step=2' },
+        { label: 'Team Building', done: progress.s1_team,     href: '/dashboard/team-setup'   },
       ],
     },
     {
-      num: 2, label: 'Learn & Quiz',
-      done: s2Done, active: currentStage === 2, locked: currentStage < 2,
+      num: 2, label: 'Orientation',
+      done: progress.s2_orientation,
+      active: inOrient,
+      locked: !stageLocks[2] || currentStage < 2,
+      href: !progress.s2_orientation && currentStage >= 2 && stageLocks[2]
+        ? '/register/stage-2/orientation'
+        : null,
+      subSteps: [],
+    },
+    {
+      num: 3, label: 'Learn & Quiz',
+      done: s3SubDone,
+      active: inLearn,
+      locked: !stageLocks[2] || currentStage < 2 || !progress.s2_orientation,
       href: null,
       subSteps: [
-        { label: 'Orientation', done: progress.s2_orientation, href: '/register/stage-2/orientation' },
-        { label: 'Domain',      done: progress.s2_domain,      href: '/register/stage-2/domain'      },
-        { label: 'Quiz',        done: progress.s2_quiz,        href: '/register/stage-2/quiz'        },
-        { label: 'Idea Pitch',  done: progress.s2_idea,        href: '/register/stage-2/idea'        },
+        { label: 'Domain',     done: progress.s2_domain, href: '/register/stage-2/domain' },
+        { label: 'Quiz',       done: progress.s2_quiz,   href: '/register/stage-2/quiz'   },
+        { label: 'Idea Pitch', done: progress.s2_idea,   href: '/register/stage-2/idea'   },
       ],
     },
     {
-      num: 3, label: 'Payment',
-      done: progress.s3_paid, active: currentStage === 3, locked: currentStage < 3,
-      href: currentStage >= 3 && !progress.s3_paid ? '/register/stage-3/engage' : null,
+      num: 4, label: 'Payment',
+      done: progress.s3_paid,
+      active: currentStage === 3,
+      locked: !stageLocks[3] || currentStage < 3,
+      href: !progress.s3_paid && currentStage >= 3 && stageLocks[3]
+        ? '/register/stage-3/engage'
+        : null,
       subSteps: [],
     },
     {
-      num: 4, label: 'Build Phase',
-      done: false, active: currentStage >= 4, locked: currentStage < 4,
+      num: 5, label: 'Build Phase',
+      done: false,
+      active: currentStage >= 4,
+      locked: currentStage < 4,
       href: null,
       subSteps: [],
     },
     {
-      num: 5, label: 'Certificates',
-      done: progress.s5_cert, active: false, locked: !progress.s5_cert && currentStage < 5,
+      num: 6, label: 'Certificates',
+      done: progress.s5_cert,
+      active: false,
+      locked: !progress.s5_cert && currentStage < 5,
       href: progress.s5_cert ? '/dashboard/certificate' : null,
       subSteps: [],
     },
@@ -389,14 +417,16 @@ export function DashboardSidebar({
   student,
   progress,
   team,
+  stageLocks,
 }: {
-  student:  StudentData
-  progress: DashboardProgress
-  team:     TeamData
+  student:    StudentData
+  progress:   DashboardProgress
+  team:       TeamData
+  stageLocks: Record<number, boolean>
 }) {
   void team
 
-  const stages = buildStages(progress, student.currentStage)
+  const stages = buildStages(progress, student.currentStage, stageLocks)
 
   // Default-expand the active stage (or the last completed one)
   const defaultExpanded =
