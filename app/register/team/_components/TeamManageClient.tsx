@@ -9,28 +9,28 @@ import { createStudentTeam, joinStudentTeam, leaveStudentTeam, setTeamSolo } fro
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 interface TeamMember {
-  id:       string
+  id: string
   fullName: string
-  grade:    string | null
-  city:     string | null
+  grade: string | null
+  city: string | null
   teamRole: string | null
 }
 
 interface TeamInfo {
-  id:          string
-  name:        string
-  code:        string
+  id: string
+  name: string
+  code: string
   memberCount: number
-  maxSize:     number
-  isLocked:    boolean
-  members:     TeamMember[]
+  maxSize: number
+  isLocked: boolean
+  members: TeamMember[]
 }
 
 interface Props {
-  studentId:  string
+  studentId: string
   studentName: string
-  teamRole:   string | null
-  team:       TeamInfo | null
+  teamRole: string | null
+  team: TeamInfo | null
 }
 
 // ─── Shared helpers ────────────────────────────────────────────────────────────
@@ -70,17 +70,17 @@ function CTAButton({
 }) {
   const isActive = !disabled && !loading
   const bg =
-    variant === 'danger'  ? (isActive ? 'rgba(248,113,113,0.15)' : 'var(--bg-float)') :
-    variant === 'ghost'   ? 'var(--bg-float)' :
-    isActive ? 'linear-gradient(135deg,#FFB800,#FFCF40)' : 'var(--bg-float)'
+    variant === 'danger' ? (isActive ? 'rgba(248,113,113,0.15)' : 'var(--bg-float)') :
+      variant === 'ghost' ? 'var(--bg-float)' :
+        isActive ? 'linear-gradient(135deg,#FFB800,#FFCF40)' : 'var(--bg-float)'
   const color =
-    variant === 'danger'  ? (isActive ? 'var(--red)'   : 'var(--text-4)') :
-    variant === 'ghost'   ? 'var(--text-3)' :
-    isActive ? '#000' : 'var(--text-4)'
+    variant === 'danger' ? (isActive ? 'var(--red)' : 'var(--text-4)') :
+      variant === 'ghost' ? 'var(--text-3)' :
+        isActive ? '#000' : 'var(--text-4)'
   const border =
-    variant === 'danger'  ? `1px solid ${isActive ? 'rgba(248,113,113,0.35)' : 'var(--border-subtle)'}` :
-    variant === 'ghost'   ? '1px solid var(--border-subtle)' :
-    'none'
+    variant === 'danger' ? `1px solid ${isActive ? 'rgba(248,113,113,0.35)' : 'var(--border-subtle)'}` :
+      variant === 'ghost' ? '1px solid var(--border-subtle)' :
+        'none'
 
   return (
     <motion.button
@@ -108,13 +108,13 @@ function CTAButton({
 function CurrentTeamView({
   team, teamRole, onLeave, leaving,
 }: {
-  team:     TeamInfo
+  team: TeamInfo
   teamRole: string | null
-  onLeave:  () => void
-  leaving:  boolean
+  onLeave: () => void
+  leaving: boolean
 }) {
   const isLeader = teamRole === 'leader'
-  const spots    = team.maxSize - team.memberCount
+  const spots = team.maxSize - team.memberCount
 
   return (
     <motion.div
@@ -263,12 +263,12 @@ function CurrentTeamView({
 type NoTeamMode = 'choosing' | 'create_form' | 'join_form' | 'created' | 'joined'
 
 function NoTeamView({ studentName, onDone }: { studentName: string; onDone: () => void }) {
-  const [mode, setMode]         = useState<NoTeamMode>('choosing')
+  const [mode, setMode] = useState<NoTeamMode>('choosing')
   const [teamName, setTeamName] = useState('')
   const [joinCode, setJoinCode] = useState('')
-  const [loading, setLoading]   = useState(false)
-  const [error, setError]       = useState<string | null>(null)
-  const [result, setResult]     = useState<{ teamCode?: string; teamName?: string; memberCount?: number } | null>(null)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [result, setResult] = useState<{ teamCode?: string; teamName?: string; memberCount?: number } | null>(null)
 
   const handleCreate = async () => {
     if (teamName.trim().length < 2) { setError('Team name must be at least 2 characters'); return }
@@ -448,8 +448,8 @@ function NoTeamView({ studentName, onDone }: { studentName: string; onDone: () =
 
 export function TeamManageClient({ studentId: _studentId, studentName, teamRole, team: initialTeam }: Props) {
   const router = useRouter()
-  const [team, setTeam]             = useState(initialTeam)
-  const [leaving, setLeaving]       = useState(false)
+  const [team, setTeam] = useState(initialTeam)
+  const [leaving, setLeaving] = useState(false)
   const [leaveError, setLeaveError] = useState<string | null>(null)
   const [leaveConfirm, setLeaveConfirm] = useState(false)
 
@@ -471,7 +471,7 @@ export function TeamManageClient({ studentId: _studentId, studentName, teamRole,
 
   // If student already made a team decision, show status + continue CTA
   const alreadyDecided = teamRole !== null
-  const isSolo         = teamRole === 'solo'
+  const isSolo = teamRole === 'solo'
 
   return (
     <div className="flex flex-col gap-6 pb-12">
@@ -563,10 +563,10 @@ export function TeamManageClient({ studentId: _studentId, studentName, teamRole,
               className="w-full rounded-2xl font-heading font-bold text-base tracking-wide
                          flex items-center justify-center gap-2.5 transition-all active:scale-[0.97]"
               style={{
-                minHeight:  '56px',
+                minHeight: '56px',
                 background: 'linear-gradient(135deg, #FFB800, #FFCF40)',
-                color:      '#000',
-                boxShadow:  '0 0 32px rgba(255,184,0,0.25)',
+                color: '#000',
+                boxShadow: '0 0 32px rgba(255,184,0,0.25)',
               }}
             >
               Continue to Stage 2 →
@@ -597,10 +597,10 @@ export function TeamManageClient({ studentId: _studentId, studentName, teamRole,
               className="w-full rounded-2xl font-heading font-bold text-base tracking-wide
                          flex items-center justify-center gap-2.5 transition-all active:scale-[0.97]"
               style={{
-                minHeight:  '56px',
+                minHeight: '56px',
                 background: 'linear-gradient(135deg, #FFB800, #FFCF40)',
-                color:      '#000',
-                boxShadow:  '0 0 32px rgba(255,184,0,0.25)',
+                color: '#000',
+                boxShadow: '0 0 32px rgba(255,184,0,0.25)',
               }}
             >
               Continue to Stage 2 →

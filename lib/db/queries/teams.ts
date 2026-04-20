@@ -15,10 +15,10 @@ export function generateTeamCode(): string {
 export async function createTeam(leaderId: string, teamName: string) {
   const code = generateTeamCode()
   const [team] = await db.insert(teams).values({
-    name:        teamName.trim(),
+    name: teamName.trim(),
     code,
     leaderId,
-    maxSize:     3,
+    maxSize: 3,
     memberCount: 1,
   }).returning()
 
@@ -31,15 +31,15 @@ export async function createTeam(leaderId: string, teamName: string) {
 
 export async function joinTeam(studentId: string, code: string): Promise<{
   success: boolean
-  error?:  string
-  team?:   typeof teams.$inferSelect
+  error?: string
+  team?: typeof teams.$inferSelect
 }> {
   const normalizedCode = code.trim().toUpperCase()
 
   const [team] = await db.select().from(teams).where(eq(teams.code, normalizedCode)).limit(1)
-  if (!team)          return { success: false, error: 'Team code not found. Check the code and try again.' }
-  if (team.isLocked)  return { success: false, error: 'This team is locked and no longer accepting members.' }
-  if (team.memberCount >= team.maxSize) return { success: false, error: `This team is full (${team.maxSize} members max).` }
+  if (!team) return { success: false, error: 'Team code not found. Check the code and try again.' }
+  if (team.isLocked) return { success: false, error: 'This team is locked and no longer accepting members.' }
+  if (team.memberCount >= team.maxSize) return { success: false, error: `This team is full (max ${team.maxSize} members allowed).` }
 
   const [student] = await db.select({ teamId: students.teamId }).from(students).where(eq(students.id, studentId)).limit(1)
   if (student?.teamId) return { success: false, error: 'You are already in a team. You cannot join another.' }
@@ -61,13 +61,13 @@ export async function getTeamWithMembers(teamId: string) {
   if (!team) return null
 
   const members = await db.select({
-    id:       students.id,
+    id: students.id,
     fullName: students.fullName,
-    grade:    students.grade,
-    city:     students.city,
+    grade: students.grade,
+    city: students.city,
     teamRole: students.teamRole,
-    isPaid:   students.isPaid,
-    tier:     students.tier,
+    isPaid: students.isPaid,
+    tier: students.tier,
   }).from(students).where(eq(students.teamId, teamId))
 
   return { ...team, members }
@@ -137,7 +137,7 @@ export async function getAllSettings(): Promise<typeof appSettings.$inferSelect[
 export async function getOpenStages(): Promise<Record<number, boolean>> {
   const rows = await db.select().from(appSettings)
     .where(inArray(appSettings.key, [
-      'stage_1_open','stage_2_open','stage_3_open','stage_4_open','stage_5_open'
+      'stage_1_open', 'stage_2_open', 'stage_3_open', 'stage_4_open', 'stage_5_open'
     ]))
 
   const result: Record<number, boolean> = { 1: false, 2: false, 3: false, 4: false, 5: false }

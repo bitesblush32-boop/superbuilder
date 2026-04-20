@@ -6,7 +6,7 @@ import { getTeamWithMembers, getFlatPricing } from '@/lib/db/queries/teams'
 
 export async function POST() {
   const rzp = new Razorpay({
-    key_id:     process.env.RAZORPAY_KEY_ID!,
+    key_id: process.env.RAZORPAY_KEY_ID!,
     key_secret: process.env.RAZORPAY_KEY_SECRET!,
   })
 
@@ -35,19 +35,19 @@ export async function POST() {
   const order = await rzp.orders.create({
     amount,
     currency: 'INR',
-    receipt:  `sb_${student.id.slice(0, 8)}_${Date.now()}`,
-    notes:    { studentId: student.id, memberCount: String(memberCount) },
+    receipt: `sb_${student.id.slice(0, 8)}_${Date.now()}`,
+    notes: { studentId: student.id, memberCount: String(memberCount) },
   })
 
   await createPendingPayment({
-    studentId:       student.id,
+    studentId: student.id,
     razorpayOrderId: order.id,
     amount,
   })
 
   return Response.json({
     orderId: order.id,
-    amount:  order.amount,
-    keyId:   process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+    amount: order.amount,
+    keyId: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
   })
 }

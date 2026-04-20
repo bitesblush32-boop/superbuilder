@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Script from 'next/script'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -19,14 +20,14 @@ interface TeamData {
 }
 
 interface PayPageProps {
-  studentId:   string
-  fullName:    string
-  email:       string
-  phone:       string
-  teamData:    TeamData | null
+  studentId: string
+  fullName: string
+  email: string
+  phone: string
+  teamData: TeamData | null
   memberCount: number
-  priceSolo:   number  // ₹ rupees
-  priceTeam:   number  // ₹ rupees per head
+  priceSolo: number  // ₹ rupees
+  priceTeam: number  // ₹ rupees per head
   priceRupees: number  // computed price for this student
 }
 
@@ -36,27 +37,27 @@ declare global {
   }
 }
 interface RazorpayOptions {
-  key:         string
-  amount:      number
-  currency:    string
-  order_id:    string
-  name:        string
+  key: string
+  amount: number
+  currency: string
+  order_id: string
+  name: string
   description: string
-  prefill?:    { name?: string; email?: string; contact?: string }
-  theme?:      { color?: string }
-  handler:     (response: { razorpay_order_id: string; razorpay_payment_id: string; razorpay_signature: string }) => void
-  modal?:      { ondismiss?: () => void }
+  prefill?: { name?: string; email?: string; contact?: string }
+  theme?: { color?: string }
+  handler: (response: { razorpay_order_id: string; razorpay_payment_id: string; razorpay_signature: string }) => void
+  modal?: { ondismiss?: () => void }
 }
 
 function TeamStatusCard({ teamData, memberCount, priceSolo, priceTeam }: {
-  teamData:    TeamData
+  teamData: TeamData
   memberCount: number
-  priceSolo:   number
-  priceTeam:   number
+  priceSolo: number
+  priceTeam: number
 }) {
-  const paidCount  = teamData.members.filter(m => m.isPaid).length
+  const paidCount = teamData.members.filter(m => m.isPaid).length
   const isTeamRate = memberCount >= 2
-  const savedPer   = priceSolo - priceTeam
+  const savedPer = priceSolo - priceTeam
 
   return (
     <div
@@ -66,7 +67,7 @@ function TeamStatusCard({ teamData, memberCount, priceSolo, priceTeam }: {
         border: isTeamRate ? '1px solid rgba(34,197,94,0.25)' : '1px solid var(--border-subtle)',
       }}
     >
-      <div className="flex items-center justify-between mb-2">
+      <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span className="text-base">👥</span>
           <p className="font-body text-sm font-semibold" style={{ color: 'var(--text-1)' }}>
@@ -114,10 +115,11 @@ export function PayPage({
   studentId: _studentId, fullName, email, phone,
   teamData, memberCount, priceSolo, priceTeam, priceRupees,
 }: PayPageProps) {
-  const router       = useRouter()
+  const router = useRouter()
   const searchParams = useSearchParams()
 
-  const [loading, setLoading]         = useState(false)
+
+  const [loading, setLoading] = useState(false)
   const [scriptReady, setScriptReady] = useState(false)
   const [error, setError] = useState<string | null>(
     searchParams.get('error') ? decodeURIComponent(searchParams.get('error')!) : null
@@ -127,6 +129,7 @@ export function PayPage({
   const savedAmount = isTeamRate ? priceSolo - priceTeam : 0
 
   async function handlePay() {
+    if (!scriptReady) return
     if (!scriptReady) return
     setLoading(true)
     setError(null)
@@ -142,19 +145,19 @@ export function PayPage({
       const { orderId, amount, keyId } = await res.json()
 
       const rzp = new window.Razorpay({
-        key:         keyId,
+        key: keyId,
         amount,
-        currency:    'INR',
-        order_id:    orderId,
-        name:        'Super Builders',
+        currency: 'INR',
+        order_id: orderId,
+        name: 'Super Builders',
         description: 'School Edition Season 1',
-        prefill:     { name: fullName, email, contact: phone },
-        theme:       { color: '#FFB800' },
+        prefill: { name: fullName, email, contact: phone },
+        theme: { color: '#FFB800' },
         handler: async ({ razorpay_order_id, razorpay_payment_id, razorpay_signature }) => {
           const vRes = await fetch('/api/payments/verify', {
-            method:  'POST',
+            method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body:    JSON.stringify({ razorpay_order_id, razorpay_payment_id, razorpay_signature }),
+            body: JSON.stringify({ razorpay_order_id, razorpay_payment_id, razorpay_signature }),
           })
           const vData = await vRes.json()
           if (vData.success) {
@@ -164,6 +167,7 @@ export function PayPage({
             setLoading(false)
           }
         },
+        modal: { ondismiss: () => setLoading(false) },
         modal: { ondismiss: () => setLoading(false) },
       })
 
@@ -248,6 +252,7 @@ export function PayPage({
             ].map(f => (
               <li key={f} className="flex items-center gap-2 font-body text-sm" style={{ color: 'var(--text-2)' }}>
                 <span style={{ color: 'var(--brand)' }}>✓</span>
+                <span style={{ color: 'var(--brand)' }}>✓</span>
                 {f}
               </li>
             ))}
@@ -281,8 +286,8 @@ export function PayPage({
             {loading
               ? 'Opening payment…'
               : !scriptReady
-              ? 'Loading payment…'
-              : `Confirm & Pay ₹${priceRupees.toLocaleString('en-IN')}`}
+                ? 'Loading payment…'
+                : `Confirm & Pay ₹${priceRupees.toLocaleString('en-IN')}`}
           </button>
 
           <p className="font-body text-xs text-center" style={{ color: 'var(--text-3)' }}>
@@ -290,7 +295,7 @@ export function PayPage({
           </p>
         </motion.div>
 
-        {/* Parent trust section */}
+        {/* For Parents */}
         <motion.div
           className="rounded-2xl p-5"
           style={{ background: 'var(--bg-card)', border: '1px solid var(--border-faint)' }}
@@ -302,7 +307,7 @@ export function PayPage({
           </p>
           {[
             { icon: '✅', title: 'zer0.pro Verified', desc: 'Registered organisation with verified mentors and instructors.' },
-            { icon: '💰', title: 'Full refund guarantee', desc: 'If the programme is cancelled or doesn\'t start, you get 100% back.' },
+            { icon: '💰', title: 'Full refund guarantee', desc: "If the programme is cancelled or doesn't start, you get 100% back." },
             { icon: '🔐', title: 'Safe online environment', desc: 'All sessions recorded. No direct student-mentor contact outside platform.' },
             { icon: '📲', title: 'Parent WhatsApp group', desc: 'Dedicated group for updates, schedules, and any concerns.' },
           ].map(({ icon, title, desc }) => (
