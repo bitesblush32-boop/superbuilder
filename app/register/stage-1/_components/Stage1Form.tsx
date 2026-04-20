@@ -898,6 +898,18 @@ export function Stage1Form({ initialStep = 1 }: { initialStep?: 1 | 2 }) {
                         />
                       </div>
 
+                      <div>
+                        <FieldLabel>Friend&apos;s Referral Code</FieldLabel>
+                        <TextInput
+                          {...register('referralCode')}
+                          placeholder="e.g. AB3X72QK"
+                          inputMode="text"
+                          autoComplete="off"
+                          autoCapitalize="characters"
+                          style={{ letterSpacing: '0.08em' }}
+                        />
+                      </div>
+
                     </div>
                   </FormCard>
 

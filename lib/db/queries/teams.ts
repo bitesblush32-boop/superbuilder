@@ -18,7 +18,7 @@ export async function createTeam(leaderId: string, teamName: string) {
     name:        teamName.trim(),
     code,
     leaderId,
-    maxSize:     4,
+    maxSize:     3,  // max 3 members (Solo ₹3499 / Team of 2 ₹6000 / Team of 3 ₹9000)
     memberCount: 1,
   }).returning()
 
@@ -39,7 +39,7 @@ export async function joinTeam(studentId: string, code: string): Promise<{
   const [team] = await db.select().from(teams).where(eq(teams.code, normalizedCode)).limit(1)
   if (!team)          return { success: false, error: 'Team code not found. Check the code and try again.' }
   if (team.isLocked)  return { success: false, error: 'This team is locked and no longer accepting members.' }
-  if (team.memberCount >= team.maxSize) return { success: false, error: `This team is full (${team.maxSize} members max).` }
+  if (team.memberCount >= team.maxSize) return { success: false, error: `This team is full (max ${team.maxSize} members allowed).` }
 
   const [student] = await db.select({ teamId: students.teamId }).from(students).where(eq(students.id, studentId)).limit(1)
   if (student?.teamId) return { success: false, error: 'You are already in a team. You cannot join another.' }

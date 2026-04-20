@@ -221,15 +221,17 @@ function CurrentTeamView({
         ))}
       </div>
 
-      {/* Discount status */}
-      {team.memberCount >= 3 && (
+      {/* Pricing illustration */}
+      {team.memberCount >= 2 && (
         <div
           className="rounded-xl px-4 py-3 flex items-center gap-3"
           style={{ background: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.2)' }}
         >
           <span>🎉</span>
           <p className="text-sm font-body" style={{ color: 'var(--green)' }}>
-            {team.memberCount === 4 ? '20% team discount' : '10% team discount'} unlocked at payment!
+            {team.memberCount >= 3
+              ? 'Team of 3 plan unlocked! Pay ₹9,000 (saves ₹1,497 vs solo)'
+              : 'Team of 2 plan unlocked! Pay ₹6,000 (saves ₹998 vs solo)'}
           </p>
         </div>
       )}
@@ -336,8 +338,8 @@ function NoTeamView({ studentName, onDone }: { studentName: string; onDone: () =
           <p className="font-heading font-bold text-base mb-0.5" style={{ color: 'var(--text-brand)' }}>Create a Team</p>
           <p className="font-body text-xs" style={{ color: 'var(--text-3)' }}>Get a code → share with 2–3 friends</p>
           <div className="flex flex-wrap gap-2 mt-2">
-            <span className="font-mono text-[11px] px-2 py-0.5 rounded-full" style={{ background: 'rgba(34,197,94,0.12)', color: 'var(--green)' }}>Team of 3 → 10% off</span>
-            <span className="font-mono text-[11px] px-2 py-0.5 rounded-full" style={{ background: 'rgba(34,197,94,0.12)', color: 'var(--green)' }}>Team of 4 → 20% off</span>
+            <span className="font-mono text-[11px] px-2 py-0.5 rounded-full" style={{ background: 'rgba(34,197,94,0.12)', color: 'var(--green)' }}>Team of 2 → ₹6,000 (save ₹998)</span>
+            <span className="font-mono text-[11px] px-2 py-0.5 rounded-full" style={{ background: 'rgba(34,197,94,0.12)', color: 'var(--green)' }}>Team of 3 → ₹9,000 (save ₹1,497)</span>
           </div>
         </div>
       </button>
