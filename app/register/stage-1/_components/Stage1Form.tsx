@@ -415,9 +415,9 @@ function CTAButton({
 // ─────────────────────────────────────────────────────────────────────────────
 
 
-export function Stage1Form() {
+export function Stage1Form({ initialStep = 1 }: { initialStep?: 1 | 2 }) {
   const router = useRouter()
-  const [subStep, setSubStep] = useState<1 | 2>(1)
+  const [subStep, setSubStep] = useState<1 | 2>(initialStep)
   const [direction, setDirection] = useState<1 | -1>(1)
   const [submitting, setSubmitting] = useState(false)
   const [serverError, setServerError] = useState<string | null>(null)
