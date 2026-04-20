@@ -19,11 +19,6 @@ interface Props {
   myEntry:     LeaderboardEntry
 }
 
-const TIER_COLOR: Record<string, string> = {
-  premium: 'var(--brand)',
-  pro:     'var(--text-3)',
-}
-
 const PODIUM = ['🥇', '🥈', '🥉']
 
 export function LeaderboardClient({ initialRows, myEntry }: Props) {
@@ -77,14 +72,6 @@ export function LeaderboardClient({ initialRows, myEntry }: Props) {
             {myEntry.xpPoints.toLocaleString('en-IN')} XP · {myEntry.badges.length} badge{myEntry.badges.length !== 1 ? 's' : ''}
           </p>
         </div>
-        {myEntry.tier && (
-          <span
-            className="font-mono text-[10px] px-2 py-0.5 rounded-full shrink-0"
-            style={{ background: 'rgba(255,184,0,0.1)', color: TIER_COLOR[myEntry.tier] ?? 'var(--text-4)' }}
-          >
-            {myEntry.tier === 'premium' ? '⭐ Premium' : '⚡ Pro'}
-          </span>
-        )}
       </div>
 
       {/* Podium — top 3 */}
@@ -171,17 +158,6 @@ export function LeaderboardClient({ initialRows, myEntry }: Props) {
                   </p>
                 )}
               </div>
-              {entry.tier && (
-                <span
-                  className="font-mono text-[10px] px-1.5 py-0.5 rounded-full shrink-0"
-                  style={{
-                    background: entry.tier === 'premium' ? 'rgba(255,184,0,0.1)' : 'transparent',
-                    color:      TIER_COLOR[entry.tier] ?? 'var(--text-4)',
-                  }}
-                >
-                  {entry.tier === 'premium' ? '⭐' : '⚡'}
-                </span>
-              )}
             </div>
           ))}
         </div>

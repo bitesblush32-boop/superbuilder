@@ -31,7 +31,7 @@ export const teams = pgTable('teams', {
   name:        varchar('name', { length: 100 }).notNull(),
   code:        varchar('code', { length: 10 }).unique().notNull(), // e.g. "SB-X7K2"
   leaderId:    uuid('leader_id').notNull(),                        // FK added via ALTER after students
-  maxSize:     integer('max_size').default(4).notNull(),
+  maxSize:     integer('max_size').default(3).notNull(),
   memberCount: integer('member_count').default(1).notNull(),
   isLocked:    boolean('is_locked').default(false).notNull(),      // locked after reg deadline
   createdAt:   timestamp('created_at').defaultNow().notNull(),
@@ -129,7 +129,7 @@ export const payments = pgTable('payments', {
   razorpayOrderId:   varchar('razorpay_order_id', { length: 100 }).unique(),
   razorpayPaymentId: varchar('razorpay_payment_id', { length: 100 }),
   amount:            integer('amount').notNull(), // paise (₹1 = 100 paise)
-  tier:              tierEnum('tier').notNull(),
+  tier:              tierEnum('tier'),       // nullable — legacy field, no longer required
   status:            statusEnum('status').default('pending').notNull(),
   isEmi:             boolean('is_emi').default(false),
   emiPhase:          integer('emi_phase').default(1),

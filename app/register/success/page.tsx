@@ -31,7 +31,6 @@ export default async function SuccessPage() {
 
   const firstName    = student.fullName.split(' ')[0]
   const referralCode = student.referralCode ?? ''
-  const tier         = (student.tier ?? 'pro') as 'pro' | 'premium'
   const xp           = student.xpPoints
 
   return (
@@ -39,7 +38,6 @@ export default async function SuccessPage() {
       firstName={firstName}
       fullName={student.fullName}
       referralCode={referralCode}
-      tier={tier}
       xp={xp}
     />
   )

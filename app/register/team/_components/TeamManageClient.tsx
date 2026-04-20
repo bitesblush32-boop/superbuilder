@@ -221,15 +221,15 @@ function CurrentTeamView({
         ))}
       </div>
 
-      {/* Discount status */}
-      {team.memberCount >= 3 && (
+      {/* Team rate status */}
+      {team.memberCount >= 2 && (
         <div
           className="rounded-xl px-4 py-3 flex items-center gap-3"
           style={{ background: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.2)' }}
         >
           <span>🎉</span>
           <p className="text-sm font-body" style={{ color: 'var(--green)' }}>
-            {team.memberCount === 4 ? '20% team discount' : '10% team discount'} unlocked at payment!
+            Team rate unlocked — everyone pays ₹2,999 instead of ₹3,499!
           </p>
         </div>
       )}
@@ -304,7 +304,7 @@ function NoTeamView({ studentName, onDone }: { studentName: string; onDone: () =
       className="flex flex-col gap-4"
     >
       <p className="text-sm font-body" style={{ color: 'var(--text-3)' }}>
-        {studentName ? `Hey ${studentName}! ` : ''}Teams of 3–4 unlock discounts at payment. Individual stages are still completed solo.
+        {studentName ? `Hey ${studentName}! ` : ''}Teams of 2–3 pay ₹2,999/head vs ₹3,499 solo. Individual stages are completed solo.
       </p>
 
       {/* Solo */}
@@ -334,10 +334,9 @@ function NoTeamView({ studentName, onDone }: { studentName: string; onDone: () =
         <span className="text-3xl">⚡</span>
         <div>
           <p className="font-heading font-bold text-base mb-0.5" style={{ color: 'var(--text-brand)' }}>Create a Team</p>
-          <p className="font-body text-xs" style={{ color: 'var(--text-3)' }}>Get a code → share with 2–3 friends</p>
+          <p className="font-body text-xs" style={{ color: 'var(--text-3)' }}>Get a code → share with 1–2 friends</p>
           <div className="flex flex-wrap gap-2 mt-2">
-            <span className="font-mono text-[11px] px-2 py-0.5 rounded-full" style={{ background: 'rgba(34,197,94,0.12)', color: 'var(--green)' }}>Team of 3 → 10% off</span>
-            <span className="font-mono text-[11px] px-2 py-0.5 rounded-full" style={{ background: 'rgba(34,197,94,0.12)', color: 'var(--green)' }}>Team of 4 → 20% off</span>
+            <span className="font-mono text-[11px] px-2 py-0.5 rounded-full" style={{ background: 'rgba(34,197,94,0.12)', color: 'var(--green)' }}>Team of 2–3 → ₹2,999/head</span>
           </div>
         </div>
       </button>
@@ -436,7 +435,7 @@ function NoTeamView({ studentName, onDone }: { studentName: string; onDone: () =
       <h2 className="font-display text-3xl leading-none tracking-wide" style={{ color: 'var(--text-brand)' }}>YOU&apos;RE IN!</h2>
       <div className="w-full rounded-2xl p-4" style={{ background: 'var(--bg-card)', border: '1px solid var(--border-subtle)' }}>
         <p className="font-heading font-bold text-lg mb-1" style={{ color: 'var(--text-1)' }}>{result?.teamName}</p>
-        <p className="font-mono text-xs" style={{ color: 'var(--text-3)' }}>{result?.memberCount} of 4 members joined</p>
+        <p className="font-mono text-xs" style={{ color: 'var(--text-3)' }}>{result?.memberCount} of 3 members joined</p>
       </div>
       <CTAButton onClick={onDone}>Continue to Stage 2 →</CTAButton>
     </motion.div>
@@ -493,7 +492,7 @@ export function TeamManageClient({ studentId: _studentId, studentName, teamRole,
         <p className="text-sm font-body" style={{ color: 'var(--text-3)' }}>
           {alreadyDecided
             ? 'Your team status is set. Continue to Stage 2 when ready.'
-            : 'Teams of 3–4 unlock discounts at payment. Individual stages are completed solo.'}
+            : 'Teams of 2–3 pay ₹2,999/head vs ₹3,499 solo. Individual stages are completed solo.'}
         </p>
       </div>
 

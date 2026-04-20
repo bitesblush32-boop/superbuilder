@@ -31,7 +31,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
       <DashboardShell
         student={{
           id: '', fullName: 'Builder', firstName: 'Builder',
-          grade: '10', city: '', tier: 'pro',
+          grade: '10', city: '', tier: null,
           xpPoints: 0, badges: [], currentStage: 1,
           orientationComplete: false, hackathonDomain: null,
           teamId: null, teamRole: null, certificateUrl: null,
@@ -83,7 +83,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
         firstName:           student.fullName.split(' ')[0],
         grade:               student.grade,
         city:                student.city ?? '',
-        tier:                (student.tier ?? 'pro') as 'pro' | 'premium',
+        tier:                student.tier ?? null,
         xpPoints:            student.xpPoints,
         badges:              (student.badges as string[]) ?? [],
         currentStage:        parseInt(student.currentStage, 10),

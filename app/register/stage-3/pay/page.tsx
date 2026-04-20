@@ -2,7 +2,7 @@ import { redirect } from 'next/navigation'
 import { getStudentOrRedirect } from '@/lib/auth/getStudentOrRedirect'
 import { checkStageLock } from '@/lib/auth/stageLock'
 import { StageLocked } from '@/components/stage/StageLocked'
-import { getTeamWithMembers, getTeamDiscounts } from '@/lib/db/queries/teams'
+import { getTeamWithMembers, getFlatPricing } from '@/lib/db/queries/teams'
 import { PayPage } from './_components/PayPage'
 
 export const metadata = {
@@ -17,15 +17,13 @@ export default async function PayPageRoute() {
   const { student } = await getStudentOrRedirect(3)
   if (!student) redirect('/dashboard/apply')
 
-  const [teamData, discounts] = await Promise.all([
+  const [teamData, pricing] = await Promise.all([
     student.teamId ? getTeamWithMembers(student.teamId) : Promise.resolve(null),
-    getTeamDiscounts(),
+    getFlatPricing(),
   ])
 
-  const memberCount  = teamData?.memberCount ?? 1
-  const discountPct  = memberCount >= 4 ? discounts.team4
-                     : memberCount >= 3 ? discounts.team3
-                     : 0
+  const memberCount = teamData?.memberCount ?? 1
+  const priceRupees = memberCount >= 2 ? pricing.priceTeam : pricing.priceSolo
 
   return (
     <PayPage
@@ -33,9 +31,11 @@ export default async function PayPageRoute() {
       fullName={student.fullName}
       email={student.email}
       phone={student.phone ?? ''}
-      defaultTier={(student.tier as 'pro' | 'premium' | null) ?? null}
       teamData={teamData}
-      discountPct={discountPct}
+      memberCount={memberCount}
+      priceSolo={pricing.priceSolo}
+      priceTeam={pricing.priceTeam}
+      priceRupees={priceRupees}
     />
   )
 }

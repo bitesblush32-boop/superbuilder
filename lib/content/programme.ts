@@ -38,43 +38,6 @@ export const PHASES = [
   { num: 6, name: 'Winners + Certificates', dates: 'Jun 9–10', milestone: 'Prizes + certs' },
 ] as const
 
-export const TIERS = {
-  pro: {
-    name: 'Pro',
-    priceMin: 1499,
-    priceMax: 1999,
-    features: [
-      '3 live workshops',
-      'Group mentorship',
-      'Participation certificate',
-      'Digital badge',
-    ],
-    missing: [
-      '1:1 mentor',
-      'LinkedIn certificate',
-      'T-shirt + kit',
-      'Priority judging',
-      'Parent report',
-      'EMI',
-    ],
-  },
-  premium: {
-    name: 'Premium',
-    priceMin: 2499,
-    priceMax: 2999,
-    emiFirst: 999,
-    popular: true,
-    features: [
-      '3 workshops + bonus session',
-      '1:1 mentor (2 slots)',
-      'Verified LinkedIn certificate',
-      'T-shirt + premium kit',
-      'Priority judging',
-      'Parent progress report',
-      'EMI: ₹999 now + rest in 1 week',
-    ],
-  },
-} as const
 
 export const JUDGING = [
   { criterion: 'Innovation & Originality', weight: 25, desc: 'Is the idea unique and thoughtful?' },

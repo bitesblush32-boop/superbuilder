@@ -19,7 +19,7 @@ export interface StudentData {
   firstName:           string
   grade:               string
   city:                string
-  tier:                'pro' | 'premium'
+  tier:                string | null
   xpPoints:            number
   badges:              string[]
   currentStage:        number

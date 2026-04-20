@@ -16,7 +16,7 @@ const EASE_OUT: [number, number, number, number] = [0.16, 1, 0.3, 1]
 const NAV_LINKS = [
   { href: '/dashboard',             label: 'Overview',    emoji: '🏠' },
   { href: '/dashboard/workshops',   label: 'Workshops',   emoji: '🎓' },
-  { href: '/dashboard/mentors',     label: 'Mentors',     emoji: '👤', premiumOnly: true },
+  { href: '/dashboard/mentors',     label: 'Mentors',     emoji: '👤' },
   { href: '/dashboard/team',        label: 'My Team',     emoji: '🤝' },
   { href: '/dashboard/leaderboard', label: 'Leaderboard', emoji: '🏆' },
   { href: '/dashboard/submit',      label: 'Submit',      emoji: '🚀' },
@@ -302,7 +302,7 @@ function StageNode({
 
 // ── Nav links ─────────────────────────────────────────────────────────────────
 
-function NavLinks({ tier }: { tier: 'pro' | 'premium' }) {
+function NavLinks() {
   const pathname = usePathname()
 
   return (
@@ -310,7 +310,6 @@ function NavLinks({ tier }: { tier: 'pro' | 'premium' }) {
       {NAV_LINKS.map(link => {
         const isActive = pathname === link.href ||
           (link.href !== '/dashboard' && pathname.startsWith(link.href))
-        const isLocked = 'premiumOnly' in link && link.premiumOnly && tier !== 'premium'
 
         return (
           <Link
@@ -319,20 +318,12 @@ function NavLinks({ tier }: { tier: 'pro' | 'premium' }) {
             className="flex items-center gap-3 px-3 min-h-[44px] rounded-xl transition-all duration-150 active:scale-[0.97]"
             style={{
               background:  isActive ? 'var(--brand-subtle)' : 'transparent',
-              color:       isActive ? 'var(--text-brand)' : isLocked ? 'var(--text-4)' : 'var(--text-3)',
+              color:       isActive ? 'var(--text-brand)' : 'var(--text-3)',
               borderLeft:  isActive ? '2px solid var(--brand)' : '2px solid transparent',
             }}
           >
             <span className="text-base leading-none">{link.emoji}</span>
             <span className="font-body font-medium text-[13px] flex-1">{link.label}</span>
-            {isLocked && (
-              <span
-                className="font-mono text-[10px] px-1.5 py-0.5 rounded"
-                style={{ background: 'var(--bg-float)', color: 'var(--text-4)' }}
-              >
-                ⭐
-              </span>
-            )}
           </Link>
         )
       })}
@@ -345,9 +336,9 @@ function NavLinks({ tier }: { tier: 'pro' | 'premium' }) {
 const XP_THRESHOLDS = [0, 50, 150, 350, 550, 750, 1050, 1350, 1850]
 
 function XPBarFooter({
-  xpPoints, fullName, tier, firstName,
+  xpPoints, fullName, firstName,
 }: {
-  xpPoints: number; fullName: string; tier: string; firstName: string
+  xpPoints: number; fullName: string; firstName: string
 }) {
   const { signOut } = useClerk()
   const nextThreshold = XP_THRESHOLDS.find(t => t > xpPoints) ?? 2000
@@ -393,8 +384,8 @@ function XPBarFooter({
           <p className="font-body text-sm font-medium truncate" style={{ color: 'var(--text-1)' }}>
             {firstName}
           </p>
-          <p className="font-mono text-[11px] capitalize" style={{ color: 'var(--text-4)' }}>
-            {tier} tier
+          <p className="font-mono text-[11px]" style={{ color: 'var(--text-4)' }}>
+            Super Builder
           </p>
         </div>
         <button
@@ -513,7 +504,7 @@ export function DashboardSidebar({
 
       {/* Nav links */}
       <div className="flex-1 overflow-y-auto py-2">
-        <NavLinks tier={student.tier} />
+        <NavLinks />
       </div>
 
       {/* XP + avatar footer */}
@@ -521,7 +512,6 @@ export function DashboardSidebar({
         xpPoints={student.xpPoints}
         fullName={student.fullName}
         firstName={student.firstName}
-        tier={student.tier}
       />
     </div>
   )

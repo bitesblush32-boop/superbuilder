@@ -30,20 +30,6 @@ export type DatesConfig = {
   workshops: WorkshopEntry[]
 }
 
-export type PricingConfig = {
-  pro: {
-    priceMin: number
-    priceMax: number
-    features: string[]
-    missing: string[]
-  }
-  premium: {
-    priceMin: number
-    priceMax: number
-    emiFirst: number
-    features: string[]
-  }
-}
 
 export type ScheduleItem = {
   id: string
@@ -83,28 +69,6 @@ export const DEFAULT_DATES: DatesConfig = {
   ],
 }
 
-export const DEFAULT_PRICING: PricingConfig = {
-  pro: {
-    priceMin: 1499,
-    priceMax: 1999,
-    features: ['3 live workshops', 'Group mentorship', 'Participation certificate', 'Digital badge'],
-    missing: ['1:1 mentor', 'LinkedIn certificate', 'T-shirt + kit', 'Priority judging', 'Parent report', 'EMI'],
-  },
-  premium: {
-    priceMin: 2499,
-    priceMax: 2999,
-    emiFirst: 999,
-    features: [
-      '3 workshops + bonus session',
-      '1:1 mentor (2 slots)',
-      'Verified LinkedIn certificate',
-      'T-shirt + premium kit',
-      'Priority judging',
-      'Parent progress report',
-      'EMI: ₹999 now + rest in 1 week',
-    ],
-  },
-}
 
 // ─── Getters ──────────────────────────────────────────────────────────────────
 
@@ -117,14 +81,6 @@ export async function getDatesConfig(): Promise<DatesConfig> {
   }
 }
 
-export async function getPricingConfig(): Promise<PricingConfig> {
-  try {
-    const [row] = await db.select().from(programmeConfig).where(eq(programmeConfig.section, 'pricing')).limit(1)
-    return row ? (row.data as PricingConfig) : DEFAULT_PRICING
-  } catch {
-    return DEFAULT_PRICING
-  }
-}
 
 export async function getScheduleItems(targetStage?: string): Promise<ScheduleItem[]> {
   try {
@@ -164,9 +120,3 @@ export async function upsertDatesConfig(data: DatesConfig): Promise<void> {
     .onConflictDoUpdate({ target: programmeConfig.section, set: { data, updatedAt: new Date() } })
 }
 
-export async function upsertPricingConfig(data: PricingConfig): Promise<void> {
-  await db
-    .insert(programmeConfig)
-    .values({ section: 'pricing', data, updatedAt: new Date() })
-    .onConflictDoUpdate({ target: programmeConfig.section, set: { data, updatedAt: new Date() } })
-}

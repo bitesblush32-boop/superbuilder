@@ -47,7 +47,6 @@ export async function POST(req: Request) {
   let studentId = ''
   let parentEmail = ''
   let parentName = ''
-  let tierName = ''
 
   try {
     await db.transaction(async (tx) => {
@@ -83,12 +82,11 @@ export async function POST(req: Request) {
       // d. Generate referral code if not already set
       const referralCode = student.referralCode ?? generateReferralCode()
 
-      // e. Update student: isPaid, tier, stage, referralCode
+      // e. Update student: isPaid, stage, referralCode
       await tx
         .update(students)
         .set({
           isPaid: true,
-          tier: payment.tier,
           currentStage: '4',
           referralCode,
           updatedAt: new Date(),
@@ -139,7 +137,6 @@ export async function POST(req: Request) {
       studentEmail = student.email
       studentName = student.fullName
       studentId = student.id
-      tierName = payment.tier === 'premium' ? 'Premium' : 'Pro'
       parentEmail = parent?.email ?? ''
       parentName = parent?.fullName ?? ''
     })
@@ -156,15 +153,15 @@ export async function POST(req: Request) {
       from: 'Super Builders <hello@superbuilder.org>',
       to: [studentEmail],
       subject: `You're officially a Super Builder, ${firstName}! 🏆`,
-      html: studentConfirmationEmail({ firstName, tier: tierName }),
+      html: studentConfirmationEmail({ firstName }),
     }).catch(e => console.error('[razorpay-webhook] student email:', e))
 
     if (parentEmail) {
       resend.emails.send({
         from: 'Super Builders <hello@superbuilder.org>',
         to: [parentEmail],
-        subject: `${firstName} is registered for Super Builders ${tierName} ✅`,
-        html: parentConfirmationEmail({ studentName, parentName, tier: tierName }),
+        subject: `${firstName} is registered for Super Builders ✅`,
+        html: parentConfirmationEmail({ studentName, parentName }),
       }).catch(e => console.error('[razorpay-webhook] parent email:', e))
     }
   }
@@ -174,7 +171,7 @@ export async function POST(req: Request) {
 
 // ─── Email templates ──────────────────────────────────────────────────────────
 
-function studentConfirmationEmail({ firstName, tier }: { firstName: string; tier: string }) {
+function studentConfirmationEmail({ firstName }: { firstName: string }) {
   return `<!DOCTYPE html>
 <html>
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
@@ -193,7 +190,7 @@ function studentConfirmationEmail({ firstName, tier }: { firstName: string; tier
 
       <div style="background:#161616;border:1px solid rgba(255,255,255,0.09);border-radius:16px;padding:28px;margin-bottom:20px">
         <p style="margin:0 0 20px;font-size:15px;line-height:1.7;color:#FFFFFF">
-          Your <strong style="color:#FFB800">${tier}</strong> spot is locked in. You're officially a Super Builder. ⚡
+          Your spot is locked in. You're officially a Super Builder. ⚡
         </p>
         <div style="border-top:1px solid rgba(255,255,255,0.06);padding-top:20px;margin-bottom:20px">
           <p style="margin:0 0 10px;font-size:12px;color:#484848;letter-spacing:0.12em;text-transform:uppercase">What's next</p>
@@ -230,8 +227,8 @@ function studentConfirmationEmail({ firstName, tier }: { firstName: string; tier
 }
 
 function parentConfirmationEmail({
-  studentName, parentName, tier,
-}: { studentName: string; parentName: string; tier: string }) {
+  studentName, parentName,
+}: { studentName: string; parentName: string }) {
   const firstName = studentName.split(' ')[0]
   return `<!DOCTYPE html>
 <html>
@@ -243,13 +240,13 @@ function parentConfirmationEmail({
         <h1 style="margin:0 0 6px;font-size:22px;color:#FFFFFF;font-weight:700">
           ${firstName} is in! ✅
         </h1>
-        <p style="margin:0;font-size:13px;color:#808080">Super Builders ${tier} — Payment Confirmed</p>
+        <p style="margin:0;font-size:13px;color:#808080">Super Builders — Payment Confirmed</p>
       </div>
 
       <div style="background:#161616;border:1px solid rgba(255,255,255,0.09);border-radius:16px;padding:24px;margin-bottom:16px">
         <p style="margin:0 0 16px;font-size:14px;line-height:1.7">Dear ${parentName || 'Parent/Guardian'},</p>
         <p style="margin:0 0 16px;font-size:14px;line-height:1.7;color:#808080">
-          Payment for <strong style="color:#FFFFFF">${studentName}</strong>'s <strong style="color:#FFB800">${tier}</strong> registration is confirmed. Here's everything you need to know.
+          Payment for <strong style="color:#FFFFFF">${studentName}</strong>'s Super Builders registration is confirmed. Here's everything you need to know.
         </p>
 
         <div style="background:#111;border:1px solid rgba(255,255,255,0.05);border-radius:10px;padding:16px;margin-bottom:12px">

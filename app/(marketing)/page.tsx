@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import Script from 'next/script'
-import { getDatesConfig, getPricingConfig } from '@/lib/db/queries/config'
+import { getDatesConfig } from '@/lib/db/queries/config'
 
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
@@ -45,7 +45,7 @@ export const metadata: Metadata = {
 
 /* ─── Page ───────────────────────────────────────────────────────────────────── */
 export default async function LandingPage() {
-  const [dates, pricing] = await Promise.all([getDatesConfig(), getPricingConfig()])
+  const dates = await getDatesConfig()
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -62,7 +62,7 @@ export default async function LandingPage() {
     },
     offers: {
       '@type': 'Offer',
-      price: String(pricing.pro.priceMin),
+      price: '2999',
       priceCurrency: 'INR',
       validThrough: dates.regDeadlineISO,
     },
@@ -90,8 +90,8 @@ export default async function LandingPage() {
         {/* 4 — Programme timeline (phases + workshop cards) */}
         <ProgrammeTimeline phases={dates.phases} workshops={dates.workshops} />
 
-        {/* 5 — Tier comparison */}
-        <TierComparison pricing={pricing} />
+        {/* 5 — Pricing (solo vs team) */}
+        <TierComparison />
 
         {/* 6 — Badge wall */}
         <BadgeWall />

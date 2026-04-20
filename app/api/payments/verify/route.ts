@@ -50,7 +50,7 @@ export async function POST(req: Request) {
   // 5. Capture payment + update student in parallel
   await Promise.all([
     capturePayment({ razorpayOrderId: razorpay_order_id, razorpayPaymentId: razorpay_payment_id }),
-    confirmStudentPayment({ studentId: payment.studentId, tier: payment.tier }),
+    confirmStudentPayment({ studentId: payment.studentId }),
   ])
 
   // 6. Award Builder badge + 200 XP (idempotency: addBadge is append-only, minor dup risk acceptable)

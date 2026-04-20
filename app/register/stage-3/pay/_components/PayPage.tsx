@@ -1,11 +1,9 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Script from 'next/script'
 import { motion, AnimatePresence } from 'framer-motion'
-import { useRegistrationStore } from '@/lib/store/registration'
-import { TIERS } from '@/lib/content/programme'
 
 type Bez = [number, number, number, number]
 const EASE_OUT: Bez = [0.16, 1, 0.3, 1]
@@ -25,15 +23,11 @@ interface PayPageProps {
   fullName:    string
   email:       string
   phone:       string
-  defaultTier: 'pro' | 'premium' | null
   teamData:    TeamData | null
-  discountPct: number  // 0, 10, or 20
-}
-
-// Feature summaries for the summary card
-const TIER_HIGHLIGHTS: Record<'pro' | 'premium', string[]> = {
-  pro:     ['3 live workshops', 'Group mentorship', 'Participation certificate', 'Digital badge'],
-  premium: ['3 workshops + bonus session', '1:1 mentor (2 slots)', 'Verified LinkedIn certificate', 'T-shirt + premium kit'],
+  memberCount: number
+  priceSolo:   number  // ₹ rupees
+  priceTeam:   number  // ₹ rupees per head
+  priceRupees: number  // computed price for this student
 }
 
 declare global {
@@ -42,28 +36,34 @@ declare global {
   }
 }
 interface RazorpayOptions {
-  key:            string
-  amount:         number
-  currency:       string
-  order_id:       string
-  name:           string
-  description:    string
-  prefill?:       { name?: string; email?: string; contact?: string }
-  theme?:         { color?: string }
-  handler:        (response: { razorpay_order_id: string; razorpay_payment_id: string; razorpay_signature: string }) => void
-  modal?:         { ondismiss?: () => void }
+  key:         string
+  amount:      number
+  currency:    string
+  order_id:    string
+  name:        string
+  description: string
+  prefill?:    { name?: string; email?: string; contact?: string }
+  theme?:      { color?: string }
+  handler:     (response: { razorpay_order_id: string; razorpay_payment_id: string; razorpay_signature: string }) => void
+  modal?:      { ondismiss?: () => void }
 }
 
-function TeamStatusCard({ teamData, discountPct }: { teamData: TeamData; discountPct: number }) {
-  const paidCount = teamData.members.filter(m => m.isPaid).length
-  const totalCount = teamData.memberCount
+function TeamStatusCard({ teamData, memberCount, priceSolo, priceTeam }: {
+  teamData:    TeamData
+  memberCount: number
+  priceSolo:   number
+  priceTeam:   number
+}) {
+  const paidCount  = teamData.members.filter(m => m.isPaid).length
+  const isTeamRate = memberCount >= 2
+  const savedPer   = priceSolo - priceTeam
 
   return (
     <div
       className="rounded-2xl p-4"
       style={{
-        background: discountPct > 0 ? 'rgba(34,197,94,0.06)' : 'var(--bg-card)',
-        border: discountPct > 0 ? '1px solid rgba(34,197,94,0.25)' : '1px solid var(--border-subtle)',
+        background: isTeamRate ? 'rgba(34,197,94,0.06)' : 'var(--bg-card)',
+        border: isTeamRate ? '1px solid rgba(34,197,94,0.25)' : '1px solid var(--border-subtle)',
       }}
     >
       <div className="flex items-center justify-between mb-2">
@@ -79,80 +79,60 @@ function TeamStatusCard({ teamData, discountPct }: { teamData: TeamData; discoun
             {teamData.code}
           </span>
         </div>
-        {discountPct > 0 && (
+        {isTeamRate && (
           <span
             className="font-mono text-xs px-2 py-0.5 rounded-full font-bold"
             style={{ background: 'rgba(34,197,94,0.15)', color: 'var(--green)' }}
           >
-            {discountPct}% team discount
+            Team rate — save ₹{savedPer.toLocaleString('en-IN')}/head
           </span>
         )}
       </div>
+
       <div className="flex items-center gap-2">
         <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: 'var(--bg-float)' }}>
           <div
             className="h-full rounded-full transition-all"
-            style={{ width: `${(paidCount / totalCount) * 100}%`, background: 'var(--green)' }}
+            style={{ width: `${(paidCount / memberCount) * 100}%`, background: 'var(--green)' }}
           />
         </div>
         <p className="font-mono text-[11px] shrink-0" style={{ color: 'var(--text-3)' }}>
-          {paidCount}/{totalCount} paid
+          {paidCount}/{memberCount} paid
         </p>
       </div>
-      {discountPct === 0 && totalCount < 3 && (
+
+      {!isTeamRate && (
         <p className="font-body text-[11px] mt-2" style={{ color: 'var(--text-3)' }}>
-          Get 3+ members to unlock a team discount
+          Add 1 more member to unlock the team rate (₹{priceTeam.toLocaleString('en-IN')}/head)
         </p>
       )}
     </div>
   )
 }
 
-export function PayPage({ studentId, fullName, email, phone, defaultTier, discountPct, teamData }: PayPageProps) {
+export function PayPage({
+  studentId: _studentId, fullName, email, phone,
+  teamData, memberCount, priceSolo, priceTeam, priceRupees,
+}: PayPageProps) {
   const router       = useRouter()
   const searchParams = useSearchParams()
-  const { tier: storeTier, isEmi, setTier } = useRegistrationStore()
 
-  // Prefer Zustand (set on select page), fall back to DB value
-  const tier = storeTier ?? defaultTier
-
-  // If no tier at all, redirect back to select
-  useEffect(() => {
-    if (!tier) router.replace('/register/stage-3/select')
-  }, [tier, router])
-
-  const [emiEnabled, setEmiEnabled]   = useState(isEmi)
   const [loading, setLoading]         = useState(false)
   const [scriptReady, setScriptReady] = useState(false)
-  // Pre-populate error from callback redirect (e.g. net banking failure)
   const [error, setError] = useState<string | null>(
     searchParams.get('error') ? decodeURIComponent(searchParams.get('error')!) : null
   )
 
-  const PREMIUM_PRICE  = TIERS.premium.priceMin // 2499
-  const EMI_FIRST      = TIERS.premium.emiFirst  // 999
-  const EMI_REST       = PREMIUM_PRICE - EMI_FIRST
-
-  const basePrice = !tier ? 0
-    : tier === 'pro'    ? TIERS.pro.priceMin
-    : emiEnabled        ? EMI_FIRST
-    : PREMIUM_PRICE
-
-  const displayPrice = Math.round(basePrice * (1 - discountPct / 100))
-  const savedAmount  = basePrice - displayPrice
-  const amountPaise  = displayPrice * 100
+  const isTeamRate = memberCount >= 2
+  const savedAmount = isTeamRate ? priceSolo - priceTeam : 0
 
   async function handlePay() {
-    if (!tier || !scriptReady) return
+    if (!scriptReady) return
     setLoading(true)
     setError(null)
 
     try {
-      const res = await fetch('/api/payments/create-order', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ tier, isEmi: tier === 'premium' && emiEnabled }),
-      })
+      const res = await fetch('/api/payments/create-order', { method: 'POST' })
 
       if (!res.ok) {
         const { error: msg } = await res.json()
@@ -167,11 +147,10 @@ export function PayPage({ studentId, fullName, email, phone, defaultTier, discou
         currency:    'INR',
         order_id:    orderId,
         name:        'Super Builders',
-        description: `${tier === 'premium' ? 'Premium' : 'Pro'} — School Edition Season 1`,
+        description: 'School Edition Season 1',
         prefill:     { name: fullName, email, contact: phone },
         theme:       { color: '#FFB800' },
-        handler:     async ({ razorpay_order_id, razorpay_payment_id, razorpay_signature }) => {
-          // Verify on server
+        handler: async ({ razorpay_order_id, razorpay_payment_id, razorpay_signature }) => {
           const vRes = await fetch('/api/payments/verify', {
             method:  'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -185,9 +164,7 @@ export function PayPage({ studentId, fullName, email, phone, defaultTier, discou
             setLoading(false)
           }
         },
-        modal: {
-          ondismiss: () => setLoading(false),
-        },
+        modal: { ondismiss: () => setLoading(false) },
       })
 
       rzp.open()
@@ -196,8 +173,6 @@ export function PayPage({ studentId, fullName, email, phone, defaultTier, discou
       setLoading(false)
     }
   }
-
-  if (!tier) return null
 
   return (
     <>
@@ -209,86 +184,74 @@ export function PayPage({ studentId, fullName, email, phone, defaultTier, discou
       />
 
       <div className="flex flex-col gap-6 max-w-lg mx-auto pb-8">
-        {/* Team status card — shown if student is in a team */}
+        {/* Team status card */}
         {teamData && (
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0, transition: { duration: 0.4, ease: EASE_OUT } }}
           >
-            <TeamStatusCard teamData={teamData} discountPct={discountPct} />
+            <TeamStatusCard
+              teamData={teamData}
+              memberCount={memberCount}
+              priceSolo={priceSolo}
+              priceTeam={priceTeam}
+            />
           </motion.div>
         )}
 
-        {/* Tier summary card */}
+        {/* Pricing card */}
         <motion.div
           className="rounded-2xl p-5"
           style={{
-            background:  'var(--bg-card)',
-            border:      tier === 'premium' ? '2px solid rgba(255,184,0,0.4)' : '1px solid var(--border-subtle)',
-            boxShadow:   tier === 'premium' ? '0 0 32px rgba(255,184,0,0.1)' : 'none',
+            background: 'var(--bg-card)',
+            border: '2px solid rgba(255,184,0,0.4)',
+            boxShadow: '0 0 32px rgba(255,184,0,0.08)',
           }}
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0, transition: { duration: 0.4, ease: EASE_OUT } }}
         >
-          <div className="flex items-start justify-between mb-4">
-            <div>
-              <p className="font-mono text-[12px] tracking-[0.2em] uppercase mb-1" style={{ color: 'var(--text-3)' }}>
-                Your selection
-              </p>
-              <h2 className="font-display text-3xl tracking-wide" style={{ color: tier === 'premium' ? 'var(--brand)' : 'var(--text-1)' }}>
-                {tier === 'premium' ? 'PREMIUM' : 'PRO'}
-              </h2>
-            </div>
-            <button
-              className="font-body text-xs underline min-h-[44px] px-2 flex items-center"
-              style={{ color: 'var(--text-3)' }}
-              onClick={() => router.push('/register/stage-3/select')}
-            >
-              Change
-            </button>
+          <p className="font-mono text-[11px] tracking-[0.18em] uppercase mb-2" style={{ color: 'var(--text-3)' }}>
+            Registration Fee
+          </p>
+          <div className="flex items-baseline gap-3 mb-3">
+            <span className="font-display text-5xl tracking-tight" style={{ color: 'var(--text-1)' }}>
+              ₹{priceRupees.toLocaleString('en-IN')}
+            </span>
+            {isTeamRate && (
+              <span className="font-body text-sm" style={{ color: 'var(--text-3)' }}>per head</span>
+            )}
           </div>
 
-          {/* Features */}
-          <ul className="flex flex-col gap-2 mb-4">
-            {TIER_HIGHLIGHTS[tier].map(f => (
+          {/* Savings badge for team rate */}
+          {isTeamRate && savedAmount > 0 && (
+            <div className="flex items-center gap-2 mb-4">
+              <span className="font-body text-sm line-through" style={{ color: 'var(--text-4)' }}>
+                ₹{priceSolo.toLocaleString('en-IN')}
+              </span>
+              <span
+                className="font-mono text-xs px-2 py-0.5 rounded-full"
+                style={{ background: 'rgba(34,197,94,0.12)', color: 'var(--green)' }}
+              >
+                Team rate — ₹{savedAmount.toLocaleString('en-IN')} off
+              </span>
+            </div>
+          )}
+
+          {/* What's included */}
+          <ul className="flex flex-col gap-2">
+            {[
+              '3 live AI workshops',
+              'Group mentorship sessions',
+              '24-hour hackathon access',
+              'Participation certificate + digital badge',
+              '₹1,00,000+ prize pool',
+            ].map(f => (
               <li key={f} className="flex items-center gap-2 font-body text-sm" style={{ color: 'var(--text-2)' }}>
-                <span style={{ color: tier === 'premium' ? 'var(--brand)' : '#34D399' }}>✓</span>
+                <span style={{ color: 'var(--brand)' }}>✓</span>
                 {f}
               </li>
             ))}
           </ul>
-
-          {/* EMI toggle — Premium only */}
-          {tier === 'premium' && (
-            <div
-              className="rounded-xl p-3 cursor-pointer transition-all active:scale-[0.98]"
-              style={{
-                background: emiEnabled ? 'rgba(255,184,0,0.08)' : 'var(--bg-float)',
-                border:     emiEnabled ? '1px solid rgba(255,184,0,0.4)' : '1px solid var(--border-subtle)',
-              }}
-              onClick={() => { setEmiEnabled(v => !v); setLoading(false); setError(null) }}
-            >
-              <div className="flex items-center gap-3">
-                <div
-                  className="w-4 h-4 rounded flex items-center justify-center shrink-0"
-                  style={{
-                    background: emiEnabled ? 'var(--brand)' : 'transparent',
-                    border:     emiEnabled ? 'none' : '1.5px solid var(--border-soft)',
-                  }}
-                >
-                  {emiEnabled && <span className="text-[9px] font-bold" style={{ color: '#000' }}>✓</span>}
-                </div>
-                <div>
-                  <p className="font-body text-xs font-semibold" style={{ color: emiEnabled ? 'var(--brand)' : 'var(--text-2)' }}>
-                    Pay in 2 instalments
-                  </p>
-                  <p className="font-mono text-[13px]" style={{ color: 'var(--text-3)' }}>
-                    ₹{EMI_FIRST} now · ₹{EMI_REST} in 1 week
-                  </p>
-                </div>
-              </div>
-            </div>
-          )}
         </motion.div>
 
         {/* Price + CTA */}
@@ -297,34 +260,6 @@ export function PayPage({ studentId, fullName, email, phone, defaultTier, discou
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0, transition: { duration: 0.4, ease: EASE_OUT, delay: 0.1 } }}
         >
-          {/* Price display */}
-          <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 px-1">
-            <span className="font-display text-5xl tracking-tight" style={{ color: 'var(--text-1)' }}>
-              ₹{displayPrice.toLocaleString('en-IN')}
-            </span>
-            {tier === 'premium' && emiEnabled && (
-              <span className="font-body text-sm" style={{ color: 'var(--text-3)' }}>
-                now (₹{EMI_REST} due in 1 week)
-              </span>
-            )}
-          </div>
-
-          {/* Savings badge */}
-          {discountPct > 0 && savedAmount > 0 && (
-            <div className="flex items-center gap-2 px-1">
-              <span className="font-body text-sm line-through" style={{ color: 'var(--text-4)' }}>
-                ₹{basePrice.toLocaleString('en-IN')}
-              </span>
-              <span
-                className="font-mono text-xs px-2 py-0.5 rounded-full"
-                style={{ background: 'rgba(34,197,94,0.12)', color: 'var(--green)' }}
-              >
-                You save ₹{savedAmount.toLocaleString('en-IN')}
-              </span>
-            </div>
-          )}
-
-          {/* Error message */}
           <AnimatePresence>
             {error && (
               <motion.div
@@ -337,7 +272,6 @@ export function PayPage({ studentId, fullName, email, phone, defaultTier, discou
             )}
           </AnimatePresence>
 
-          {/* Pay button */}
           <button
             disabled={loading || !scriptReady}
             className="w-full rounded-xl py-4 font-heading font-bold text-lg tracking-wide min-h-[56px] transition-all active:scale-[0.97] disabled:opacity-40"
@@ -348,10 +282,9 @@ export function PayPage({ studentId, fullName, email, phone, defaultTier, discou
               ? 'Opening payment…'
               : !scriptReady
               ? 'Loading payment…'
-              : `Confirm & Pay ₹${displayPrice.toLocaleString('en-IN')}`}
+              : `Confirm & Pay ₹${priceRupees.toLocaleString('en-IN')}`}
           </button>
 
-          {/* Trust line */}
           <p className="font-body text-xs text-center" style={{ color: 'var(--text-3)' }}>
             🔒 Secured by Razorpay · UPI, Cards, NetBanking accepted
           </p>

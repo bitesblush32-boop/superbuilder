@@ -18,7 +18,7 @@ export async function createTeam(leaderId: string, teamName: string) {
     name:        teamName.trim(),
     code,
     leaderId,
-    maxSize:     4,
+    maxSize:     3,
     memberCount: 1,
   }).returning()
 
@@ -110,12 +110,13 @@ export async function leaveTeam(studentId: string): Promise<{ success: boolean; 
   return { success: true }
 }
 
-export async function getTeamDiscounts(): Promise<{ team3: number; team4: number }> {
+export async function getFlatPricing(): Promise<{ priceSolo: number; priceTeam: number }> {
   const all = await db.select().from(appSettings)
-  const get = (key: string) => parseInt(all.find(r => r.key === key)?.value ?? '0', 10)
+  const get = (key: string, fallback: number) =>
+    parseInt(all.find(r => r.key === key)?.value ?? String(fallback), 10)
   return {
-    team3: get('team_discount_3'),
-    team4: get('team_discount_4'),
+    priceSolo: get('price_solo', 3499),
+    priceTeam: get('price_team', 2999),
   }
 }
 

@@ -18,10 +18,6 @@ const STAGE_COLORS: Record<string, string> = {
 const STAGE_LABELS: Record<string, string> = {
   '1': 'Applied', '2': 'Quiz', '3': 'Pre-pay', '4': 'Paid', '5': 'Submitted',
 }
-const TIER_COLORS: Record<string, string> = {
-  premium: 'var(--bdg-super, #FFD700)',
-  pro:     'var(--blue)',
-}
 
 function initials(name: string): string {
   return name.split(' ').slice(0, 2).map(w => w[0]?.toUpperCase() ?? '').join('')
@@ -99,7 +95,7 @@ function StudentDetailPanel({ studentId }: { studentId: string }) {
         </div>
       </div>
 
-      {/* Stage + tier badges */}
+      {/* Stage + paid badges */}
       <div className="flex gap-2 flex-wrap">
         <span
           className="text-xs px-2.5 py-1 rounded-full font-medium"
@@ -107,14 +103,6 @@ function StudentDetailPanel({ studentId }: { studentId: string }) {
         >
           Stage {s.currentStage} · {STAGE_LABELS[s.currentStage]}
         </span>
-        {s.tier && (
-          <span
-            className="text-xs px-2.5 py-1 rounded-full font-medium"
-            style={{ background: 'var(--bg-float)', color: TIER_COLORS[s.tier] }}
-          >
-            {s.tier === 'premium' ? '⭐ Premium' : 'Pro'}
-          </span>
-        )}
         {s.isPaid && (
           <span className="text-xs px-2.5 py-1 rounded-full font-medium"
             style={{ background: 'var(--green-bg, rgba(34,197,94,0.1))', color: 'var(--green)' }}>
@@ -143,7 +131,7 @@ function StudentDetailPanel({ studentId }: { studentId: string }) {
           <DetailRow label="Team"    value={team.name} />
           <DetailRow label="Code"    value={team.code} />
           <DetailRow label="Role"    value={s.teamRole ?? '—'} />
-          <DetailRow label="Members" value={`${team.memberCount} / 4`} />
+          <DetailRow label="Members" value={`${team.memberCount} / 3`} />
         </Section>
       )}
 
@@ -186,7 +174,6 @@ function StudentDetailPanel({ studentId }: { studentId: string }) {
       {pay && (
         <Section title="Payment">
           <DetailRow label="Amount"     value={formatRupees(pay.amount)} />
-          <DetailRow label="Tier"       value={pay.tier} />
           <DetailRow label="Status"     value={pay.status} />
           <DetailRow label="Confirmed"  value={formatDate(pay.confirmedAt)} />
           <DetailRow label="Order ID"   value={pay.razorpayOrderId} />
@@ -246,7 +233,7 @@ export function StudentsTable({ students, total, currentPage }: Props) {
           <table className="w-full text-sm border-collapse">
             <thead>
               <tr style={{ background: 'var(--bg-raised)' }}>
-                {['#', 'Student', 'Grade', 'City', 'Stage', 'Tier', 'Team', 'XP', 'Joined'].map(h => (
+                {['#', 'Student', 'Grade', 'City', 'Stage', 'Team', 'XP', 'Joined'].map(h => (
                   <th
                     key={h}
                     className="px-4 py-3 text-left text-xs uppercase tracking-wider font-medium whitespace-nowrap"
@@ -295,18 +282,6 @@ export function StudentsTable({ students, total, currentPage }: Props) {
                     </span>
                   </td>
                   <td className="px-4 py-3">
-                    {s.tier ? (
-                      <span
-                        className="text-xs px-2 py-0.5 rounded-full font-medium"
-                        style={{ color: TIER_COLORS[s.tier], background: 'var(--bg-float)' }}
-                      >
-                        {s.tier === 'premium' ? '⭐ Premium' : 'Pro'}
-                      </span>
-                    ) : (
-                      <span style={{ color: 'var(--text-4)' }}>—</span>
-                    )}
-                  </td>
-                  <td className="px-4 py-3">
                     {s.teamCode ? (
                       <span
                         className="font-mono text-[11px] px-2 py-0.5 rounded-full"
@@ -353,11 +328,6 @@ export function StudentsTable({ students, total, currentPage }: Props) {
                 <span className="text-xs" style={{ color: STAGE_COLORS[s.currentStage] }}>
                   Stage {s.currentStage}
                 </span>
-                {s.tier && (
-                  <span className="text-xs" style={{ color: TIER_COLORS[s.tier] }}>
-                    {s.tier === 'premium' ? '⭐' : 'Pro'}
-                  </span>
-                )}
               </div>
             </div>
           ))}

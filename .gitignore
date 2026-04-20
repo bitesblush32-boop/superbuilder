@@ -61,3 +61,10 @@ lib/db/migrations/meta/_journal.json
 context files
 .graphify_ast.json
 .graphify_uncached.txt
+.graphify_cached.json
+.graphify_detect.json
+.graphify_extract.json
+.graphify_incremental.json
+.graphify_semantic.json
+.claude/settings.local.json
+.graphify_python

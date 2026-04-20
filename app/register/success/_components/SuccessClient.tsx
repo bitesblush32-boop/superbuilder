@@ -16,7 +16,6 @@ interface SuccessClientProps {
   firstName: string
   fullName: string
   referralCode: string
-  tier: 'pro' | 'premium'
   xp: number
 }
 
@@ -50,7 +49,7 @@ function downloadWorkshop1ICS() {
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-export function SuccessClient({ firstName, referralCode, tier, xp }: SuccessClientProps) {
+export function SuccessClient({ firstName, referralCode, xp }: SuccessClientProps) {
   const router = useRouter()
 
   const [pendingBadge, setPendingBadge] = useState<BadgeId | null>(null)
@@ -194,7 +193,7 @@ export function SuccessClient({ firstName, referralCode, tier, xp }: SuccessClie
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0, transition: { duration: 0.4, ease: EASE_OUT, delay: 0.5 } }}
           >
-            {tier === 'premium' ? 'Premium' : 'Pro'} · Season 1 · Jun 7–8, 2026
+            Season 1 · Jun 7–8, 2026
           </motion.p>
         </motion.div>
 

@@ -69,17 +69,6 @@ export default async function DashboardPage() {
             >
               Grade {student.grade}
             </span>
-            {student.tier && (
-              <span
-                className="font-mono text-[11px] px-2.5 py-1 rounded-full"
-                style={{
-                  background: 'var(--bg-float)',
-                  color: student.tier === 'premium' ? 'var(--brand)' : 'var(--text-3)',
-                }}
-              >
-                {student.tier === 'premium' ? '⭐ Premium' : '⚡ Pro'}
-              </span>
-            )}
             {student.city && (
               <span
                 className="font-mono text-[11px] px-2.5 py-1 rounded-full"
