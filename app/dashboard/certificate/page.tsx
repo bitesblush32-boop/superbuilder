@@ -1,5 +1,6 @@
 import { redirect }            from 'next/navigation'
 import { getStudentOrRedirect } from '@/lib/auth/getStudentOrRedirect'
+import { checkStageLock }       from '@/lib/auth/stageLock'
 import { LockedSection }        from '@/components/dashboard/LockedSection'
 import { BADGES }               from '@/lib/gamification/badges'
 
@@ -26,6 +27,9 @@ function linkedInCertUrl(studentId: string, name: string) {
 }
 
 export default async function CertificatePage() {
+  const { isOpen } = await checkStageLock(6)
+  if (!isOpen) redirect('/dashboard')
+
   const { student } = await getStudentOrRedirect(4)
   if (!student) redirect('/register')
 

@@ -4,6 +4,7 @@ import { eq }                     from 'drizzle-orm'
 import { db }                     from '@/lib/db'
 import { workshopAttendance }     from '@/lib/db/schema'
 import { getStudentOrRedirect }   from '@/lib/auth/getStudentOrRedirect'
+import { checkStageLock }         from '@/lib/auth/stageLock'
 import { getScheduleItems }       from '@/lib/db/queries/config'
 import type { ScheduleItem }      from '@/lib/db/queries/config'
 import { WORKSHOPS }              from '@/lib/content/programme'
@@ -199,6 +200,9 @@ function WorkshopCard({
 }
 
 export default async function WorkshopsPage() {
+  const { isOpen } = await checkStageLock(5)
+  if (!isOpen) redirect('/dashboard')
+
   const { student } = await getStudentOrRedirect(4)
   if (!student) redirect('/register')
 

@@ -3,6 +3,7 @@ import { eq }                   from 'drizzle-orm'
 import { db }                   from '@/lib/db'
 import { projects }             from '@/lib/db/schema'
 import { getStudentOrRedirect } from '@/lib/auth/getStudentOrRedirect'
+import { checkStageLock }       from '@/lib/auth/stageLock'
 import { HACKATHON_START, HACKATHON_END } from '@/lib/content/programme'
 import { LockedSection }        from '@/components/dashboard/LockedSection'
 import { ProjectSubmitForm }    from './_components/ProjectSubmitForm'
@@ -25,6 +26,9 @@ const DOMAIN_LABELS: Record<string, string> = {
 }
 
 export default async function SubmitPage() {
+  const { isOpen } = await checkStageLock(5)
+  if (!isOpen) redirect('/dashboard')
+
   const { student } = await getStudentOrRedirect(4)
   if (!student) redirect('/register')
 

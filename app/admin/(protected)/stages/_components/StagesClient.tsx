@@ -20,23 +20,28 @@ const STAGE_META: Record<string, {
     color: '#A78BFA',
   },
   stage_2_open: {
-    num: 2, name: 'Orientation & Learning', emoji: '🧠',
-    description: 'Orientation video, domain selection, AI quiz (domain-specific, 10 Qs), and idea pitch.',
+    num: 2, name: 'Orientation', emoji: '🧭',
+    description: 'Students watch the welcome video, review programme rules, and acknowledge to proceed.',
     color: '#60A5FA',
   },
   stage_3_open: {
-    num: 3, name: 'Payment', emoji: '💳',
-    description: 'Engage questions + Razorpay payment (₹3,499 solo / ₹2,999/head team).',
+    num: 3, name: 'Domain & Quiz', emoji: '🧠',
+    description: 'Students pick their hackathon domain (locked after selection), complete the 10-question domain quiz (6/10 to pass, max 2 attempts), and submit their idea pitch.',
     color: '#34D399',
   },
   stage_4_open: {
-    num: 4, name: 'Build Phase', emoji: '🚀',
-    description: 'Paid students access workshops, mentors, submit their project during the hackathon.',
-    color: '#FFB800',
+    num: 4, name: 'Payment', emoji: '💳',
+    description: 'Engage re-anchor questions, tier selection (Pro / Premium), and Razorpay checkout with team discount applied server-side.',
+    color: '#FB923C',
   },
   stage_5_open: {
-    num: 5, name: 'Certificates', emoji: '🏆',
-    description: 'Results published, leaderboard finalised, certificates available for download.',
+    num: 5, name: 'Build Phase', emoji: '🚀',
+    description: 'Paid students access workshops, mentor sessions (Premium), live leaderboard, and project submission during the 24h hackathon window.',
+    color: '#FFB800',
+  },
+  stage_6_open: {
+    num: 6, name: 'Certificates', emoji: '🏆',
+    description: 'Results published, leaderboard finalised, winners announced, and certificates available for download.',
     color: '#FFD700',
   },
 }

@@ -126,7 +126,10 @@ export async function getAppSetting(key: string): Promise<string | null> {
 }
 
 export async function updateAppSetting(key: string, value: string): Promise<void> {
-  await db.update(appSettings).set({ value, updatedAt: new Date() }).where(eq(appSettings.key, key))
+  await db
+    .insert(appSettings)
+    .values({ key, value, updatedAt: new Date() })
+    .onConflictDoUpdate({ target: appSettings.key, set: { value, updatedAt: new Date() } })
 }
 
 export async function getAllSettings(): Promise<typeof appSettings.$inferSelect[]> {
@@ -137,10 +140,10 @@ export async function getAllSettings(): Promise<typeof appSettings.$inferSelect[
 export async function getOpenStages(): Promise<Record<number, boolean>> {
   const rows = await db.select().from(appSettings)
     .where(inArray(appSettings.key, [
-      'stage_1_open', 'stage_2_open', 'stage_3_open', 'stage_4_open', 'stage_5_open'
+      'stage_1_open', 'stage_2_open', 'stage_3_open', 'stage_4_open', 'stage_5_open', 'stage_6_open'
     ]))
 
-  const result: Record<number, boolean> = { 1: false, 2: false, 3: false, 4: false, 5: false }
+  const result: Record<number, boolean> = { 1: false, 2: false, 3: false, 4: false, 5: false, 6: false }
   for (const row of rows) {
     const num = parseInt(row.key.replace('stage_', '').replace('_open', ''), 10)
     result[num] = row.value === 'true'

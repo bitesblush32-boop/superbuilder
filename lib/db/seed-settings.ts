@@ -9,10 +9,11 @@ export async function seedSettings() {
       { key: 'price_team', value: '2999', label: 'Team registration price per head (₹)' },
       // Stage gates — admin opens these manually
       { key: 'stage_1_open', value: 'true',  label: 'Stage 1 — Applications Open' },
-      { key: 'stage_2_open', value: 'false', label: 'Stage 2 — Orientation & Quiz Open' },
-      { key: 'stage_3_open', value: 'false', label: 'Stage 3 — Payment Open' },
-      { key: 'stage_4_open', value: 'false', label: 'Stage 4 — Build & Dashboard Open' },
-      { key: 'stage_5_open', value: 'false', label: 'Stage 5 — Certificates Open' },
+      { key: 'stage_2_open', value: 'false', label: 'Stage 2 — Orientation Open' },
+      { key: 'stage_3_open', value: 'false', label: 'Stage 3 — Domain & Quiz Open' },
+      { key: 'stage_4_open', value: 'false', label: 'Stage 4 — Payment Open' },
+      { key: 'stage_5_open', value: 'false', label: 'Stage 5 — Build Phase Open' },
+      { key: 'stage_6_open', value: 'false', label: 'Stage 6 — Certificates Open' },
     ])
     .onConflictDoNothing()
 }

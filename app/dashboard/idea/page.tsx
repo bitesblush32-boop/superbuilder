@@ -1,7 +1,6 @@
 import { redirect } from 'next/navigation'
 import { getStudentOrRedirect, getStage2Checkpoint } from '@/lib/auth/getStudentOrRedirect'
 import { checkStageLock } from '@/lib/auth/stageLock'
-import { StageLocked } from '@/components/stage/StageLocked'
 import { IdeaForm } from './_components/IdeaForm'
 
 export const metadata = {
@@ -10,8 +9,8 @@ export const metadata = {
 }
 
 export default async function IdeaPage() {
-  const { isOpen } = await checkStageLock(2)
-  if (!isOpen) return <StageLocked stageNum={2} />
+  const { isOpen } = await checkStageLock(3)
+  if (!isOpen) redirect('/dashboard')
 
   const { student } = await getStudentOrRedirect(2)
   if (!student) redirect('/dashboard/apply')

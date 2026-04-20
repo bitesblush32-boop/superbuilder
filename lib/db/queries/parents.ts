@@ -26,15 +26,17 @@ export async function getParentByStudentId(studentId: string): Promise<Parent | 
 // ─────────────────────────────────────────────────────────────────────────────
 
 export async function upsertParent(data: NewParent): Promise<Parent> {
-  const now     = new Date()
+  const now       = new Date()
   const consentAt = data.consentGiven ? now : undefined
 
-  const [row] = await db
-    .insert(parents)
-    .values({ ...data, consentAt })
-    .onConflictDoUpdate({
-      target: parents.studentId,
-      set: {
+  // student_id has no unique constraint in the DB, so we cannot use onConflictDoUpdate.
+  // Manually check for an existing row and update if found, otherwise insert.
+  const existing = await getParentByStudentId(data.studentId)
+
+  if (existing) {
+    const [row] = await db
+      .update(parents)
+      .set({
         fullName:           data.fullName,
         email:              data.email,
         phone:              data.phone,
@@ -43,9 +45,15 @@ export async function upsertParent(data: NewParent): Promise<Parent> {
         consentAt:          data.consentGiven ? now : undefined,
         safetyAcknowledged: data.safetyAcknowledged,
         emergencyContact:   data.emergencyContact,
-      },
-    })
-    .returning()
+      })
+      .where(eq(parents.studentId, data.studentId))
+      .returning()
+    return row
+  }
 
+  const [row] = await db
+    .insert(parents)
+    .values({ ...data, consentAt })
+    .returning()
   return row
 }

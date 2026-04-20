@@ -1,7 +1,6 @@
 import { redirect } from 'next/navigation'
 import { getStudentOrRedirect } from '@/lib/auth/getStudentOrRedirect'
 import { checkStageLock } from '@/lib/auth/stageLock'
-import { StageLocked } from '@/components/stage/StageLocked'
 import { getTeamWithMembers, getFlatPricing } from '@/lib/db/queries/teams'
 import { PayPage } from './_components/PayPage'
 
@@ -11,8 +10,8 @@ export const metadata = {
 }
 
 export default async function PayPageRoute() {
-  const { isOpen } = await checkStageLock(3)
-  if (!isOpen) return <StageLocked stageNum={3} />
+  const { isOpen } = await checkStageLock(4)
+  if (!isOpen) redirect('/dashboard')
 
   const { student } = await getStudentOrRedirect(3)
   if (!student) redirect('/dashboard/apply')

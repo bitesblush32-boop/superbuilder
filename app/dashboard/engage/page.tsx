@@ -1,6 +1,6 @@
+import { redirect } from 'next/navigation'
 import { getStudentOrRedirect } from '@/lib/auth/getStudentOrRedirect'
 import { checkStageLock } from '@/lib/auth/stageLock'
-import { StageLocked } from '@/components/stage/StageLocked'
 import { EngageForm } from './_components/EngageForm'
 
 export const metadata = {
@@ -9,8 +9,8 @@ export const metadata = {
 }
 
 export default async function EngagePage() {
-  const { isOpen } = await checkStageLock(3)
-  if (!isOpen) return <StageLocked stageNum={3} />
+  const { isOpen } = await checkStageLock(4)
+  if (!isOpen) redirect('/dashboard')
 
   await getStudentOrRedirect(3)
   return <EngageForm />

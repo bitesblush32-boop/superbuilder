@@ -4,7 +4,6 @@ import { db } from '@/lib/db'
 import { quizAttempts } from '@/lib/db/schema'
 import { getStudentOrRedirect } from '@/lib/auth/getStudentOrRedirect'
 import { checkStageLock } from '@/lib/auth/stageLock'
-import { StageLocked } from '@/components/stage/StageLocked'
 import { QuizShell } from './_components/QuizShell'
 
 export const metadata = {
@@ -13,8 +12,8 @@ export const metadata = {
 }
 
 export default async function QuizPage() {
-  const { isOpen } = await checkStageLock(2)
-  if (!isOpen) return <StageLocked stageNum={2} />
+  const { isOpen } = await checkStageLock(3)
+  if (!isOpen) redirect('/dashboard')
 
   const { student } = await getStudentOrRedirect(2)
   if (!student) redirect('/dashboard/apply')
