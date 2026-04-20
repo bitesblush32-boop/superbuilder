@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useClerk }   from '@clerk/nextjs'
 import { LogOut, ChevronDown, Lock } from 'lucide-react'
 import type { DashboardProgress, StudentData, TeamData } from './DashboardShell'
+import { useRegistrationStore } from '@/lib/store/registration'
 
 // ── Easing constant (typed tuple for Framer Motion v12) ─────────────────────
 const EASE_OUT: [number, number, number, number] = [0.16, 1, 0.3, 1]
@@ -117,10 +118,12 @@ function StageNode({
   stage,
   isExpanded,
   onToggle,
+  activeSubStepIndex,
 }: {
   stage: Stage
   isExpanded: boolean
   onToggle: () => void
+  activeSubStepIndex?: number  // 1-based index of current UI sub-step within this stage
 }) {
   const hasSubSteps  = stage.subSteps.length > 0
   const isNavigable  = !hasSubSteps && !stage.locked && stage.href
@@ -188,11 +191,6 @@ function StageNode({
           >
             {stage.label}
           </p>
-          {stage.active && !stage.done && (
-            <p className="font-mono text-[10px]" style={{ color: 'var(--text-brand)' }}>
-              ← You are here
-            </p>
-          )}
         </div>
 
         {/* Right: lock or chevron */}
@@ -255,11 +253,6 @@ function StageNode({
             >
               {stage.label}
             </p>
-            {stage.active && !stage.done && (
-              <p className="font-mono text-[10px]" style={{ color: 'var(--text-brand)' }}>
-                ← You are here
-              </p>
-            )}
           </div>
 
           {/* Right: lock or chevron */}
@@ -289,20 +282,31 @@ function StageNode({
             className="overflow-hidden"
           >
             <div className="pl-11 pr-4 pb-2 flex flex-col gap-0.5">
-              {stage.subSteps.map((sub) => {
-                // Sub-step is only locked if the entire stage is locked (admin gate)
-                const subLocked = stage.locked
-                const canNavigate = !subLocked && sub.href
+              {stage.subSteps.map((sub, idx) => {
+                const subLocked    = stage.locked
+                const canNavigate  = !subLocked && sub.href
+                // 1-based: idx 0 → step 1, idx 1 → step 2, idx 2 → step 3
+
+                // State 2 — ACTIVE: exactly the step being worked on right now
+                const isActiveSub  = !sub.done && activeSubStepIndex === idx + 1
+                // State 3 — COMPLETED client-side: store has moved past this step
+                // (fills immediately on "Next" click without waiting for a DB round-trip)
+                const isPastSub    = !sub.done && activeSubStepIndex !== undefined && activeSubStepIndex > idx + 1
+                const isEffDone    = sub.done || isPastSub  // DB truth OR store truth
 
                 const dotEl = (
                   <div
-                    className="w-[18px] h-[18px] rounded-full flex items-center justify-center shrink-0 border"
+                    className="w-[18px] h-[18px] rounded-full flex items-center justify-center shrink-0 border transition-all duration-300"
                     style={{
-                      background:  sub.done ? 'var(--brand)' : 'var(--bg-float)',
-                      borderColor: sub.done ? 'var(--brand)' : 'var(--border-subtle)',
+                      // State 3 → filled brand gold | State 2 → transparent + glow | State 1 → dim
+                      background:  isEffDone   ? 'var(--brand)'
+                                 : isActiveSub ? 'transparent'
+                                 :               'var(--bg-float)',
+                      borderColor: isEffDone || isActiveSub ? 'var(--brand)' : 'var(--border-subtle)',
+                      boxShadow:   isActiveSub ? '0 0 8px rgba(255,184,0,0.5)' : 'none',
                     }}
                   >
-                    {sub.done && (
+                    {isEffDone && (
                       <span className="text-[8px] font-bold text-black">✓</span>
                     )}
                   </div>
@@ -313,9 +317,11 @@ function StageNode({
                     <p
                       className="font-mono text-[11px] truncate transition-all duration-200"
                       style={{
-                        color:  sub.done   ? 'var(--text-brand)'
-                              : subLocked  ? 'var(--text-4)'
-                              :              'var(--text-3)',
+                        color:      isEffDone   ? 'var(--text-brand)'
+                                  : isActiveSub ? 'var(--text-1)'
+                                  : subLocked   ? 'var(--text-4)'
+                                  :               'var(--text-3)',
+                        fontWeight: isActiveSub ? 600 : isEffDone ? 500 : 400,
                         filter:     subLocked ? 'blur(3px)' : 'none',
                         userSelect: subLocked ? 'none' : 'auto',
                       }}
@@ -482,6 +488,8 @@ export function DashboardSidebar({
   void team
 
   const stages = buildStages(progress, student.currentStage, stageLocks)
+  // Read current Stage 1 sub-step from Zustand store (written by Stage1Form)
+  const stage1SubStep = useRegistrationStore(s => s.stage1SubStep)
 
   // Default-expand the active stage (or the last completed one)
   const defaultExpanded =
@@ -558,6 +566,8 @@ export function DashboardSidebar({
               stage={stage}
               isExpanded={expandedStage === stage.num}
               onToggle={() => toggleStage(stage.num)}
+              // Only pass the active sub-step index for stage 1 while it's active
+              activeSubStepIndex={stage.num === 1 && stage.active ? stage1SubStep : undefined}
             />
           ))}
         </div>

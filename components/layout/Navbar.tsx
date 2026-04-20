@@ -79,7 +79,7 @@ function CountdownPill() {
 const NAV_LINKS = [
   { label: 'Programme',  href: '#badges' },
   { label: 'Workshops',  href: '#programme' },
-  { label: 'Prizes',     href: '#tiers'     },
+  { label: 'Prizes',     href: '#pricing'     },
   { label: 'For Parents', href: '#parents'  },
   { label: 'FAQ',        href: '#faq'       },
 ] as const
@@ -257,7 +257,7 @@ export function Navbar() {
             isSignedIn ? (
               <div className="hidden sm:flex items-center gap-3">
                 <Link
-                  href="/register"
+                  href="/dashboard/apply"
                   className="inline-flex items-center justify-center gap-1.5 h-[34px] px-4 rounded-[3px] font-heading font-bold text-[11px] md:text-[13px] tracking-[0.12em] uppercase transition-all duration-150"
                   style={{ background: 'var(--brand)', color: '#000', boxShadow: 'var(--shadow-brand-sm)' }}
                   onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.background = 'var(--brand-bright)'; el.style.boxShadow = 'var(--shadow-brand)' }}
@@ -280,7 +280,7 @@ export function Navbar() {
                   Sign In
                 </Link>
                 <Link
-                  href="/register/stage-1"
+                  href="/sign-in"
                   className="inline-flex items-center justify-center gap-1.5 h-[34px] px-4 rounded-[3px] font-heading font-bold text-[11px] md:text-[14px] tracking-[0.12em] uppercase transition-all duration-150"
                   style={{ background: 'var(--brand)', color: '#000', boxShadow: 'var(--shadow-brand-sm)' }}
                   onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.background = 'var(--brand-bright)'; el.style.boxShadow = 'var(--shadow-brand)' }}
@@ -417,7 +417,7 @@ export function Navbar() {
                 {isLoaded && isSignedIn ? (
                   <>
                     <Link
-                      href="/register"
+                      href="/dashboard/apply"
                       onClick={() => setMobileOpen(false)}
                       className="flex items-center justify-center gap-2 w-full h-[52px] rounded-[3px] active:scale-[0.98] transition-transform duration-100"
                       style={{ background: 'var(--brand)', color: '#000', boxShadow: '0 0 20px rgba(255,184,0,0.25)' }}
@@ -431,7 +431,7 @@ export function Navbar() {
                 ) : (
                   <>
                     <Link
-                      href="/register/stage-1"
+                      href="/sign-in"
                       onClick={() => setMobileOpen(false)}
                       className="flex items-center justify-center gap-2 w-full h-[52px] rounded-[3px] active:scale-[0.98] transition-transform duration-100"
                       style={{ background: 'var(--brand)', color: '#000', boxShadow: '0 0 20px rgba(255,184,0,0.25)' }}

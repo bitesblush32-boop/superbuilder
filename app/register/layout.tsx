@@ -9,6 +9,7 @@ import { students, quizAttempts, ideaSubmissions } from '@/lib/db/schema'
 import { eq, and } from 'drizzle-orm'
 import { StageProgressBar } from './_components/StageProgressBar'
 import { Stage2SubProgress } from './_components/Stage2SubProgress'
+import { Stage1SubProgress } from './_components/Stage1SubProgress'
 
 export const dynamic = 'force-dynamic'
 
@@ -130,6 +131,16 @@ export default async function RegisterLayout({
           ideaSubmitted={stageData.hasIdea}
         />
       </div>
+
+      {/* Stage 1 sub-progress (Personal Info → Parents Info → Team Building) */}
+      {stageData.currentStage === 1 && (
+        <div
+          className="shrink-0 border-b"
+          style={{ borderColor: 'var(--border-faint)', background: 'var(--bg-inset)' }}
+        >
+          <Stage1SubProgress variant="bar" />
+        </div>
+      )}
 
       {/* Learn sub-progress (Domain → Quiz) — visible during stage 2 after orientation */}
       {stageData.currentStage === 2 && stageData.orientationComplete && (

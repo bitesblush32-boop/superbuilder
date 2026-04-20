@@ -18,6 +18,7 @@ import { submitStage1, upsertStudentPersonalInfo } from '@/lib/actions/registrat
 import { BadgeUnlock } from '@/components/gamification/BadgeUnlock'
 import type { BadgeId } from '@/lib/gamification/badges'
 import { SchoolAutocomplete } from './SchoolAutocomplete'
+import { useRegistrationStore } from '@/lib/store/registration'
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -423,11 +424,18 @@ export function Stage1Form({
   initialData?: Partial<Stage1FormData>
 }) {
   const router = useRouter()
+  const { setStage1SubStep } = useRegistrationStore()
   const [subStep, setSubStep] = useState<1 | 2>(initialStep)
   const [direction, setDirection] = useState<1 | -1>(1)
   const [submitting, setSubmitting] = useState(false)
   const [serverError, setServerError] = useState<string | null>(null)
   const [pendingBadge, setPendingBadge] = useState<BadgeId | null>(null)
+
+  // Sync initial sub-step to store on mount
+  useEffect(() => {
+    setStage1SubStep(initialStep === 2 ? 2 : 1)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const {
     register,
@@ -546,17 +554,18 @@ export function Stage1Form({
     }
 
     // Auto-save Step 1 data to DB before advancing (fire-and-forget, non-blocking)
-    // Errors are silently captured — user still advances to Step 2
     upsertStudentPersonalInfo(getValues()).catch(() => { /* handled server-side */ })
 
     setDirection(1)
     setSubStep(2)
+    setStage1SubStep(2)  // ← sidebar advances to "Parents Info"
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   const handleBack = () => {
     setDirection(-1)
     setSubStep(1)
+    setStage1SubStep(1)  // ← sidebar retreats to "Personal Info"
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
@@ -568,10 +577,9 @@ export function Stage1Form({
       const result = await submitStage1(data)
       if (result.success) {
         if (result.badgeAwarded) {
-          // First-time submit: show badge modal, then navigate
           setPendingBadge(result.badgeAwarded)
         } else {
-          // Returning user re-submit: no badge, navigate directly
+          setStage1SubStep(3)  // ← sidebar advances to "Team Building"
           router.push('/dashboard/team-setup')
         }
       } else {
@@ -586,8 +594,9 @@ export function Stage1Form({
 
   const handleBadgeDismiss = useCallback(() => {
     setPendingBadge(null)
+    setStage1SubStep(3)  // ← sidebar advances to "Team Building"
     router.push('/dashboard/team-setup')
-  }, [router])
+  }, [router, setStage1SubStep])
 
   // ── Input style helpers ─────────────────────────────────────────────────────
   const inputCls = 'w-full rounded-xl px-4 font-body transition-colors outline-none focus:outline-none placeholder:opacity-40'
