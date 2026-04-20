@@ -68,18 +68,18 @@ function StageToggle({ setting }: { setting: Setting }) {
 
   return (
     <div
-      className="rounded-2xl border overflow-hidden"
+      className="rounded-2xl border overflow-hidden transition-all duration-300"
       style={{
         background:  isOpen ? `${meta.color}08` : 'var(--bg-card)',
         borderColor: isOpen ? `${meta.color}40` : 'var(--border-faint)',
-        boxShadow:   isOpen ? `0 0 24px ${meta.color}12` : 'none',
+        boxShadow:   isOpen ? `0 0 32px ${meta.color}18` : 'none',
       }}
     >
       {/* Main row */}
-      <div className="flex items-center gap-4 p-5">
+      <div className="flex items-center gap-3 sm:gap-4 p-4 sm:p-5">
         {/* Stage badge */}
         <div
-          className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl shrink-0 border"
+          className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center text-xl sm:text-2xl shrink-0 border transition-all duration-300"
           style={{
             background:  isOpen ? `${meta.color}15` : 'var(--bg-float)',
             borderColor: isOpen ? `${meta.color}35` : 'var(--border-subtle)',
@@ -98,7 +98,7 @@ function StageToggle({ setting }: { setting: Setting }) {
               Stage {meta.num} — {meta.name}
             </p>
             <span
-              className="font-mono text-[10px] px-2 py-0.5 rounded-full shrink-0"
+              className="font-mono text-[10px] px-2 py-0.5 rounded-full shrink-0 transition-all duration-300"
               style={{
                 background: isOpen ? `${meta.color}18` : 'var(--bg-float)',
                 color:      isOpen ? meta.color : 'var(--text-4)',
@@ -108,31 +108,61 @@ function StageToggle({ setting }: { setting: Setting }) {
               {isOpen ? '● OPEN' : '○ LOCKED'}
             </span>
           </div>
-          <p className="font-body text-xs leading-snug" style={{ color: 'var(--text-3)' }}>
+          <p className="font-body text-xs leading-snug hidden sm:block" style={{ color: 'var(--text-3)' }}>
             {meta.description}
           </p>
         </div>
 
-        {/* Toggle switch */}
+        {/* Premium toggle switch */}
         <button
           onClick={handleToggleClick}
           disabled={saving}
           aria-pressed={isOpen}
           aria-label={`${isOpen ? 'Close' : 'Open'} Stage ${meta.num}`}
-          className="shrink-0 relative w-14 h-7 rounded-full transition-all duration-300 active:scale-95 disabled:opacity-50"
+          className="shrink-0 relative rounded-full transition-all duration-300 active:scale-95 disabled:opacity-50 focus:outline-none"
           style={{
-            background: isOpen ? meta.color : 'var(--bg-float)',
-            border:     isOpen ? 'none' : '1px solid var(--border-subtle)',
+            width: '56px',
+            height: '30px',
+            background: isOpen
+              ? `linear-gradient(135deg, ${meta.color}ee, ${meta.color}aa)`
+              : 'var(--bg-float)',
+            border: isOpen
+              ? `1px solid ${meta.color}80`
+              : '1px solid var(--border-soft)',
+            boxShadow: isOpen
+              ? `0 0 18px ${meta.color}55, inset 0 1px 0 rgba(255,255,255,0.18)`
+              : 'inset 0 2px 4px rgba(0,0,0,0.5)',
           }}
         >
+          {/* Outer glow ring when open */}
+          {isOpen && (
+            <span
+              className="absolute inset-0 rounded-full pointer-events-none animate-pulse"
+              style={{ boxShadow: `0 0 0 4px ${meta.color}22` }}
+            />
+          )}
+          {/* Thumb */}
           <motion.div
-            className="absolute top-1 w-5 h-5 rounded-full shadow-sm"
-            style={{ background: isOpen ? '#000' : 'var(--text-4)' }}
-            animate={{ x: isOpen ? 30 : 4 }}
-            transition={{ type: 'spring', stiffness: 500, damping: 28 }}
+            className="absolute rounded-full"
+            style={{
+              top: '4px',
+              width: '20px',
+              height: '20px',
+              background: isOpen ? '#ffffff' : 'var(--text-4)',
+              boxShadow: isOpen
+                ? `0 2px 8px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.15)`
+                : '0 1px 4px rgba(0,0,0,0.35)',
+            }}
+            animate={{ x: isOpen ? 30 : 5 }}
+            transition={{ type: 'spring', stiffness: 600, damping: 32 }}
           />
         </button>
       </div>
+
+      {/* Description shown below on mobile */}
+      <p className="font-body text-xs leading-snug sm:hidden px-4 pb-4 -mt-1" style={{ color: 'var(--text-3)' }}>
+        {meta.description}
+      </p>
 
       {/* Confirm close panel */}
       <AnimatePresence>
@@ -145,26 +175,26 @@ function StageToggle({ setting }: { setting: Setting }) {
             className="overflow-hidden"
           >
             <div
-              className="px-5 pb-5 pt-0 flex flex-col gap-3"
+              className="px-4 sm:px-5 pb-4 sm:pb-5 pt-0 flex flex-col sm:flex-row gap-3"
               style={{ borderTop: '1px solid var(--border-faint)' }}
             >
-              <p className="font-body text-sm pt-4" style={{ color: 'var(--amber)' }}>
+              <p className="font-body text-sm pt-4 flex-1" style={{ color: 'var(--amber)' }}>
                 ⚠️ This will lock Stage {meta.num} for ALL students immediately.
                 Students mid-flow will be blocked. Are you sure?
               </p>
-              <div className="flex gap-2">
+              <div className="flex gap-2 sm:items-end sm:pb-0 pt-0 sm:pt-4">
                 <button
                   onClick={() => toggle(false)}
                   disabled={saving}
-                  className="flex-1 h-10 rounded-xl font-heading font-bold text-sm tracking-wide active:scale-95 disabled:opacity-50"
-                  style={{ background: 'var(--red)', color: '#fff' }}
+                  className="flex-1 sm:flex-none sm:w-36 h-10 rounded-xl font-heading font-bold text-sm tracking-wide active:scale-95 disabled:opacity-50 transition-all"
+                  style={{ background: 'var(--red)', color: '#fff', boxShadow: '0 2px 12px rgba(248,113,113,0.35)' }}
                 >
                   {saving ? 'Closing…' : 'Yes, Close Stage'}
                 </button>
                 <button
                   onClick={() => setConfirmClose(false)}
                   disabled={saving}
-                  className="flex-1 h-10 rounded-xl font-heading font-semibold text-sm border active:scale-95"
+                  className="flex-1 sm:flex-none sm:w-24 h-10 rounded-xl font-heading font-semibold text-sm border active:scale-95 transition-all"
                   style={{ borderColor: 'var(--border-subtle)', color: 'var(--text-2)' }}
                 >
                   Cancel

@@ -1,9 +1,10 @@
-@AGENTS.md
+@@AGENTS.md
 # CLAUDE.md — Super Builders × zer0.pro
-## Complete Development Reference for Claude Code
+## Complete Development Reference for Claude Code — v3.0
 
-> Read this entire file before writing a single line of code.
+> **Read this entire file AND `/mnt/skills/public/frontend-design/SKILL.md` before writing a single line of code.**
 > This is the single source of truth. Nothing overrides it.
+> The skill file defines HOW to design. This file defines WHAT to build.
 
 ---
 
@@ -256,132 +257,139 @@ export default {
 
 ---
 
-## 5. FILE STRUCTURE
+## 6. FILE STRUCTURE (Current)
 
 ```
 super-builders/
 ├── app/
-│   ├── (marketing)/
-│   │   ├── layout.tsx
-│   │   ├── page.tsx                 # Landing page — SSG/ISR
-│   │   └── _components/
-│   │       ├── HeroSection.tsx
-│   │       ├── StatsBar.tsx
-│   │       ├── ProgrammeTimeline.tsx
-│   │       ├── WorkshopCards.tsx
-│   │       ├── TierComparison.tsx
-│   │       ├── BadgeWall.tsx
-│   │       ├── ForParents.tsx
-│   │       ├── JudgingCriteria.tsx
-│   │       ├── DomainGrid.tsx
-│   │       ├── FAQ.tsx
-│   │       └── FinalCTA.tsx
-│   │
-│   ├── (auth)/
-│   │   ├── sign-in/[[...sign-in]]/page.tsx
-│   │   └── sign-up/[[...sign-up]]/page.tsx
-│   │
-│   ├── register/
-│   │   ├── layout.tsx               # Stage progress bar header
-│   │   ├── page.tsx                 # Redirect to current stage
-│   │   ├── stage-1/page.tsx         # Application + parental consent
-│   │   ├── stage-2/
-│   │   │   ├── quiz/page.tsx
-│   │   │   └── idea/page.tsx
-│   │   ├── stage-3/
-│   │   │   ├── engage/page.tsx      # 3 pre-payment questions
-│   │   │   ├── select/page.tsx      # Tier selection
-│   │   │   └── pay/page.tsx         # Razorpay checkout
-│   │   └── success/page.tsx
-│   │
-│   ├── dashboard/
-│   │   ├── layout.tsx
-│   │   ├── page.tsx
-│   │   ├── workshops/page.tsx
-│   │   ├── mentors/page.tsx         # Premium only
-│   │   ├── team/page.tsx
-│   │   ├── leaderboard/page.tsx
-│   │   ├── submit/page.tsx
-│   │   └── certificate/page.tsx     # Post Jun 10
-│   │
+│   ├── (marketing)/             # Landing page — SSG/ISR
+│   ├── (auth)/                  # Clerk sign-in/sign-up
 │   ├── admin/
-│   │   ├── page.tsx
-│   │   ├── students/page.tsx
-│   │   ├── payments/page.tsx
-│   │   ├── projects/page.tsx
-│   │   ├── judging/page.tsx
-│   │   └── comms/page.tsx
-│   │
-│   └── api/
-│       ├── webhooks/
-│       │   ├── razorpay/route.ts
-│       │   └── clerk/route.ts
-│       ├── registration/[stage]/route.ts
-│       ├── quiz/submit/route.ts
-│       ├── quiz/retake/route.ts
-│       ├── leaderboard/stream/route.ts  # SSE
-│       ├── payments/create-order/route.ts
-│       └── certificates/generate/route.ts
+│   │   ├── login/               # NEW: standalone admin login (NOT Clerk)
+│   │   ├── (protected)/         # NEW: route group, all protected by cookie
+│   │   │   ├── layout.tsx       # reads admin_session cookie, redirects if missing
+│   │   │   ├── page.tsx         # Overview KPIs
+│   │   │   ├── stages/          # NEW: Stage Control panel (toggle open/close)
+│   │   │   ├── students/        # Students table + detail sheet
+│   │   │   ├── payments/        # Payments reconciliation + CSV export
+│   │   │   ├── projects/        # Project submissions viewer
+│   │   │   ├── judging/         # Judge scoring interface
+│   │   │   ├── comms/           # Drop-off recovery triggers
+│   │   │   ├── settings/        # NEW: Pricing + discount config
+│   │   │   ├── schedule/        # NEW: Workshop dates + content items
+│   │   │   └── teams/           # NEW: Teams viewer
+│   │   └── _components/         # AdminNav, StudentsTable, etc.
+│   ├── api/
+│   │   ├── admin/
+│   │   │   ├── auth/login/      # NEW: POST — validates credentials, sets cookie
+│   │   │   ├── auth/logout/     # NEW: POST — clears cookie
+│   │   │   ├── config/          # PUT — saves programmeConfig sections
+│   │   │   ├── schedule-items/  # CRUD for schedule items
+│   │   │   └── students/
+│   │   │       ├── [id]/        # GET student detail (admin)
+│   │   │       └── export/      # GET CSV export
+│   │   ├── payments/
+│   │   │   ├── create-order/    # POST — computes team discount server-side
+│   │   │   └── verify/          # POST — HMAC verification
+│   │   ├── webhooks/razorpay/   # Full webhook with email + referrals
+│   │   ├── leaderboard/stream/  # SSE endpoint (stub — needs Upstash)
+│   │   └── certificates/generate/ # Stub
+│   ├── register/
+│   │   ├── layout.tsx           # Stage progress bar (6-step with sub-dots)
+│   │   ├── page.tsx             # Smart redirect to current sub-step
+│   │   ├── stage-1/             # Application + parent consent + team choice
+│   │   ├── stage-2/
+│   │   │   ├── orientation/     # NEW: Welcome, video, rules, acknowledge
+│   │   │   ├── domain/          # NEW: Pick hackathon domain (locked after)
+│   │   │   ├── quiz/            # Domain-specific quiz (10 Qs, varies by domain)
+│   │   │   └── idea/            # Idea form (domain pre-selected + locked)
+│   │   ├── stage-3/
+│   │   │   ├── engage/          # 3 re-anchor questions
+│   │   │   ├── select/          # Tier select + team discount preview
+│   │   │   └── pay/             # Razorpay checkout (team discount applied)
+│   │   └── success/             # Confetti + Builder badge + referral code
+│   ├── stage-locked/            # NEW: Generic locked page (?stage=N)
+│   ├── dashboard/
+│   │   ├── layout.tsx           # DashboardShell (sidebar + mobile nav)
+│   │   ├── page.tsx             # Overview
+│   │   ├── workshops/           # Workshop schedule + recordings
+│   │   ├── mentors/             # Premium-only mentor booking
+│   │   ├── team/                # Team status + teammate finder
+│   │   ├── leaderboard/         # Live XP leaderboard (SSE)
+│   │   ├── submit/              # Project submission (hackathon window only)
+│   │   └── certificate/         # Certificate download (post Jun 10)
+│   ├── globals.css              # Tailwind v4 @theme tokens
+│   ├── layout.tsx               # Root layout — ClerkProvider + fonts
+│   └── page.tsx                 # Root delegate → (marketing)/page.tsx
 │
 ├── components/
-│   ├── ui/                          # shadcn/ui — do not edit
+│   ├── ui/                      # shadcn/ui — DO NOT EDIT
 │   ├── gamification/
-│   │   ├── BadgeUnlock.tsx
-│   │   ├── BadgeWall.tsx
-│   │   ├── XPBar.tsx
-│   │   ├── StageProgress.tsx
-│   │   ├── Leaderboard.tsx
-│   │   └── CountdownTimer.tsx
-│   ├── forms/
-│   │   ├── ApplicationForm.tsx
-│   │   ├── ParentConsentForm.tsx
-│   │   ├── QuizForm.tsx
-│   │   ├── IdeaForm.tsx
-│   │   ├── TierSelectForm.tsx
-│   │   └── ProjectSubmitForm.tsx
+│   │   └── BadgeUnlock.tsx      # Framer Motion overlay + confetti burst
 │   ├── layout/
-│   │   ├── Navbar.tsx
-│   │   ├── MobileNav.tsx
+│   │   ├── Navbar.tsx           # Marketing navbar (Clerk-aware)
 │   │   ├── Footer.tsx
-│   │   └── DashboardShell.tsx
+│   │   ├── MobileStickyBar.tsx  # Landing page mobile CTA bar
+│   │   ├── DashboardShell.tsx   # NEW: Sidebar + mobile nav wrapper
+│   │   ├── DashboardSidebar.tsx # NEW: Stage progress rail + nav links
+│   │   └── DashboardBottomNav.tsx # NEW: Mobile 5-tab bottom nav
+│   ├── stage/
+│   │   └── StageLocked.tsx      # NEW: "Not open yet" branded wall
+│   ├── dashboard/
+│   │   └── LockedSection.tsx    # NEW: Inline locked section within pages
 │   └── three/
-│       ├── HeroBadge.tsx
-│       └── ParticleField.tsx
+│       └── heroanimation.tsx    # Three.js particle atom hero
 │
 ├── lib/
 │   ├── db/
-│   │   ├── index.ts
-│   │   ├── schema.ts
-│   │   ├── migrations/
+│   │   ├── index.ts             # Drizzle + pg Pool
+│   │   ├── schema.ts            # Full schema (all tables above)
+│   │   ├── migrations/          # 0000–0003 SQL files
+│   │   ├── seed-settings.ts     # NEW: seeds app_settings defaults
 │   │   └── queries/
-│   │       ├── students.ts
-│   │       ├── payments.ts
-│   │       ├── projects.ts
-│   │       └── leaderboard.ts
-│   ├── razorpay/index.ts
+│   │       ├── students.ts      # getStudentByClerkId, createStudent, addBadge, etc.
+│   │       ├── parents.ts       # createParent, getParentByStudentId
+│   │       ├── payments.ts      # createPendingPayment, capturePayment, etc.
+│   │       ├── admin.ts         # getAdminKPIs, getStudents, getStudentDetail, etc.
+│   │       ├── teams.ts         # NEW: createTeam, joinTeam, getTeamWithMembers,
+│   │       │                    #      getOpenStages, isStageOpen, getTeamDiscounts,
+│   │       │                    #      getAppSetting, updateAppSetting, getAllSettings
+│   │       └── config.ts        # NEW: getDatesConfig, getScheduleItems, etc.
+│   ├── auth/
+│   │   ├── getStudentOrRedirect.ts # Stage gate + Stage 2 sub-routing
+│   │   ├── adminAuth.ts            # NEW: verifyAdminSession (cookie-based)
+│   │   └── stageLock.ts            # NEW: checkStageLock(stageNum)
+│   ├── actions/
+│   │   ├── registration.ts      # submitStage1, submitQuiz, submitIdea, submitEngage,
+│   │   │                        # completeOrientation, selectDomain,
+│   │   │                        # createStudentTeam, joinStudentTeam
+│   │   ├── admin.ts             # NEW: updateSettingAction, updateStageAction
+│   │   └── project.ts           # submitProject (dashboard/submit)
+│   ├── content/
+│   │   ├── programme.ts         # HACKATHON_START, WORKSHOPS, PHASES, TIERS, JUDGING
+│   │   └── quizQuestions.ts     # NEW: 6 domains × 10 questions each
 │   ├── gamification/
-│   │   ├── badges.ts
-│   │   └── xp.ts
-│   ├── email/templates/
-│   ├── whatsapp/index.ts
-│   └── redis/index.ts
+│   │   ├── badges.ts            # BADGES constant + BadgeId type
+│   │   └── xp.ts                # awardXP, awardBadge, awardXPAndBadge
+│   ├── store/
+│   │   └── registration.ts      # Zustand: tier, isEmi (persisted to localStorage)
+│   ├── validation/
+│   │   ├── stage1.ts            # Zod v4 schema (teamPreference removed)
+│   │   └── stage2.ts            # quizSchema, ideaSchema
+│   └── utils.ts                 # cn() helper
 │
 ├── hooks/
 │   ├── useCountdown.ts
-│   ├── useLeaderboard.ts
-│   ├── useBadgeUnlock.ts
-│   └── useDeviceCapability.ts
+│   ├── useLeaderboard.ts        # SSE hook
+│   ├── useBadgeUnlock.ts        # Zustand-backed badge modal
+│   └── useDeviceCapability.ts   # low/mid/high tier for Three.js
 │
-├── styles/globals.css
-├── public/
-│   ├── badges/                      # Lottie JSON
-│   ├── og/
-│   └── logo/
-│
-├── CLAUDE.md
+├── middleware.ts / proxy.ts     # Clerk middleware (public: /, /sign-in, /sign-up,
+│                                # /admin/login, /api/admin/auth/*, /stage-locked)
+├── CLAUDE.md                    # This file
 ├── drizzle.config.ts
-├── middleware.ts
-└── next.config.ts
+├── next.config.ts
+└── package.json
 ```
 
 ---
@@ -927,45 +935,46 @@ JSON-LD structured data (add as `<script type="application/ld+json">` in the pag
 ## 14. ENVIRONMENT VARIABLES
 
 ```bash
-# .env.local
+# Database
+DATABASE_URL=postgresql://...@monorail.proxy.rlwy.net:PORT/railway
 
-# Database — Railway PostgreSQL (auto-injected on Railway deploy)
-DATABASE_URL=postgresql://postgres:xxx@monorail.proxy.rlwy.net:PORT/railway
-
-# Auth — Clerk
+# Clerk (students)
 NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_...
 CLERK_SECRET_KEY=sk_live_...
 NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
 NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
 NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/register
 NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/register/stage-1
-CLERK_WEBHOOK_SECRET=whsec_YOUR_SECRET
+CLERK_WEBHOOK_SECRET=whsec_...
+
+# Admin (standalone session)
+ADMIN_EMAIL=admin@superbuilders.org
+ADMIN_PASSWORD=admin
+ADMIN_SESSION_SECRET=...32-char-secret...
 
 # Razorpay
 RAZORPAY_KEY_ID=rzp_live_...
 RAZORPAY_KEY_SECRET=...
 RAZORPAY_WEBHOOK_SECRET=...
-NEXT_PUBLIC_RAZORPAY_KEY_ID=rzp_live_...   # public — safe to expose
+NEXT_PUBLIC_RAZORPAY_KEY_ID=rzp_live_...
 
-# Email — Resend
+# Email
 RESEND_API_KEY=re_...
 FROM_EMAIL=hello@superbuilder.org
-
-# Email — Amazon SES (bulk)
 AWS_SES_REGION=ap-south-1
 AWS_ACCESS_KEY_ID=...
 AWS_SECRET_ACCESS_KEY=...
 
-# WhatsApp — Meta Cloud API
+# WhatsApp
 META_WHATSAPP_TOKEN=...
 META_WHATSAPP_PHONE_ID=...
 META_WHATSAPP_VERIFY_TOKEN=...
 
-# Upstash Redis
+# Redis
 UPSTASH_REDIS_REST_URL=https://...upstash.io
 UPSTASH_REDIS_REST_TOKEN=...
 
-# Cloudflare R2
+# R2
 CLOUDFLARE_R2_ACCOUNT_ID=...
 CLOUDFLARE_R2_ACCESS_KEY_ID=...
 CLOUDFLARE_R2_SECRET_ACCESS_KEY=...
