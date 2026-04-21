@@ -266,10 +266,14 @@ export function Footer() {
           </p>
 
           <div className="flex items-center gap-4">
-            {(['Privacy Policy', 'Terms of Use', 'Refund Policy'] as const).map((item) => (
+            {([
+              { label: 'Privacy Policy', href: '/terms#privacy' },
+              { label: 'Terms of Use',   href: '/terms#terms'   },
+              { label: 'Refund Policy',  href: '/terms#refund'  },
+            ] as const).map(({ label, href }) => (
               <Link
-                key={item}
-                href="#"
+                key={label}
+                href={href}
                 className="font-mono text-[9px] tracking-wider uppercase transition-colors duration-150"
                 style={{ color: 'var(--text-4)' }}
                 onMouseEnter={(e) =>
@@ -279,7 +283,7 @@ export function Footer() {
                   ((e.currentTarget as HTMLElement).style.color = 'var(--text-4)')
                 }
               >
-                {item}
+                {label}
               </Link>
             ))}
           </div>

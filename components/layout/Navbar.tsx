@@ -139,7 +139,7 @@ function UserMenu() {
             </p>
           </div>
           <Link
-            href="/privacy-policy"
+            href="/terms#privacy"
             onClick={() => setOpen(false)}
             className="flex items-center gap-3 px-4 h-11 font-body text-sm transition-colors"
             style={{ color: 'var(--text-2)' }}
@@ -150,7 +150,7 @@ function UserMenu() {
             Privacy Policy
           </Link>
           <Link
-            href="/refund-policy"
+            href="/terms#refund"
             onClick={() => setOpen(false)}
             className="flex items-center gap-3 px-4 h-11 font-body text-sm transition-colors"
             style={{ color: 'var(--text-2)' }}
