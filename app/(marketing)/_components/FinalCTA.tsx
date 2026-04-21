@@ -216,7 +216,7 @@ export function FinalCTA({
           >
             <Link
               href="/register/stage-1"
-              className="flex items-center justify-center gap-2 h-[56px] px-10 rounded-[4px] font-heading font-bold tracking-[0.1em] uppercase text-[15px] text-black w-full sm:w-auto"
+              className="flex items-center justify-center gap-2 h-[56px] px-10 rounded-[4px] font-heading font-bold tracking-[0.1em] uppercase text-[15px] text-black w-full sm:w-auto transition-all duration-150 touch-manipulation active:opacity-70 active:scale-95"
               style={{
                 background: 'var(--brand)',
                 boxShadow:  '0 0 0 1px rgba(255,184,0,0.5), 0 4px 32px rgba(255,184,0,0.4)',
@@ -234,7 +234,7 @@ export function FinalCTA({
           >
             <a
               href="#"
-              className="flex items-center justify-center gap-2 h-[56px] px-8 rounded-[4px] font-heading font-semibold tracking-[0.08em] uppercase text-[13px] border transition-all duration-150 w-full sm:w-auto"
+              className="flex items-center justify-center gap-2 h-[56px] px-8 rounded-[4px] font-heading font-semibold tracking-[0.08em] uppercase text-[13px] border transition-all duration-150 touch-manipulation active:opacity-70 active:scale-95 w-full sm:w-auto"
               style={{
                 borderColor: 'var(--border-subtle)',
                 color:       'var(--text-3)',

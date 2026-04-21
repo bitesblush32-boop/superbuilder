@@ -264,7 +264,7 @@ export function HeroSection() {
             >
               <Link
                 href="/register/stage-1"
-                className="flex items-center justify-center gap-2 h-[54px] px-8 rounded-[4px] font-heading font-bold tracking-[0.1em] uppercase text-[14px] text-black w-full sm:w-auto"
+                className="flex items-center justify-center gap-2 h-[54px] px-8 rounded-[4px] font-heading font-bold tracking-[0.1em] uppercase text-[14px] text-black w-full sm:w-auto transition-all duration-150 touch-manipulation active:opacity-70 active:scale-95"
                 style={{
                   background: 'var(--brand)',
                   boxShadow:
@@ -283,7 +283,7 @@ export function HeroSection() {
             >
               <Link
                 href="#parents"
-                className="flex items-center justify-center gap-2 h-[54px] px-7 rounded-[4px] font-heading font-semibold tracking-[0.08em] uppercase text-[13px] border transition-colors duration-150 w-full sm:w-auto"
+                className="flex items-center justify-center gap-2 h-[54px] px-7 rounded-[4px] font-heading font-semibold tracking-[0.08em] uppercase text-[13px] border transition-all duration-150 touch-manipulation active:opacity-70 active:scale-95 w-full sm:w-auto"
                 style={{
                   borderColor: 'var(--border-subtle)',
                   color: 'var(--text-2)',

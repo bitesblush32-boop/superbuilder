@@ -27,7 +27,7 @@ export function PaymentsFilterBar({ total, showing }: Props) {
     borderColor: 'var(--border-subtle)',
     color:       'var(--text-1)',
   }
-  const inputBase = 'min-h-[40px] px-3 text-sm rounded-lg border bg-transparent outline-none'
+  const inputBase = 'min-h-[40px] px-3 text-base rounded-lg border bg-transparent outline-none'
 
   return (
     <div className="flex flex-col gap-3 w-full">

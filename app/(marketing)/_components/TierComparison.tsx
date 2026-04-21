@@ -151,7 +151,7 @@ export function TierComparison() {
 
             <Link
               href="/register/stage-1"
-              className="flex items-center justify-center h-[50px] rounded-[4px] border font-heading font-bold text-[13px] tracking-[0.1em] uppercase transition-all duration-150"
+              className="flex items-center justify-center h-[50px] rounded-[4px] border font-heading font-bold text-[13px] tracking-[0.1em] uppercase transition-all duration-150 touch-manipulation active:opacity-70 active:scale-95"
               style={{
                 borderColor: 'var(--border-soft)',
                 color:       'var(--text-2)',
@@ -265,7 +265,7 @@ export function TierComparison() {
 
             <Link
               href="/register/stage-1"
-              className="flex items-center justify-center gap-2 h-[50px] rounded-[4px] font-heading font-bold text-[13px] tracking-[0.1em] uppercase transition-all duration-150 text-black"
+              className="flex items-center justify-center gap-2 h-[50px] rounded-[4px] font-heading font-bold text-[13px] tracking-[0.1em] uppercase transition-all duration-150 touch-manipulation active:opacity-70 active:scale-95 text-black"
               style={{
                 background: 'var(--brand)',
                 boxShadow:  '0 0 0 1px rgba(255,184,0,0.4), 0 4px 24px rgba(255,184,0,0.3)',

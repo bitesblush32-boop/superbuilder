@@ -66,14 +66,14 @@ function TeamStatusCard({ teamData, memberCount, priceSolo, priceTeam }: {
         border: isTeamRate ? '1px solid rgba(34,197,94,0.25)' : '1px solid var(--border-subtle)',
       }}
     >
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <span className="text-base">👥</span>
-          <p className="font-body text-sm font-semibold" style={{ color: 'var(--text-1)' }}>
+      <div className="flex flex-wrap items-center gap-2">
+        <div className="flex items-center gap-2 flex-1 min-w-0">
+          <span className="text-base shrink-0">👥</span>
+          <p className="font-body text-sm font-semibold truncate" style={{ color: 'var(--text-1)' }}>
             {teamData.name}
           </p>
           <span
-            className="font-mono text-[10px] px-1.5 py-0.5 rounded"
+            className="font-mono text-[10px] px-1.5 py-0.5 rounded shrink-0"
             style={{ background: 'var(--bg-float)', color: 'var(--text-3)' }}
           >
             {teamData.code}
@@ -81,7 +81,7 @@ function TeamStatusCard({ teamData, memberCount, priceSolo, priceTeam }: {
         </div>
         {isTeamRate && (
           <span
-            className="font-mono text-xs px-2 py-0.5 rounded-full font-bold"
+            className="font-mono text-xs px-2 py-0.5 rounded-full font-bold shrink-0"
             style={{ background: 'rgba(34,197,94,0.15)', color: 'var(--green)' }}
           >
             Team rate — save ₹{savedPer.toLocaleString('en-IN')}/head
@@ -89,7 +89,7 @@ function TeamStatusCard({ teamData, memberCount, priceSolo, priceTeam }: {
         )}
       </div>
 
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 mt-3">
         <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: 'var(--bg-float)' }}>
           <div
             className="h-full rounded-full transition-all"

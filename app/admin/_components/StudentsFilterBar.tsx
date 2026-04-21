@@ -36,7 +36,7 @@ export function StudentsFilterBar({ total, showing }: Props) {
 
   useEffect(() => () => { if (debounceRef.current) clearTimeout(debounceRef.current) }, [])
 
-  const inputBase = 'min-h-[40px] px-3 text-sm rounded-lg border bg-transparent outline-none transition-colors duration-150'
+  const inputBase = 'min-h-[40px] px-3 text-base rounded-lg border bg-transparent outline-none transition-colors duration-150'
   const inputStyle = {
     background:  'var(--bg-float)',
     borderColor: 'var(--border-subtle)',
@@ -52,8 +52,10 @@ export function StudentsFilterBar({ total, showing }: Props) {
           placeholder="Search name, email, school…"
           defaultValue={params.get('search') ?? ''}
           onChange={e => handleSearch(e.target.value)}
+          inputMode="search"
+          autoComplete="off"
           className={`${inputBase} flex-1 min-w-0`}
-          style={inputStyle}
+          style={{ ...inputStyle, fontSize: '16px' }}
         />
         <a
           href={`/api/admin/students/export?${params.toString()}`}
@@ -115,8 +117,10 @@ export function StudentsFilterBar({ total, showing }: Props) {
             if (debounceRef.current) clearTimeout(debounceRef.current)
             debounceRef.current = setTimeout(() => updateParam('city', e.target.value), 300)
           }}
+          inputMode="text"
+          autoComplete="off"
           className={inputBase}
-          style={{ ...inputStyle, width: '110px' }}
+          style={{ ...inputStyle, width: '110px', fontSize: '16px' }}
         />
       </div>
 

@@ -614,7 +614,7 @@ export function IdeaForm({ lockedDomain }: { lockedDomain: DomainValue }) {
                         onClick={() => field.onChange(sel ? undefined : opt)}
                         className="flex items-center gap-1.5 rounded-full text-sm font-body font-medium transition-all active:scale-95 select-none"
                         style={{
-                          minHeight: '40px',
+                          minHeight: '44px',
                           padding: '0 16px',
                           background: sel ? 'rgba(255,184,0,0.10)' : 'var(--bg-float)',
                           border: `1.5px solid ${sel ? 'var(--brand)' : 'var(--border-subtle)'}`,

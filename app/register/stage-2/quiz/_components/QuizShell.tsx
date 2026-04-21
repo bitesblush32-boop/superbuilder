@@ -633,7 +633,7 @@ export function QuizShell({ domain, attemptCount, isLocked, lastAttemptAt }: Qui
 
       {/* ── Sticky bottom CTA ── */}
       <div
-        className="fixed bottom-0 left-0 right-0 px-4 pb-safe-bottom py-4 safe-bottom"
+        className="fixed bottom-0 left-0 right-0 px-4 py-4 safe-bottom"
         style={{ background: 'rgba(10,10,10,0.95)', backdropFilter: 'blur(8px)', borderTop: '1px solid var(--border-faint)' }}
       >
         <div className="max-w-lg mx-auto">

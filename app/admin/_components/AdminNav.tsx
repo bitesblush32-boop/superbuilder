@@ -31,7 +31,7 @@ function NavItem({ href, label, emoji, onClick }: {
     <Link
       href={href}
       onClick={onClick}
-      className="flex items-center gap-3 px-4 min-h-[44px] text-sm font-medium transition-all duration-150 rounded-r-none"
+      className="flex items-center gap-3 px-4 min-h-[48px] text-sm font-medium transition-all duration-150 rounded-r-none active:opacity-70"
       style={{
         color: isActive ? 'var(--text-brand)' : 'var(--text-3)',
         background: isActive ? 'var(--brand-subtle)' : 'transparent',
@@ -149,23 +149,30 @@ export function AdminMobileTopBar({ adminEmail }: { adminEmail: string }) {
 
         <SheetContent
           side="bottom"
-          className="p-0 rounded-t-2xl border-t"
+          className="p-0 rounded-t-2xl border-t flex flex-col"
           style={{
             background: 'var(--bg-card)',
             borderColor: 'var(--border-subtle)',
+            maxHeight: '80vh',
           }}
         >
-          <div className="p-4 border-b" style={{ borderColor: 'var(--border-faint)' }}>
+          <div className="p-4 border-b shrink-0" style={{ borderColor: 'var(--border-faint)' }}>
             <p className="text-xs font-mono" style={{ color: 'var(--text-3)' }}>
               {adminEmail}
             </p>
           </div>
-          <nav className="flex flex-col gap-0.5 py-3">
+          <nav className="flex flex-col gap-0.5 py-3 overflow-y-auto flex-1">
             {NAV_ITEMS.map(item => (
               <NavItem key={item.href} {...item} onClick={() => setOpen(false)} />
             ))}
           </nav>
-          <div className="border-t pb-2" style={{ borderColor: 'var(--border-faint)' }}>
+          <div
+            className="border-t shrink-0"
+            style={{
+              borderColor: 'var(--border-faint)',
+              paddingBottom: 'max(8px, env(safe-area-inset-bottom))',
+            }}
+          >
             <SignOutButton onSignOut={() => setOpen(false)} />
           </div>
         </SheetContent>

@@ -96,7 +96,7 @@ export function LeaderboardClient({ initialRows, myEntry }: Props) {
             >
               {entry.firstName.charAt(0).toUpperCase()}
             </div>
-            <p className="font-heading font-semibold text-xs leading-tight" style={{ color: 'var(--text-1)' }}>
+            <p className="font-heading font-semibold text-sm leading-tight" style={{ color: 'var(--text-1)' }}>
               {entry.firstName}
             </p>
             <p className="font-mono text-[10px]" style={{ color: 'var(--text-brand)' }}>

@@ -141,7 +141,7 @@ function UserMenu() {
           <Link
             href="/privacy-policy"
             onClick={() => setOpen(false)}
-            className="flex items-center gap-3 px-4 h-11 font-body text-sm transition-colors"
+            className="flex items-center gap-3 px-4 h-11 font-body text-sm transition-colors touch-manipulation active:opacity-70"
             style={{ color: 'var(--text-2)' }}
             onMouseEnter={e => (e.currentTarget.style.background = 'var(--brand-subtle)')}
             onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
@@ -152,7 +152,7 @@ function UserMenu() {
           <Link
             href="/refund-policy"
             onClick={() => setOpen(false)}
-            className="flex items-center gap-3 px-4 h-11 font-body text-sm transition-colors"
+            className="flex items-center gap-3 px-4 h-11 font-body text-sm transition-colors touch-manipulation active:opacity-70"
             style={{ color: 'var(--text-2)' }}
             onMouseEnter={e => (e.currentTarget.style.background = 'var(--brand-subtle)')}
             onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
@@ -162,7 +162,7 @@ function UserMenu() {
           </Link>
           <button
             onClick={() => { setOpen(false); signOut() }}
-            className="flex items-center gap-3 px-4 h-11 w-full text-left font-body text-sm transition-colors"
+            className="flex items-center gap-3 px-4 h-11 w-full text-left font-body text-sm transition-colors touch-manipulation active:opacity-70"
             style={{ color: 'var(--text-2)' }}
             onMouseEnter={e => (e.currentTarget.style.background = 'var(--brand-subtle)')}
             onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
@@ -203,7 +203,7 @@ export function Navbar() {
         {/* ── Left: Logo ── */}
         <Link
           href="/"
-          className="flex shrink-0 items-center gap-2 sm:gap-3 min-h-[44px] select-none"
+          className="flex shrink-0 items-center gap-2 sm:gap-3 min-h-[44px] select-none touch-manipulation transition-opacity duration-150 active:opacity-70"
           aria-label="Super Builders — home"
         >
           <Image
@@ -230,7 +230,7 @@ export function Navbar() {
               href={link.href}
               className={cn(
                 'relative inline-flex h-11 shrink-0 items-center font-body font-semibold text-[12px] xl:text-[13px] leading-none tracking-[0.08em] uppercase',
-                'transition-colors duration-150',
+                'transition-colors duration-150 touch-manipulation active:opacity-70',
                 'after:absolute after:bottom-[-2px] after:left-0 after:h-[1px] after:w-0',
                 'after:bg-[var(--brand)] after:transition-all after:duration-200',
                 'hover:after:w-full',
@@ -258,7 +258,7 @@ export function Navbar() {
               <div className="hidden sm:flex items-center gap-3">
                 <Link
                   href="/dashboard/apply"
-                  className="inline-flex items-center justify-center gap-1.5 h-[34px] px-4 rounded-[3px] font-heading font-bold text-[11px] md:text-[13px] tracking-[0.12em] uppercase transition-all duration-150"
+                  className="inline-flex items-center justify-center gap-1.5 h-[34px] px-4 rounded-[3px] font-heading font-bold text-[11px] md:text-[13px] tracking-[0.12em] uppercase transition-all duration-150 touch-manipulation active:opacity-70 active:scale-95"
                   style={{ background: 'var(--brand)', color: '#000', boxShadow: 'var(--shadow-brand-sm)' }}
                   onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.background = 'var(--brand-bright)'; el.style.boxShadow = 'var(--shadow-brand)' }}
                   onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.background = 'var(--brand)'; el.style.boxShadow = 'var(--shadow-brand-sm)' }}
@@ -272,7 +272,7 @@ export function Navbar() {
               <div className="hidden sm:flex items-center gap-2">
                 <Link
                   href="/sign-in"
-                  className="inline-flex items-center justify-center h-[34px] px-4 rounded-[3px] font-heading font-bold text-[11px] md:text-[13px] tracking-[0.12em] uppercase transition-all duration-150"
+                  className="inline-flex items-center justify-center h-[34px] px-4 rounded-[3px] font-heading font-bold text-[11px] md:text-[13px] tracking-[0.12em] uppercase transition-all duration-150 touch-manipulation active:opacity-70"
                   style={{ border: '1.5px solid var(--border-soft)', color: 'var(--text-2)' }}
                   onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--border-brand)'; (e.currentTarget as HTMLElement).style.color = 'var(--text-brand)' }}
                   onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--border-soft)'; (e.currentTarget as HTMLElement).style.color = 'var(--text-2)' }}
@@ -281,7 +281,7 @@ export function Navbar() {
                 </Link>
                 <Link
                   href="/sign-in"
-                  className="inline-flex items-center justify-center gap-1.5 h-[34px] px-4 rounded-[3px] font-heading font-bold text-[11px] md:text-[14px] tracking-[0.12em] uppercase transition-all duration-150"
+                  className="inline-flex items-center justify-center gap-1.5 h-[34px] px-4 rounded-[3px] font-heading font-bold text-[11px] md:text-[14px] tracking-[0.12em] uppercase transition-all duration-150 touch-manipulation active:opacity-70 active:scale-95"
                   style={{ background: 'var(--brand)', color: '#000', boxShadow: 'var(--shadow-brand-sm)' }}
                   onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.background = 'var(--brand-bright)'; el.style.boxShadow = 'var(--shadow-brand)' }}
                   onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.background = 'var(--brand)'; el.style.boxShadow = 'var(--shadow-brand-sm)' }}
@@ -301,7 +301,7 @@ export function Navbar() {
           <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
             <SheetTrigger asChild>
               <button
-                className="lg:hidden w-11 h-11 flex items-center justify-center rounded-md transition-all duration-150 active:scale-90"
+                className="lg:hidden w-11 h-11 flex items-center justify-center rounded-md transition-all duration-150 touch-manipulation active:scale-90 active:opacity-70"
                 style={{ color: 'var(--text-2)' }}
                 aria-label="Open navigation menu"
                 onMouseEnter={(e) =>

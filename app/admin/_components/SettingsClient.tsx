@@ -70,12 +70,14 @@ function SettingRow({ setting, prefix }: { setting: Setting; prefix: boolean }) 
           value={val}
           onChange={e => setVal(e.target.value)}
           onKeyDown={e => e.key === 'Enter' && isDirty && !saving && handleSave()}
-          className="w-20 rounded-lg px-3 font-mono text-sm outline-none text-right"
+          inputMode="numeric"
+          className="w-20 rounded-lg px-3 font-mono text-base outline-none text-right"
           style={{
             minHeight: '40px',
             background: 'var(--bg-float)',
             border: `1px solid ${isDirty ? 'var(--border-brand)' : 'var(--border-subtle)'}`,
             color: 'var(--text-1)',
+            fontSize: '16px',
           }}
         />
         {!prefix && (
