@@ -294,11 +294,12 @@ function DomainCard({
 function SidePanel({ domain }: { domain: DomainValue | undefined }) {
   const tips = domain ? (DOMAIN_TIPS[domain] ?? DOMAIN_TIPS.default) : DOMAIN_TIPS.default
 
+  // Only on 2xl+ (≥1536px): calc(50% + 472px) accounts for the 240px sidebar,
+  // placing the panel 16px past the max-w-2xl form's right edge at any viewport.
   return (
-    // Fixed position calculated to sit just right of the centered max-w-xl content
     <div
-      className="hidden xl:block fixed w-[234px]"
-      style={{ top: '180px', left: 'calc(50% + 370px)' }}
+      className="hidden 2xl:block fixed w-[234px]"
+      style={{ top: '180px', left: 'calc(50% + 472px)' }}
       aria-label="Idea tips panel"
     >
       <AnimatePresence mode="wait">

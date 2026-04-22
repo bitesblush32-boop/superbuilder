@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
-import { submitQuiz } from '@/lib/actions/registration'
 import { BadgeUnlock } from '@/components/gamification/BadgeUnlock'
 import { QUIZ_QUESTIONS, CORRECT_ANSWERS, SHORT_ANSWER_MIN, DOMAIN_META } from '@/lib/content/quizQuestions'
 import type { BadgeId } from '@/lib/gamification/badges'
@@ -134,6 +133,9 @@ export function QuizShell({ domain, attemptCount, isLocked, lastAttemptAt }: Qui
   }, [score, phase])
 
   // ── Submit logic ──────────────────────────────────────────────────────────
+  // Uses fetch (not server action) so Next.js doesn't auto-refresh the page,
+  // which would trigger the quiz page's `if (hasPassed) redirect(...)` before
+  // the results screen has a chance to render.
   async function runSubmit(finalAnswers: Record<number, string>) {
     if (submitGuard.current) return
     submitGuard.current = true
@@ -145,22 +147,34 @@ export function QuizShell({ domain, attemptCount, isLocked, lastAttemptAt }: Qui
       answer:     finalAnswers[q.id] ?? '',
     }))
 
-    const res = await submitQuiz({ answers: payload })
+    try {
+      const res  = await fetch('/api/quiz/submit', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ answers: payload }),
+      })
+      const data = await res.json()
 
-    if (res.error) {
-      setServerError(res.error)
+      if (!res.ok || data.error) {
+        setServerError(data.error ?? 'Submission failed. Please try again.')
+        setScore(0)
+        setPassed(false)
+        setPhase('results')
+        return
+      }
+
+      setScore(data.score)
+      setPassed(data.passed)
       setPhase('results')
+
+      if (data.passed && data.badgeAwarded) {
+        setTimeout(() => setPendingBadge(data.badgeAwarded as BadgeId), 800)
+      }
+    } catch {
+      setServerError('Network error. Check your connection and try again.')
       setScore(0)
       setPassed(false)
-      return
-    }
-
-    setScore(res.score)
-    setPassed(res.passed)
-    setPhase('results')
-
-    if (res.passed && res.badgeAwarded) {
-      setTimeout(() => setPendingBadge(res.badgeAwarded as BadgeId), 800)
+      setPhase('results')
     }
   }
 
@@ -633,7 +647,7 @@ export function QuizShell({ domain, attemptCount, isLocked, lastAttemptAt }: Qui
 
       {/* ── Sticky bottom CTA ── */}
       <div
-        className="fixed bottom-0 left-0 right-0 px-4 py-4 safe-bottom"
+        className="fixed left-0 right-0 px-4 py-4 bottom-16 md:bottom-0 md:safe-bottom"
         style={{ background: 'rgba(10,10,10,0.95)', backdropFilter: 'blur(8px)', borderTop: '1px solid var(--border-faint)' }}
       >
         <div className="max-w-lg mx-auto">

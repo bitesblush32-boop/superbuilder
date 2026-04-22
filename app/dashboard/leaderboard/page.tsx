@@ -13,7 +13,8 @@ export const metadata = {
 }
 
 export default async function LeaderboardPage() {
-  const { student } = await getStudentOrRedirect(4)
+  // Stage 2+ can view the leaderboard (all registered students)
+  const { student } = await getStudentOrRedirect(2)
   if (!student) redirect('/register')
 
   // Fetch top 50 + enough to find current student rank
@@ -61,18 +62,14 @@ export default async function LeaderboardPage() {
       {/* Page header */}
       <div className="px-4 pt-5 pb-2 md:px-6 md:pt-6">
         <p className="font-mono text-[11px] tracking-[0.2em] uppercase mb-1" style={{ color: 'var(--text-brand)' }}>
-          Rankings
+          Rankings · {allRanked.length} builders
         </p>
-        <div className="flex items-center gap-3">
-          <h1 className="font-display text-[2rem] md:text-[2.5rem] leading-none tracking-wide" style={{ color: 'var(--text-1)' }}>
-            LEADERBOARD
-          </h1>
-          {/* Live indicator */}
-          <span className="flex items-center gap-1.5 font-mono text-[10px] px-2.5 py-1 rounded-full border" style={{ background: 'rgba(34,197,94,0.08)', borderColor: 'rgba(34,197,94,0.25)', color: 'var(--green)' }}>
-            <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: 'var(--green)' }} />
-            LIVE
-          </span>
-        </div>
+        <h1 className="font-display text-[2rem] md:text-[2.5rem] leading-none tracking-wide" style={{ color: 'var(--text-1)' }}>
+          LEADERBOARD
+        </h1>
+        <p className="font-body text-sm mt-1" style={{ color: 'var(--text-4)' }}>
+          Updates every 10 seconds · Earn XP by completing stages, workshops &amp; submitting your project
+        </p>
       </div>
 
       <div className="px-4 md:px-6">
