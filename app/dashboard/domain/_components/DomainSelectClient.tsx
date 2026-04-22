@@ -92,7 +92,8 @@ export function DomainSelectClient({ studentId: _studentId }: { studentId: strin
   const selectedMeta = selected ? DOMAINS.find(d => d.value === selected) : null
 
   return (
-    <div className="flex flex-col gap-6 pb-12">
+    <div className="max-w-2xl mx-auto px-4 md:px-6 pt-5 pb-12">
+    <div className="flex flex-col gap-6">
 
       {/* Header */}
       <motion.div
@@ -295,6 +296,7 @@ export function DomainSelectClient({ studentId: _studentId }: { studentId: strin
       <p className="text-center text-xs" style={{ color: 'var(--text-4)' }}>
         This opens your personalised domain quiz
       </p>
+    </div>
     </div>
   )
 }

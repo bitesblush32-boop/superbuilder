@@ -298,7 +298,7 @@ function SidePanel({ domain }: { domain: DomainValue | undefined }) {
     // Fixed position calculated to sit just right of the centered max-w-xl content
     <div
       className="hidden xl:block fixed w-[234px]"
-      style={{ top: '180px', left: 'calc(50vw + 310px)' }}
+      style={{ top: '180px', left: 'calc(50% + 370px)' }}
       aria-label="Idea tips panel"
     >
       <AnimatePresence mode="wait">
@@ -428,6 +428,7 @@ export function IdeaForm({ lockedDomain }: { lockedDomain: DomainValue }) {
       <BadgeUnlock badge={pendingBadge} onDismiss={handleBadgeDismiss} />
       <SidePanel domain={selectedDomain} />
 
+      <div className="max-w-2xl mx-auto px-4 md:px-6 pt-5 pb-12">
       <form onSubmit={onSubmit} noValidate className="flex flex-col gap-6">
 
         {/* ── Page header ─────────────────────────────────────────────────── */}
@@ -732,6 +733,7 @@ export function IdeaForm({ lockedDomain }: { lockedDomain: DomainValue }) {
           </p>
         </motion.div>
       </form>
+      </div>
     </>
   )
 }

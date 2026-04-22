@@ -96,7 +96,8 @@ export function OrientationClient({
   }
 
   return (
-    <div className="flex flex-col gap-10 pb-12">
+    <div className="max-w-2xl mx-auto px-4 md:px-6 pt-5 pb-12">
+    <div className="flex flex-col gap-10">
 
       {/* ── SECTION 1 — Welcome ─────────────────────────────────────────── */}
       <FadeUp>
@@ -427,6 +428,7 @@ export function OrientationClient({
         </div>
       </FadeUp>
 
+    </div>
     </div>
   )
 }
