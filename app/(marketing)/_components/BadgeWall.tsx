@@ -17,8 +17,8 @@ const BADGE_ORDER: (keyof typeof BADGES)[] = [
   'SUPER_BUILDER',
 ]
 
-// First 4 are "unlocked" — creates desire for the rest
-const UNLOCKED_COUNT = 4
+// All badges unlocked — full achievement showcase
+const UNLOCKED_COUNT = 9
 
 /* ─── Variants ───────────────────────────────────────────────────────────────── */
 const gridVariants: Variants = {
