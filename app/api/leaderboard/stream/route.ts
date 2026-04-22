@@ -5,6 +5,7 @@ import { redis } from '@/lib/redis'
 import { db } from '@/lib/db'
 import { students } from '@/lib/db/schema'
 import { inArray } from 'drizzle-orm'
+import { seedLeaderboard } from '@/lib/redis/seedLeaderboard'
 
 export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs'
@@ -58,6 +59,9 @@ export async function GET(req: Request) {
           // client disconnected
         }
       }
+
+      // Auto-recover if Redis leaderboard was flushed / evicted
+      await seedLeaderboard()
 
       // Initial snapshot
       try {

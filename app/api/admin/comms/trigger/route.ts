@@ -135,6 +135,15 @@ export async function POST(req: Request) {
   for (const student of targets) {
     const firstName = student.fullName.split(' ')[0]
 
+    // ── Dedup guard — skip if this exact template was already sent today ──
+    // Key format: comms:sent:{triggerType}:{studentId}  TTL: 24h
+    if (triggerType !== 'bulk') {
+      const dedupKey = `comms:sent:${triggerType}:${student.id}`
+      const alreadySent = await redis.get(dedupKey)
+      if (alreadySent) continue
+      await redis.set(dedupKey, '1', { ex: 86_400 })
+    }
+
     // ── Email ──────────────────────────────────────────────────────────────
     if (channel === 'email' || channel === 'both') {
       try {
