@@ -56,7 +56,7 @@ const COLUMNS = [
     heading: 'Community',
     links: [
       { label: 'Discord Server', href: '#discord' },
-      { label: 'WhatsApp Group', href: '#whatsapp' },
+      { label: 'WhatsApp Group', href: 'https://chat.whatsapp.com/Kn9WvBrBsXsJ4PWg1rJC56' },
       { label: 'Instagram', href: '#instagram' },
       { label: 'Mentors', href: '#mentors' },
     ],
@@ -75,7 +75,7 @@ const COLUMNS = [
 /* ─── Social links ─────────────────────────────────────────────────────────── */
 const SOCIALS = [
   { label: 'Discord', href: '#discord', Icon: DiscordIcon },
-  { label: 'WhatsApp', href: '#whatsapp', Icon: WhatsAppIcon },
+  { label: 'WhatsApp', href: 'https://chat.whatsapp.com/Kn9WvBrBsXsJ4PWg1rJC56', Icon: WhatsAppIcon },
   { label: 'Instagram', href: '#instagram', Icon: InstagramIcon },
 ] as const
 

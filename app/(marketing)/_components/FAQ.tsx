@@ -236,7 +236,7 @@ export function FAQ() {
           <p className="font-body text-[13px]" style={{ color: 'var(--text-4)' }}>
             Still have questions?{' '}
             <a
-              href="https://wa.me/919999999999"
+              href="https://wa.me/919325235592"
               className="transition-colors duration-150"
               style={{ color: 'var(--text-brand)' }}
               onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.opacity = '0.75' }}

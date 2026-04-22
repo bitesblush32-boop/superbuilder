@@ -292,7 +292,7 @@ export function OrientationClient({
 
             {/* WhatsApp */}
             <a
-              href="https://chat.whatsapp.com/superbuilders-parents"
+              href="https://chat.whatsapp.com/Kn9WvBrBsXsJ4PWg1rJC56"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center justify-between px-4 py-4 rounded-xl border transition-all duration-150 active:scale-[0.98] active:opacity-80 min-h-[72px]"
