@@ -4,7 +4,7 @@ import { motion, type Variants } from 'framer-motion'
 import { BADGES } from '@/lib/gamification/badges'
 
 /* ─── Config ─────────────────────────────────────────────────────────────────── */
-const EASE_OUT  = [0.16, 1, 0.3, 1] as const
+const EASE_OUT = [0.16, 1, 0.3, 1] as const
 const BADGE_ORDER: (keyof typeof BADGES)[] = [
   'EXPLORER',
   'AI_CURIOUS',
@@ -23,24 +23,24 @@ const UNLOCKED_COUNT = 4
 /* ─── Variants ───────────────────────────────────────────────────────────────── */
 const gridVariants: Variants = {
   hidden: {},
-  show:   { transition: { staggerChildren: 0.07, delayChildren: 0.05 } },
+  show: { transition: { staggerChildren: 0.07, delayChildren: 0.05 } },
 }
 
 const cardVariants: Variants = {
   hidden: { opacity: 0, scale: 0.75, y: 16 },
-  show:   { opacity: 1, scale: 1,    y: 0,  transition: { duration: 0.45, ease: EASE_OUT } },
+  show: { opacity: 1, scale: 1, y: 0, transition: { duration: 0.45, ease: EASE_OUT } },
 }
 
 const headerVariants: Variants = {
   hidden: { opacity: 0, y: 20 },
-  show:   { opacity: 1, y: 0, transition: { duration: 0.55, ease: EASE_OUT } },
+  show: { opacity: 1, y: 0, transition: { duration: 0.55, ease: EASE_OUT } },
 }
 
 /* ─── XP bar constants (static demo) ────────────────────────────────────────── */
-const DEMO_CURRENT_XP  = 325   // after Explorer + AI_CURIOUS + IDEA_LAUNCHER + BUILDER = 50+100+75+200
-const DEMO_LEVEL2_XP   = 500
-const DEMO_FILL_PCT    = Math.round((DEMO_CURRENT_XP / DEMO_LEVEL2_XP) * 100)
-const DEMO_REMAINING   = DEMO_LEVEL2_XP - DEMO_CURRENT_XP
+const DEMO_CURRENT_XP = 325   // after Explorer + AI_CURIOUS + IDEA_LAUNCHER + BUILDER = 50+100+75+200
+const DEMO_LEVEL2_XP = 500
+const DEMO_FILL_PCT = Math.round((DEMO_CURRENT_XP / DEMO_LEVEL2_XP) * 100)
+const DEMO_REMAINING = DEMO_LEVEL2_XP - DEMO_CURRENT_XP
 
 /* ─── BadgeCard ──────────────────────────────────────────────────────────────── */
 function BadgeCard({
@@ -70,8 +70,8 @@ function BadgeCard({
             className="absolute inset-[-5px] rounded-full"
             style={{
               background: `radial-gradient(circle, ${badge.color}28 0%, transparent 70%)`,
-              border:      `1px solid ${badge.color}50`,
-              animation:   'glow-pulse 2.4s ease-in-out infinite',
+              border: `1px solid ${badge.color}50`,
+              animation: 'glow-pulse 2.4s ease-in-out infinite',
             }}
             aria-hidden="true"
           />
@@ -83,16 +83,16 @@ function BadgeCard({
           style={
             unlocked
               ? {
-                  background:   `linear-gradient(145deg, ${badge.color}28 0%, ${badge.color}12 100%)`,
-                  borderColor:  badge.color,
-                  boxShadow:    `0 0 20px ${badge.color}35, inset 0 1px 0 ${badge.color}25`,
-                }
+                background: `linear-gradient(145deg, ${badge.color}28 0%, ${badge.color}12 100%)`,
+                borderColor: badge.color,
+                boxShadow: `0 0 20px ${badge.color}35, inset 0 1px 0 ${badge.color}25`,
+              }
               : {
-                  background:  'var(--bg-raised)',
-                  borderColor: 'var(--border-faint)',
-                  filter:      'grayscale(1)',
-                  opacity:     0.35,
-                }
+                background: 'var(--bg-raised)',
+                borderColor: 'var(--border-faint)',
+                filter: 'grayscale(1)',
+                opacity: 0.35,
+              }
           }
           aria-label={unlocked ? `${badge.id} badge — unlocked` : `${badge.id} badge — locked`}
         >
@@ -104,9 +104,9 @@ function BadgeCard({
           <div
             className="absolute -bottom-1.5 -right-1.5 z-20 h-5 px-1.5 rounded-full flex items-center font-mono text-[9px] font-bold border"
             style={{
-              background:  'var(--bg-card)',
+              background: 'var(--bg-card)',
               borderColor: `${badge.color}60`,
-              color:        badge.color,
+              color: badge.color,
             }}
           >
             +{badge.xp}
@@ -129,59 +129,6 @@ function BadgeCard({
           STAGE {badge.stage}
         </p>
       </div>
-    </motion.div>
-  )
-}
-
-/* ─── XPBar ──────────────────────────────────────────────────────────────────── */
-function XPBar() {
-  return (
-    <motion.div
-      className="mt-12 max-w-lg mx-auto"
-      initial={{ opacity: 0, y: 16 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.55, ease: EASE_OUT, delay: 0.3 }}
-    >
-      {/* Label row */}
-      <div className="flex items-baseline justify-between mb-2.5">
-        <p className="font-mono text-[12px] tracking-[0.18em] uppercase" style={{ color: 'var(--text-3)' }}>
-          Your XP
-        </p>
-        <p className="font-mono text-[12px]" style={{ color: 'var(--text-4)' }}>
-          <span style={{ color: 'var(--text-brand)' }}>{DEMO_CURRENT_XP}</span>
-          {' / '}{DEMO_LEVEL2_XP}
-        </p>
-      </div>
-
-      {/* Track */}
-      <div
-        className="relative h-2 rounded-full overflow-hidden"
-        style={{ background: 'var(--bg-raised)', border: '1px solid var(--border-faint)' }}
-      >
-        {/* Fill — scaleX instead of width: GPU composited, no layout thrash */}
-        <motion.div
-          className="absolute inset-y-0 left-0 rounded-full w-full"
-          style={{
-            background:
-              'linear-gradient(90deg, var(--brand-dim) 0%, var(--brand) 60%, var(--brand-bright) 100%)',
-            boxShadow:       '0 0 8px rgba(255,184,0,0.5)',
-            transformOrigin: 'left center',
-            willChange:      'transform',
-          }}
-          initial={{ scaleX: 0 }}
-          whileInView={{ scaleX: DEMO_FILL_PCT / 100 }}
-          viewport={{ once: true }}
-          transition={{ duration: 1.2, ease: EASE_OUT, delay: 0.5 }}
-        />
-      </div>
-
-      {/* Sub-label */}
-      <p className="mt-2 font-mono text-[12px] text-center" style={{ color: 'var(--text-4)' }}>
-        You&apos;re{' '}
-        <span style={{ color: 'var(--text-brand)' }}>{DEMO_REMAINING} XP</span>
-        {' '}away from Level 2 — keep building
-      </p>
     </motion.div>
   )
 }
@@ -270,33 +217,6 @@ export function BadgeWall() {
             />
           ))}
         </motion.div>
-
-        {/* ── Legend ── */}
-        <motion.div
-          className="mt-10 flex items-center justify-center gap-6"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.25 }}
-        >
-          <span className="flex items-center gap-1.5 font-mono text-[12px]" style={{ color: 'var(--text-3)' }}>
-            <span
-              className="inline-block w-3 h-3 rounded-full border"
-              style={{ borderColor: 'var(--brand)', background: 'rgba(255,184,0,0.15)' }}
-            />
-            Unlocked
-          </span>
-          <span className="flex items-center gap-1.5 font-mono text-[12px]" style={{ color: 'var(--text-4)' }}>
-            <span
-              className="inline-block w-3 h-3 rounded-full border"
-              style={{ borderColor: 'var(--border-faint)', background: 'var(--bg-raised)', filter: 'grayscale(1)', opacity: 0.5 }}
-            />
-            Locked — register to unlock
-          </span>
-        </motion.div>
-
-        {/* ── XP bar ── */}
-        <XPBar />
 
       </div>
     </section>
