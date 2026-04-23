@@ -246,7 +246,7 @@ export function HeroSection() {
             className="flex flex-wrap justify-center md:justify-start gap-2 mb-8"
           >
             <Pill label="Class 8–12" color="brand" />
-            <Pill label="100% Online" color="green" />
+            <Pill label="Hybrid Mode" color="green" />
             <Pill label="₹1,00,000+ Prize Pool" color="purple" />
             <Pill label="Jun 7–8, 2026" color="blue" />
           </motion.div>
@@ -302,44 +302,6 @@ export function HeroSection() {
                 For Parents →
               </Link>
             </motion.div>
-          </motion.div>
-
-          {/* Stats bar */}
-          <motion.div
-            variants={fadeUp}
-            className="mt-8 pt-6 w-full"
-            style={{ borderTop: '1px solid var(--border-faint)' }}
-          >
-            <div className="flex flex-wrap justify-center md:justify-start gap-x-5 gap-y-1.5">
-              {[
-                { value: '2,847', label: 'Registered' },
-                { value: '38', label: 'Cities' },
-                { value: daysLabel, label: '' },
-                { value: '₹1L+', label: 'Prize Pool' },
-              ].map(({ value, label }, i) => (
-                <span
-                  key={i}
-                  className="font-mono text-[13px] tracking-wide flex items-baseline gap-1.5"
-                  style={{ color: 'var(--text-3)' }}
-                >
-                  <span
-                    className="font-semibold"
-                    style={{ color: 'var(--text-2)' }}
-                  >
-                    {value}
-                  </span>
-                  {label && <span>{label}</span>}
-                  {i < 3 && (
-                    <span
-                      className="ml-1 opacity-30 select-none"
-                      aria-hidden="true"
-                    >
-                      ·
-                    </span>
-                  )}
-                </span>
-              ))}
-            </div>
           </motion.div>
         </motion.div>
       </div>

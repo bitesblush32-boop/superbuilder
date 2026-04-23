@@ -145,19 +145,13 @@ export function FAQ() {
             >
               <TabsTrigger
                 value="students"
-                className="flex-1 h-full rounded-[4px] font-heading font-semibold text-[13px] tracking-[0.06em] uppercase transition-all duration-200 data-[state=active]:shadow-none"
-                style={{
-                  color: 'var(--text-3)',
-                }}
+                className="flex-1 h-full rounded-[4px] font-heading font-semibold text-[13px] tracking-[0.06em] uppercase transition-all duration-300 text-[var(--text-3)] hover:text-[var(--text-1)] data-[state=active]:bg-[var(--brand)] data-[state=active]:text-black data-[state=active]:shadow-[0_0_16px_rgba(255,184,0,0.25)]"
               >
                 Students
               </TabsTrigger>
               <TabsTrigger
                 value="parents"
-                className="flex-1 h-full rounded-[4px] font-heading font-semibold text-[13px] tracking-[0.06em] uppercase transition-all duration-200 data-[state=active]:shadow-none"
-                style={{
-                  color: 'var(--text-3)',
-                }}
+                className="flex-1 h-full rounded-[4px] font-heading font-semibold text-[13px] tracking-[0.06em] uppercase transition-all duration-300 text-[var(--text-3)] hover:text-[var(--text-1)] data-[state=active]:bg-[var(--brand)] data-[state=active]:text-black data-[state=active]:shadow-[0_0_16px_rgba(255,184,0,0.25)]"
               >
                 Parents
               </TabsTrigger>
