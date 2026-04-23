@@ -47,6 +47,9 @@ export const metadata: Metadata = {
 export default async function LandingPage() {
   const dates = await getDatesConfig()
 
+  const hackDate = new Date(dates.hackathonStartISO)
+  const hackathonStartDisplay = hackDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Event',
@@ -78,11 +81,17 @@ export default async function LandingPage() {
       />
 
       {/* 1 — Sticky nav */}
-      <Navbar />
+      <Navbar
+        regDeadlineISO={dates.regDeadlineISO}
+        regDeadlineDisplay={dates.regDeadlineDisplay}
+      />
 
       <main className="pb-20 md:pb-0">
         {/* 2 — Hero */}
-        <HeroSection />
+        <HeroSection
+          hackathonStartISO={dates.hackathonStartISO}
+          regDeadlineISO={dates.regDeadlineISO}
+        />
 
         {/* 3 — Stats bar */}
         <StatsBar />

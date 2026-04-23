@@ -12,7 +12,6 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet'
 import { useCountdown } from '@/hooks/useCountdown'
-import { HACKATHON_START } from '@/lib/content/programme'
 import { cn } from '@/lib/utils'
 import { useUser, useClerk } from '@clerk/nextjs'
 
@@ -34,8 +33,14 @@ function Zer0Mark({ size = 26 }: { size?: number }) {
 /* ─── Live countdown pill ──────────────────────────────────────────────────── */
 // Mobile (<md): "22d left" — fits in 375px alongside logo + hamburger
 // Desktop (md+): "JUN 7 · 22D 14H 37M" — full format
-function CountdownPill() {
-  const { days, hours, mins, expired } = useCountdown(HACKATHON_START)
+function CountdownPill({
+  regDeadlineISO,
+  regDeadlineDisplay,
+}: {
+  regDeadlineISO: string
+  regDeadlineDisplay: string
+}) {
+  const { days, hours, mins, expired } = useCountdown(new Date(regDeadlineISO))
 
   if (expired) return null
 
@@ -66,7 +71,7 @@ function CountdownPill() {
         className="font-mono text-[12px] tracking-widest whitespace-nowrap hidden md:inline"
         style={{ color: 'var(--text-brand)' }}
       >
-        JUN 7 ·{' '}
+        {regDeadlineDisplay.toUpperCase()} ·{' '}
         {String(days).padStart(2, '0')}D{' '}
         {String(hours).padStart(2, '0')}H{' '}
         {String(mins).padStart(2, '0')}M
@@ -177,7 +182,13 @@ function UserMenu() {
 }
 
 /* ─── Navbar ───────────────────────────────────────────────────────────────── */
-export function Navbar() {
+export function Navbar({
+  regDeadlineISO,
+  regDeadlineDisplay,
+}: {
+  regDeadlineISO: string
+  regDeadlineDisplay: string
+}) {
   const { isSignedIn, isLoaded } = useUser()
   const [scrolled,    setScrolled]    = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
@@ -250,7 +261,7 @@ export function Navbar() {
 
         {/* ── Right: Countdown + CTA + Auth + Hamburger ── */}
         <div className="flex shrink-0 items-center gap-2.5">
-          <CountdownPill />
+          <CountdownPill regDeadlineISO={regDeadlineISO} regDeadlineDisplay={regDeadlineDisplay} />
 
           {/* Auth-aware CTA — desktop/tablet only */}
           {isLoaded && (
@@ -457,7 +468,7 @@ export function Navbar() {
                   className="text-center font-mono text-[12px] tracking-wider"
                   style={{ color: 'var(--text-4)' }}
                 >
-                  DEADLINE: MAY 25 · SPOTS FILLING FAST
+                  DEADLINE: {regDeadlineDisplay.toUpperCase()} · SPOTS FILLING FAST
                 </p>
               </div>
             </SheetContent>

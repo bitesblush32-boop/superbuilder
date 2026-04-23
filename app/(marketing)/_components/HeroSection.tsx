@@ -4,7 +4,6 @@ import Link from 'next/link'
 import dynamic from 'next/dynamic'
 import { motion, type Variants } from 'framer-motion'
 import { useCountdown } from '@/hooks/useCountdown'
-import { HACKATHON_START, REG_DEADLINE } from '@/lib/content/programme'
 
 /* Three.js — lazy loaded with ssr:false so it never runs during SSR and
    gets code-split into its own chunk, keeping the landing page bundle small. */
@@ -136,9 +135,15 @@ function PerspectiveGrid() {
 /* ═══════════════════════════════════════════════════════════════════════════
    HeroSection
 ═══════════════════════════════════════════════════════════════════════════ */
-export function HeroSection() {
-  const { days: hackDays, expired: hackStarted } = useCountdown(HACKATHON_START)
-  const { days: regDays, expired: regClosed } = useCountdown(REG_DEADLINE)
+export function HeroSection({
+  hackathonStartISO,
+  regDeadlineISO,
+}: {
+  hackathonStartISO: string
+  regDeadlineISO: string
+}) {
+  const { days: hackDays, expired: hackStarted } = useCountdown(new Date(hackathonStartISO))
+  const { days: regDays, expired: regClosed } = useCountdown(new Date(regDeadlineISO))
 
   const daysLabel = regClosed
     ? hackStarted
