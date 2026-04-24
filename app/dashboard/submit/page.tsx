@@ -26,11 +26,11 @@ const DOMAIN_LABELS: Record<string, string> = {
 }
 
 export default async function SubmitPage() {
-  const { isOpen } = await checkStageLock(5)
+  const { isOpen } = await checkStageLock(3)
   if (!isOpen) redirect('/dashboard')
 
   const { student } = await getStudentOrRedirect(4)
-  if (!student) redirect('/register')
+  if (!student) redirect('/dashboard/apply')
 
   const now           = new Date()
   const isBeforeHack  = now < HACKATHON_START
@@ -119,7 +119,7 @@ export default async function SubmitPage() {
               </p>
               <p className="font-body text-sm" style={{ color: 'var(--text-3)' }}>
                 {existing
-                  ? 'Your project has been submitted. Judging results and certificates go live Jun 9–10.'
+                  ? 'Your project has been submitted. Results announced Jun 27 at Demo Day. Certificates go live Jul 1.'
                   : 'The 24-hour hackathon window has ended. See you next season!'}
               </p>
             </div>

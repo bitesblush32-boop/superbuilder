@@ -1,6 +1,13 @@
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
 import { NextResponse } from 'next/server'
 
+// Fully public routes — no auth, no cookie check
+const isFullyPublic = createRouteMatcher([
+  '/verify-parent',
+  '/api/email/(.*)',
+  '/api/webhooks/resend',
+])
+
 // Admin auth routes — always public (no cookie check, no Clerk)
 const isAdminPublic = createRouteMatcher([
   '/admin/login',
@@ -13,12 +20,14 @@ const isAdminProtected = createRouteMatcher(['/admin(.*)'])
 // Student/user routes that require Clerk auth
 const isProtected = createRouteMatcher([
   '/dashboard(.*)',
-  '/register/stage-2(.*)',
-  '/register/stage-3(.*)',
-  '/register/success(.*)',
 ])
 
 export default clerkMiddleware(async (auth, req) => {
+  // 0. Fully public — no auth at all
+  if (isFullyPublic(req)) {
+    return
+  }
+
   // 1. Admin public routes — let through immediately, no checks
   if (isAdminPublic(req)) {
     return
@@ -27,7 +36,7 @@ export default clerkMiddleware(async (auth, req) => {
   // 2. Admin protected routes — cookie-only check, no Clerk involved
   if (isAdminProtected(req)) {
     const cookie = req.headers.get('cookie') ?? ''
-    const match  = cookie.match(/(?:^|;\s*)admin_session=([^;]+)/)
+    const match = cookie.match(/(?:^|;\s*)admin_session=([^;]+)/)
     const hasSession = !!(match?.[1] && match[1].length > 0)
 
     if (!hasSession) {

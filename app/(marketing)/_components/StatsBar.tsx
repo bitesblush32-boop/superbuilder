@@ -9,7 +9,6 @@ import {
   useInView,
   type Variants,
 } from 'framer-motion'
-import { cn } from '@/lib/utils'
 
 /* ─── Data ──────────────────────────────────────────────────────────────────── */
 const EASE_OUT = [0.16, 1, 0.3, 1] as const
@@ -51,6 +50,42 @@ const STATS = [
   },
 ] as const
 
+/* ─── Jigsaw SVG paths (viewBox 0 0 100 100, preserveAspectRatio="none") ─────
+   Tab protrusion = 7 units = 7% of piece width.
+   Desktop (horizontal row of 4):
+     Piece 0 → right tab only
+     Pieces 1,2 → left blank + right tab
+     Piece 3 → left blank only
+   Mobile 2×2 (pieces 0-3 in a grid):
+     Piece 0 (top-left)   → right tab + bottom tab
+     Piece 1 (top-right)  → left blank + bottom tab
+     Piece 2 (bottom-left)  → top blank + right tab
+     Piece 3 (bottom-right) → top blank + left blank
+─────────────────────────────────────────────────────────────────────────────── */
+const DESKTOP_PATHS = [
+  // Piece 0 — right tab
+  'M0,0 L100,0 L100,35 Q107,35 107,50 Q107,65 100,65 L100,100 L0,100 Z',
+  // Piece 1 — left blank + right tab
+  'M0,0 L100,0 L100,35 Q107,35 107,50 Q107,65 100,65 L100,100 L0,100 L0,65 Q7,65 7,50 Q7,35 0,35 Z',
+  // Piece 2 — left blank + right tab
+  'M0,0 L100,0 L100,35 Q107,35 107,50 Q107,65 100,65 L100,100 L0,100 L0,65 Q7,65 7,50 Q7,35 0,35 Z',
+  // Piece 3 — left blank only
+  'M0,0 L100,0 L100,100 L0,100 L0,65 Q7,65 7,50 Q7,35 0,35 Z',
+]
+
+const MOBILE_PATHS = [
+  // Piece 0 (top-left) — right tab + bottom tab
+  'M0,0 L100,0 L100,35 Q107,35 107,50 Q107,65 100,65 L100,100 L65,100 Q65,107 50,107 Q35,107 35,100 L0,100 Z',
+  // Piece 1 (top-right) — left blank + bottom tab
+  'M0,0 L100,0 L100,100 L65,100 Q65,107 50,107 Q35,107 35,100 L0,100 L0,65 Q7,65 7,50 Q7,35 0,35 Z',
+  // Piece 2 (bottom-left) — top blank + right tab
+  'M0,0 L35,0 Q35,7 50,7 Q65,7 65,0 L100,0 L100,35 Q107,35 107,50 Q107,65 100,65 L100,100 L0,100 Z',
+  // Piece 3 (bottom-right) — top blank + left blank
+  'M0,0 L35,0 Q35,7 50,7 Q65,7 65,0 L100,0 L100,100 L0,100 L0,65 Q7,65 7,50 Q7,35 0,35 Z',
+]
+
+const BG_RAISED = '#111111'
+
 /* ─── Variants ───────────────────────────────────────────────────────────────── */
 const containerVariants: Variants = {
   hidden: {},
@@ -60,6 +95,33 @@ const containerVariants: Variants = {
 const statVariants: Variants = {
   hidden: { opacity: 0, y: 14 },
   show: { opacity: 1, y: 0, transition: { duration: 0.55, ease: EASE_OUT } },
+}
+
+/* ─── PieceSVG — 3-layer jigsaw shape ───────────────────────────────────────── */
+function PieceSVG({ path, accent }: { path: string; accent: string }) {
+  return (
+    <svg
+      className="pointer-events-none absolute inset-0 w-full h-full"
+      viewBox="0 0 100 100"
+      preserveAspectRatio="none"
+      style={{ overflow: 'visible', zIndex: 0 }}
+      aria-hidden="true"
+    >
+      {/* Layer 1 — opaque background (covers tab area too) */}
+      <path d={path} fill={BG_RAISED} />
+      {/* Layer 2 — accent color wash */}
+      <path d={path} fill={accent} fillOpacity={0.10} />
+      {/* Layer 3 — accent border stroke (1px regardless of scale) */}
+      <path
+        d={path}
+        fill="none"
+        stroke={accent}
+        strokeOpacity={0.50}
+        strokeWidth="1"
+        vectorEffect="non-scaling-stroke"
+      />
+    </svg>
+  )
 }
 
 /* ─── CountUp ────────────────────────────────────────────────────────────────── */
@@ -112,28 +174,13 @@ function CountUp({
 export function StatsBar() {
   return (
     <section
-      className="relative w-full border-y overflow-hidden"
-      style={{
-        background: 'var(--bg-raised)',
-        borderColor: 'var(--border-faint)',
-      }}
+      className="relative w-full overflow-visible"
+      style={{ background: 'var(--bg-base)' }}
       id="stats"
       aria-label="Programme statistics"
     >
-      {/* Subtle grid texture */}
-      <div
-        className="pointer-events-none absolute inset-0"
-        aria-hidden="true"
-        style={{
-          backgroundImage: `
-            repeating-linear-gradient(rgba(255,184,0,0.025) 0 1px, transparent 1px 48px),
-            repeating-linear-gradient(90deg, rgba(255,184,0,0.025) 0 1px, transparent 1px 48px)
-          `,
-        }}
-      />
-
       <motion.div
-        className="relative max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4"
+        className="relative max-w-7xl mx-auto flex flex-wrap md:flex-nowrap"
         variants={containerVariants}
         initial="hidden"
         whileInView="show"
@@ -143,47 +190,51 @@ export function StatsBar() {
           <motion.div
             key={stat.id}
             variants={statVariants}
-            className={cn(
-              'flex flex-col items-center justify-center py-10 px-6 relative',
-              // Mobile 2×2: left-column gets right border, top-row gets bottom border
-              i % 2 === 0 && i < 3 && 'border-r',
-              i < 2 && 'border-b md:border-b-0',
-              // Desktop 1×4: all except last get right border
-              i >= 1 && i < 3 && 'md:border-r',
-            )}
-            style={{ borderColor: 'var(--border-faint)' }}
+            className="relative flex basis-1/2 md:basis-auto md:flex-1 flex-col items-center justify-center py-10 px-6"
+            style={{ zIndex: (STATS.length - i) * 10 }}
+            onMouseEnter={(e) => {
+              ;(e.currentTarget as HTMLElement).style.filter = `drop-shadow(0 0 14px ${stat.accent}60)`
+            }}
+            onMouseLeave={(e) => {
+              ;(e.currentTarget as HTMLElement).style.filter = ''
+            }}
           >
-            {/* Accent dot — top of card */}
-            <div
-              className="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-px"
-              style={{ background: stat.accent, opacity: 0.6 }}
-              aria-hidden="true"
-            />
+            {/* Jigsaw SVG — desktop path */}
+            <span className="hidden md:contents">
+              <PieceSVG path={DESKTOP_PATHS[i]} accent={stat.accent} />
+            </span>
+            {/* Jigsaw SVG — mobile path */}
+            <span className="contents md:hidden">
+              <PieceSVG path={MOBILE_PATHS[i]} accent={stat.accent} />
+            </span>
 
-            {/* Main value */}
-            <div
-              className="font-display leading-none tracking-tight mb-1.5"
-              style={{ fontSize: 'clamp(40px, 5vw, 64px)' }}
-            >
-              {stat.numeric ? (
-                <CountUp
-                  to={stat.to}
-                  prefix={stat.prefix}
-                  suffix={stat.suffix}
-                  accent={stat.accent}
-                />
-              ) : (
-                <span style={{ color: stat.accent }}>{stat.display}</span>
-              )}
+            {/* Content — sits above SVG layers */}
+            <div className="relative z-10 flex flex-col items-center gap-1.5">
+              {/* Main value */}
+              <div
+                className="font-display leading-none tracking-tight"
+                style={{ fontSize: 'clamp(40px, 5vw, 64px)' }}
+              >
+                {stat.numeric ? (
+                  <CountUp
+                    to={stat.to}
+                    prefix={stat.prefix}
+                    suffix={stat.suffix}
+                    accent={stat.accent}
+                  />
+                ) : (
+                  <span style={{ color: stat.accent }}>{stat.display}</span>
+                )}
+              </div>
+
+              {/* Label */}
+              <p
+                className="font-mono text-[12px] tracking-[0.2em] uppercase"
+                style={{ color: 'var(--text-3)' }}
+              >
+                {stat.label}
+              </p>
             </div>
-
-            {/* Label */}
-            <p
-              className="font-mono text-[12px] tracking-[0.2em] uppercase"
-              style={{ color: 'var(--text-3)' }}
-            >
-              {stat.label}
-            </p>
           </motion.div>
         ))}
       </motion.div>

@@ -240,11 +240,14 @@ function ScoringDialog({
               onChange={e => setFeedback(e.target.value)}
               rows={3}
               placeholder="Constructive feedback for the student…"
-              className="w-full px-3 py-2.5 text-sm rounded-lg border resize-none outline-none"
+              inputMode="text"
+              autoCapitalize="sentences"
+              className="w-full px-3 py-2.5 text-base rounded-lg border resize-none outline-none"
               style={{
                 background:  'var(--bg-float)',
                 borderColor: 'var(--border-subtle)',
                 color:       'var(--text-1)',
+                fontSize:    '16px',
               }}
             />
           </div>

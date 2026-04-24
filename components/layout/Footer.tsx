@@ -1,21 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-
-/* ─── zer0.pro geometric "0" mark (inline SVG — no shared import needed) ──── */
-function Zer0Mark({ size = 20 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 26 26" fill="none" aria-hidden="true">
-      <circle cx="13" cy="13" r="11.5" stroke="#FFB800" strokeWidth="1.5" />
-      <ellipse cx="13" cy="13" rx="4.5" ry="7" stroke="#FFB800" strokeWidth="1.5" />
-      <line
-        x1="9.5" y1="18.5"
-        x2="16.5" y2="7.5"
-        stroke="#FFB800" strokeWidth="1.5" strokeLinecap="round"
-      />
-    </svg>
-  )
-}
+import Image from 'next/image'
 
 /* ─── Discord SVG icon (not in Lucide) ────────────────────────────────────── */
 function DiscordIcon({ size = 14 }: { size?: number }) {
@@ -60,7 +46,7 @@ const COLUMNS = [
   {
     heading: 'Register',
     links: [
-      { label: 'Apply Now', href: '/register/stage-1' },
+      { label: 'Apply Now', href: '/dashboard/apply' },
       { label: 'Tiers & Pricing', href: '#tiers' },
       { label: 'FAQ', href: '#faq' },
       { label: 'For Parents', href: '#parents' },
@@ -70,7 +56,7 @@ const COLUMNS = [
     heading: 'Community',
     links: [
       { label: 'Discord Server', href: '#discord' },
-      { label: 'WhatsApp Group', href: '#whatsapp' },
+      { label: 'WhatsApp Group', href: 'https://chat.whatsapp.com/Kn9WvBrBsXsJ4PWg1rJC56' },
       { label: 'Instagram', href: '#instagram' },
       { label: 'Mentors', href: '#mentors' },
     ],
@@ -89,7 +75,7 @@ const COLUMNS = [
 /* ─── Social links ─────────────────────────────────────────────────────────── */
 const SOCIALS = [
   { label: 'Discord', href: '#discord', Icon: DiscordIcon },
-  { label: 'WhatsApp', href: '#whatsapp', Icon: WhatsAppIcon },
+  { label: 'WhatsApp', href: 'https://chat.whatsapp.com/Kn9WvBrBsXsJ4PWg1rJC56', Icon: WhatsAppIcon },
   { label: 'Instagram', href: '#instagram', Icon: InstagramIcon },
 ] as const
 
@@ -132,12 +118,18 @@ export function Footer() {
               className="flex items-center gap-2 w-fit"
               aria-label="Super Builders — home"
             >
-              <Zer0Mark size={20} />
+              <Image
+                src="/logo.png"
+                alt="zer0.pro logo"
+                width={100}
+                height={28}
+                className="h-6 w-auto object-contain"
+              />
               <span
                 className="font-heading font-extrabold text-[12px] tracking-[0.12em] uppercase"
-                style={{ color: 'var(--text-brand)' }}
+                style={{ color: 'var(--text-3)' }}
               >
-                SUPER BUILDERS
+                x Super Builders
               </span>
             </Link>
             <p
@@ -257,7 +249,7 @@ export function Footer() {
         </div>
 
         {/* Bottom bar */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-5">
+        <div className="flex items-center justify-between gap-3 pt-5 flex-wrap">
           <p
             className="font-mono text-[9px] tracking-widest uppercase"
             style={{ color: 'var(--text-4)' }}

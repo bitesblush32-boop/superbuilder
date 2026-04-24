@@ -12,7 +12,6 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet'
 import { useCountdown } from '@/hooks/useCountdown'
-import { HACKATHON_START } from '@/lib/content/programme'
 import { cn } from '@/lib/utils'
 import { useUser, useClerk } from '@clerk/nextjs'
 
@@ -34,8 +33,14 @@ function Zer0Mark({ size = 26 }: { size?: number }) {
 /* ─── Live countdown pill ──────────────────────────────────────────────────── */
 // Mobile (<md): "22d left" — fits in 375px alongside logo + hamburger
 // Desktop (md+): "JUN 7 · 22D 14H 37M" — full format
-function CountdownPill() {
-  const { days, hours, mins, expired } = useCountdown(HACKATHON_START)
+function CountdownPill({
+  regDeadlineISO,
+  regDeadlineDisplay,
+}: {
+  regDeadlineISO: string
+  regDeadlineDisplay: string
+}) {
+  const { days, hours, mins, expired } = useCountdown(new Date(regDeadlineISO))
 
   if (expired) return null
 
@@ -66,7 +71,7 @@ function CountdownPill() {
         className="font-mono text-[12px] tracking-widest whitespace-nowrap hidden md:inline"
         style={{ color: 'var(--text-brand)' }}
       >
-        JUN 7 ·{' '}
+        {regDeadlineDisplay.toUpperCase()} ·{' '}
         {String(days).padStart(2, '0')}D{' '}
         {String(hours).padStart(2, '0')}H{' '}
         {String(mins).padStart(2, '0')}M
@@ -141,7 +146,7 @@ function UserMenu() {
           <Link
             href="/terms#privacy"
             onClick={() => setOpen(false)}
-            className="flex items-center gap-3 px-4 h-11 font-body text-sm transition-colors"
+            className="flex items-center gap-3 px-4 h-11 font-body text-sm transition-colors touch-manipulation active:opacity-70"
             style={{ color: 'var(--text-2)' }}
             onMouseEnter={e => (e.currentTarget.style.background = 'var(--brand-subtle)')}
             onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
@@ -152,7 +157,7 @@ function UserMenu() {
           <Link
             href="/terms#refund"
             onClick={() => setOpen(false)}
-            className="flex items-center gap-3 px-4 h-11 font-body text-sm transition-colors"
+            className="flex items-center gap-3 px-4 h-11 font-body text-sm transition-colors touch-manipulation active:opacity-70"
             style={{ color: 'var(--text-2)' }}
             onMouseEnter={e => (e.currentTarget.style.background = 'var(--brand-subtle)')}
             onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
@@ -162,7 +167,7 @@ function UserMenu() {
           </Link>
           <button
             onClick={() => { setOpen(false); signOut() }}
-            className="flex items-center gap-3 px-4 h-11 w-full text-left font-body text-sm transition-colors"
+            className="flex items-center gap-3 px-4 h-11 w-full text-left font-body text-sm transition-colors touch-manipulation active:opacity-70"
             style={{ color: 'var(--text-2)' }}
             onMouseEnter={e => (e.currentTarget.style.background = 'var(--brand-subtle)')}
             onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
@@ -177,7 +182,13 @@ function UserMenu() {
 }
 
 /* ─── Navbar ───────────────────────────────────────────────────────────────── */
-export function Navbar() {
+export function Navbar({
+  regDeadlineISO,
+  regDeadlineDisplay,
+}: {
+  regDeadlineISO: string
+  regDeadlineDisplay: string
+}) {
   const { isSignedIn, isLoaded } = useUser()
   const [scrolled,    setScrolled]    = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
@@ -203,7 +214,7 @@ export function Navbar() {
         {/* ── Left: Logo ── */}
         <Link
           href="/"
-          className="flex shrink-0 items-center gap-2 sm:gap-3 min-h-[44px] select-none"
+          className="flex shrink-0 items-center gap-2 sm:gap-3 min-h-[44px] select-none touch-manipulation transition-opacity duration-150 active:opacity-70"
           aria-label="Super Builders — home"
         >
           <Image
@@ -230,7 +241,7 @@ export function Navbar() {
               href={link.href}
               className={cn(
                 'relative inline-flex h-11 shrink-0 items-center font-body font-semibold text-[12px] xl:text-[13px] leading-none tracking-[0.08em] uppercase',
-                'transition-colors duration-150',
+                'transition-colors duration-150 touch-manipulation active:opacity-70',
                 'after:absolute after:bottom-[-2px] after:left-0 after:h-[1px] after:w-0',
                 'after:bg-[var(--brand)] after:transition-all after:duration-200',
                 'hover:after:w-full',
@@ -250,7 +261,7 @@ export function Navbar() {
 
         {/* ── Right: Countdown + CTA + Auth + Hamburger ── */}
         <div className="flex shrink-0 items-center gap-2.5">
-          <CountdownPill />
+          <CountdownPill regDeadlineISO={regDeadlineISO} regDeadlineDisplay={regDeadlineDisplay} />
 
           {/* Auth-aware CTA — desktop/tablet only */}
           {isLoaded && (
@@ -258,7 +269,7 @@ export function Navbar() {
               <div className="hidden sm:flex items-center gap-3">
                 <Link
                   href="/dashboard/apply"
-                  className="inline-flex items-center justify-center gap-1.5 h-[34px] px-4 rounded-[3px] font-heading font-bold text-[11px] md:text-[13px] tracking-[0.12em] uppercase transition-all duration-150"
+                  className="inline-flex items-center justify-center gap-1.5 h-[34px] px-4 rounded-[3px] font-heading font-bold text-[11px] md:text-[13px] tracking-[0.12em] uppercase transition-all duration-150 touch-manipulation active:opacity-70 active:scale-95"
                   style={{ background: 'var(--brand)', color: '#000', boxShadow: 'var(--shadow-brand-sm)' }}
                   onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.background = 'var(--brand-bright)'; el.style.boxShadow = 'var(--shadow-brand)' }}
                   onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.background = 'var(--brand)'; el.style.boxShadow = 'var(--shadow-brand-sm)' }}
@@ -272,7 +283,7 @@ export function Navbar() {
               <div className="hidden sm:flex items-center gap-2">
                 <Link
                   href="/sign-in"
-                  className="inline-flex items-center justify-center h-[34px] px-4 rounded-[3px] font-heading font-bold text-[11px] md:text-[13px] tracking-[0.12em] uppercase transition-all duration-150"
+                  className="inline-flex items-center justify-center h-[34px] px-4 rounded-[3px] font-heading font-bold text-[11px] md:text-[13px] tracking-[0.12em] uppercase transition-all duration-150 touch-manipulation active:opacity-70"
                   style={{ border: '1.5px solid var(--border-soft)', color: 'var(--text-2)' }}
                   onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--border-brand)'; (e.currentTarget as HTMLElement).style.color = 'var(--text-brand)' }}
                   onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--border-soft)'; (e.currentTarget as HTMLElement).style.color = 'var(--text-2)' }}
@@ -281,7 +292,7 @@ export function Navbar() {
                 </Link>
                 <Link
                   href="/sign-in"
-                  className="inline-flex items-center justify-center gap-1.5 h-[34px] px-4 rounded-[3px] font-heading font-bold text-[11px] md:text-[14px] tracking-[0.12em] uppercase transition-all duration-150"
+                  className="inline-flex items-center justify-center gap-1.5 h-[34px] px-4 rounded-[3px] font-heading font-bold text-[11px] md:text-[14px] tracking-[0.12em] uppercase transition-all duration-150 touch-manipulation active:opacity-70 active:scale-95"
                   style={{ background: 'var(--brand)', color: '#000', boxShadow: 'var(--shadow-brand-sm)' }}
                   onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.background = 'var(--brand-bright)'; el.style.boxShadow = 'var(--shadow-brand)' }}
                   onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.background = 'var(--brand)'; el.style.boxShadow = 'var(--shadow-brand-sm)' }}
@@ -301,7 +312,7 @@ export function Navbar() {
           <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
             <SheetTrigger asChild>
               <button
-                className="lg:hidden w-11 h-11 flex items-center justify-center rounded-md transition-all duration-150 active:scale-90"
+                className="lg:hidden w-11 h-11 flex items-center justify-center rounded-md transition-all duration-150 touch-manipulation active:scale-90 active:opacity-70"
                 style={{ color: 'var(--text-2)' }}
                 aria-label="Open navigation menu"
                 onMouseEnter={(e) =>
@@ -457,7 +468,7 @@ export function Navbar() {
                   className="text-center font-mono text-[12px] tracking-wider"
                   style={{ color: 'var(--text-4)' }}
                 >
-                  DEADLINE: MAY 25 · SPOTS FILLING FAST
+                  DEADLINE: {regDeadlineDisplay.toUpperCase()} · SPOTS FILLING FAST
                 </p>
               </div>
             </SheetContent>

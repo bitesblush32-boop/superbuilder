@@ -1,0 +1,1904 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Super Builders — Design System v1.0</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Exo+2:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ================================================================
+   SUPER BUILDERS × ZER0.PRO — DESIGN SYSTEM TOKENS
+   ================================================================ */
+:root {
+  /* === BRAND === */
+  --brand:          #FFB800;
+  --brand-bright:   #FFCF40;
+  --brand-dim:      #CC9400;
+  --brand-dark:     #7A5500;
+  --brand-glow:     rgba(255, 184, 0, 0.20);
+  --brand-subtle:   rgba(255, 184, 0, 0.07);
+
+  /* === BACKGROUNDS (stacking darkness) === */
+  --bg-void:   #000000;
+  --bg-base:   #0A0A0A;
+  --bg-raised: #111111;
+  --bg-card:   #161616;
+  --bg-float:  #1E1E1E;
+  --bg-inset:  #0D0D0D;
+
+  /* === BORDERS === */
+  --border-faint:  rgba(255,255,255,0.05);
+  --border-subtle: rgba(255,255,255,0.09);
+  --border-soft:   rgba(255,255,255,0.15);
+  --border-brand:  rgba(255,184,0,0.30);
+  --border-brand-strong: rgba(255,184,0,0.60);
+
+  /* === TEXT === */
+  --text-1: #FFFFFF;
+  --text-2: #C0C0C0;
+  --text-3: #808080;
+  --text-4: #484848;
+  --text-brand: #FFB800;
+
+  /* === SEMANTIC === */
+  --green:   #22C55E;
+  --green-bg: rgba(34,197,94,0.10);
+  --blue:    #60A5FA;
+  --blue-bg: rgba(96,165,250,0.10);
+  --red:     #F87171;
+  --red-bg:  rgba(248,113,113,0.10);
+  --amber:   #FBBF24;
+  --amber-bg: rgba(251,191,36,0.10);
+  --purple:  #C084FC;
+  --purple-bg: rgba(192,132,252,0.10);
+
+  /* === BADGE COLORS (gamification) === */
+  --bdg-explorer:  #A78BFA;
+  --bdg-curious:   #60A5FA;
+  --bdg-launcher:  #34D399;
+  --bdg-builder:   #FFB800;
+  --bdg-warrior:   #FB923C;
+  --bdg-expert:    #E879F9;
+  --bdg-proto:     #818CF8;
+  --bdg-hacker:    #4ADE80;
+  --bdg-super:     #FFD700;
+
+  /* === TYPOGRAPHY === */
+  --font-display: 'Bebas Neue', 'Impact', sans-serif;
+  --font-heading: 'Exo 2', sans-serif;
+  --font-body:    'Plus Jakarta Sans', sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+
+  /* === TYPE SCALE === */
+  --text-hero:  clamp(72px, 10vw, 120px);
+  --text-xl:    clamp(40px, 5vw, 64px);
+  --text-lg:    clamp(28px, 3vw, 40px);
+  --text-md:    24px;
+  --text-base:  16px;
+  --text-sm:    14px;
+  --text-xs:    12px;
+  --text-xxs:   11px;
+
+  /* === SPACING (4px grid) === */
+  --s1: 4px;   --s2: 8px;   --s3: 12px;  --s4: 16px;
+  --s5: 24px;  --s6: 32px;  --s7: 48px;  --s8: 64px;
+  --s9: 96px;  --s10: 128px;
+
+  /* === RADIUS === */
+  --r-xs: 4px; --r-sm: 6px; --r-md: 10px;
+  --r-lg: 16px; --r-xl: 24px; --r-full: 9999px;
+
+  /* === SHADOWS === */
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.4);
+  --shadow-md: 0 4px 24px rgba(0,0,0,0.5);
+  --shadow-lg: 0 8px 48px rgba(0,0,0,0.6);
+  --shadow-brand: 0 0 32px rgba(255,184,0,0.25);
+  --shadow-brand-sm: 0 0 12px rgba(255,184,0,0.15);
+
+  /* === MOTION === */
+  --ease-spring:  cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-out:     cubic-bezier(0.16, 1, 0.30, 1);
+  --ease-in-out:  cubic-bezier(0.87, 0, 0.13, 1);
+  --ease-bounce:  cubic-bezier(0.68,-0.55,0.27,1.55);
+  --dur-instant:  100ms;
+  --dur-fast:     150ms;
+  --dur-normal:   250ms;
+  --dur-slow:     400ms;
+  --dur-xslow:    600ms;
+  --dur-entrance: 800ms;
+}
+
+/* ================================================================
+   RESET & BASE
+   ================================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg-base);
+  color: var(--text-1);
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+a { color: var(--text-brand); text-decoration: none; }
+code {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  background: var(--bg-float);
+  border: 1px solid var(--border-faint);
+  padding: 2px 6px;
+  border-radius: var(--r-xs);
+  color: var(--brand);
+}
+
+/* ================================================================
+   NAV
+   ================================================================ */
+nav {
+  position: sticky; top: 0; z-index: 200;
+  height: 52px;
+  background: rgba(10,10,10,0.88);
+  backdrop-filter: blur(24px);
+  border-bottom: 1px solid var(--border-faint);
+  display: flex; align-items: center;
+  padding: 0 var(--s8);
+  gap: var(--s6);
+}
+.nav-brand {
+  font-family: var(--font-heading); font-weight: 800; font-size: 13px;
+  color: var(--brand); letter-spacing: 0.08em; white-space: nowrap;
+}
+.nav-links { display: flex; gap: 0; list-style: none; }
+.nav-links a {
+  font-family: var(--font-heading); font-size: 12px; font-weight: 500;
+  color: var(--text-3); padding: 0 var(--s4); line-height: 52px;
+  letter-spacing: 0.03em; transition: color var(--dur-fast);
+  display: block;
+}
+.nav-links a:hover { color: var(--brand); }
+.nav-tag {
+  margin-left: auto;
+  font-family: var(--font-mono); font-size: 10px; color: var(--text-4);
+  border: 1px solid var(--border-subtle); border-radius: var(--r-full);
+  padding: 3px 10px; letter-spacing: 0.05em;
+}
+
+/* ================================================================
+   LAYOUT
+   ================================================================ */
+.page-wrap { max-width: 1200px; margin: 0 auto; }
+.section {
+  padding: var(--s9) var(--s8);
+  border-bottom: 1px solid var(--border-faint);
+}
+.section-label {
+  font-family: var(--font-mono); font-size: var(--text-xxs);
+  letter-spacing: 0.25em; color: var(--brand);
+  text-transform: uppercase; margin-bottom: var(--s2);
+  display: flex; align-items: center; gap: var(--s2);
+}
+.section-label::before {
+  content: ''; width: 20px; height: 1px; background: var(--brand);
+}
+.section-title {
+  font-family: var(--font-display); font-size: 56px;
+  line-height: 1; letter-spacing: 0.02em;
+  color: var(--text-1); margin-bottom: var(--s2);
+}
+.section-desc {
+  font-size: 15px; color: var(--text-2); max-width: 560px;
+  margin-bottom: var(--s7); line-height: 1.7;
+}
+.row { display: flex; gap: var(--s5); flex-wrap: wrap; }
+.grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: var(--s5); }
+.grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: var(--s5); }
+.grid-4 { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: var(--s4); }
+.grid-5 { display: grid; grid-template-columns: repeat(5, minmax(0,1fr)); gap: var(--s4); }
+.grid-9 { display: grid; grid-template-columns: repeat(9, minmax(0,1fr)); gap: var(--s3); }
+.sub-label {
+  font-family: var(--font-mono); font-size: 11px; color: var(--text-3);
+  letter-spacing: 0.15em; text-transform: uppercase;
+  margin-bottom: var(--s4); margin-top: var(--s7);
+}
+
+/* ================================================================
+   HERO SECTION
+   ================================================================ */
+.hero {
+  min-height: 100vh; display: flex; flex-direction: column;
+  justify-content: center; padding: var(--s10) var(--s8);
+  position: relative; overflow: hidden;
+  background: var(--bg-void);
+  contain: layout style;
+}
+.hero-bg {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(255,184,0,0.12) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 30% at 80% 80%, rgba(255,184,0,0.06) 0%, transparent 50%);
+  pointer-events: none;
+}
+.hero-grid {
+  position: absolute; inset: 0; pointer-events: none;
+  background-image:
+    linear-gradient(var(--border-faint) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border-faint) 1px, transparent 1px);
+  background-size: 60px 60px;
+  -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black 0%, transparent 80%);
+  mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black 0%, transparent 80%);
+}
+.hero-eyebrow {
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.3em;
+  color: var(--brand); text-transform: uppercase;
+  display: flex; align-items: center; gap: var(--s3);
+  margin-bottom: var(--s5);
+}
+.hero-eyebrow::before {
+  content: ''; display: inline-block; width: 32px; height: 1px; background: var(--brand);
+}
+.hero-name {
+  font-family: var(--font-display); font-size: clamp(48px,12vw,160px);
+  line-height: 0.9; letter-spacing: 0.01em; color: var(--text-1);
+  margin-bottom: var(--s2);
+}
+.hero-name span { color: var(--brand); }
+.hero-sub {
+  font-family: var(--font-heading); font-size: clamp(14px,2vw,20px);
+  font-weight: 300; color: var(--text-2); letter-spacing: 0.05em;
+  text-transform: uppercase; margin-bottom: var(--s8);
+}
+.hero-stats {
+  display: flex; gap: var(--s6); flex-wrap: wrap;
+  padding-top: var(--s6);
+  border-top: 1px solid var(--border-faint);
+}
+.hero-stat-val {
+  font-family: var(--font-display); font-size: 40px;
+  color: var(--brand); line-height: 1;
+}
+.hero-stat-key {
+  font-family: var(--font-mono); font-size: 10px;
+  color: var(--text-3); letter-spacing: 0.2em; text-transform: uppercase;
+  margin-top: 2px;
+}
+.zero-logo {
+  display: inline-flex; align-items: center; gap: var(--s2);
+  font-family: var(--font-heading); font-size: 24px; font-weight: 900;
+  color: var(--brand); letter-spacing: -0.02em;
+}
+.zero-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--brand); }
+
+/* ================================================================
+   COLOR SWATCHES
+   ================================================================ */
+.swatch {
+  border-radius: var(--r-md); overflow: hidden;
+  border: 1px solid var(--border-faint);
+  transition: transform var(--dur-normal) var(--ease-out);
+}
+.swatch:hover { transform: translateY(-3px); }
+.swatch-color { height: 72px; }
+.swatch-info { background: var(--bg-card); padding: var(--s3) var(--s3); }
+.swatch-name { font-family: var(--font-heading); font-weight: 600; font-size: 12px; color: var(--text-1); }
+.swatch-hex { font-family: var(--font-mono); font-size: 10px; color: var(--text-3); }
+.swatch-token { font-family: var(--font-mono); font-size: 9px; color: var(--text-4); margin-top: 2px; }
+
+.surface-stack {
+  border: 1px solid var(--border-faint); border-radius: var(--r-lg); overflow: hidden;
+}
+.surf-row {
+  padding: var(--s4) var(--s5);
+  display: flex; justify-content: space-between; align-items: center;
+  border-bottom: 1px solid var(--border-faint);
+  font-size: 13px;
+}
+.surf-row:last-child { border-bottom: none; }
+.surf-label { font-family: var(--font-mono); font-size: 11px; color: var(--text-3); }
+.surf-hex { font-family: var(--font-mono); font-size: 11px; color: var(--text-2); }
+.surf-dot { width: 20px; height: 20px; border-radius: var(--r-xs); border: 1px solid var(--border-faint); }
+
+/* ================================================================
+   TYPOGRAPHY DISPLAY
+   ================================================================ */
+.type-specimen {
+  padding: var(--s6) var(--s6);
+  border: 1px solid var(--border-faint);
+  border-radius: var(--r-lg);
+  background: var(--bg-card);
+  margin-bottom: var(--s4);
+}
+.type-meta {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: var(--s4);
+  padding-bottom: var(--s4);
+  border-bottom: 1px solid var(--border-faint);
+}
+.type-meta-name { font-family: var(--font-mono); font-size: 11px; color: var(--brand); letter-spacing: 0.1em; }
+.type-meta-info { font-family: var(--font-mono); font-size: 10px; color: var(--text-4); }
+
+.type-scale-row {
+  display: flex; align-items: baseline; gap: var(--s5); padding: var(--s3) 0;
+  border-bottom: 1px solid var(--border-faint);
+}
+.type-scale-row:last-child { border-bottom: none; }
+.type-scale-label {
+  font-family: var(--font-mono); font-size: 10px; color: var(--text-4);
+  width: 120px; flex-shrink: 0;
+}
+.type-scale-sample { line-height: 1.2; }
+
+/* ================================================================
+   BUTTONS
+   ================================================================ */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  gap: var(--s2); padding: 10px 24px; border-radius: var(--r-md);
+  font-family: var(--font-heading); font-size: 14px; font-weight: 700;
+  letter-spacing: 0.04em; cursor: pointer;
+  border: none; transition: all var(--dur-normal) var(--ease-out);
+  text-decoration: none; white-space: nowrap;
+}
+.btn-primary {
+  background: var(--brand); color: #000;
+}
+.btn-primary:hover {
+  background: var(--brand-bright); transform: translateY(-1px);
+  box-shadow: var(--shadow-brand);
+}
+.btn-primary:active { transform: scale(0.97); }
+
+.btn-secondary {
+  background: transparent; color: var(--brand);
+  border: 1px solid var(--border-brand);
+}
+.btn-secondary:hover {
+  background: var(--brand-subtle); border-color: var(--brand);
+  transform: translateY(-1px);
+}
+
+.btn-ghost {
+  background: var(--bg-card); color: var(--text-2);
+  border: 1px solid var(--border-subtle);
+}
+.btn-ghost:hover {
+  background: var(--bg-float); color: var(--text-1);
+  border-color: var(--border-soft); transform: translateY(-1px);
+}
+
+.btn-danger {
+  background: transparent; color: var(--red);
+  border: 1px solid rgba(248,113,113,0.30);
+}
+.btn-danger:hover { background: var(--red-bg); border-color: var(--red); }
+
+.btn-sm { padding: 6px 14px; font-size: 12px; border-radius: var(--r-sm); }
+.btn-lg { padding: 14px 32px; font-size: 16px; border-radius: var(--r-lg); }
+.btn-xl { padding: 18px 48px; font-size: 18px; border-radius: var(--r-lg); letter-spacing: 0.06em; }
+
+.btn-icon { padding: 10px; width: 40px; height: 40px; }
+.btn-icon.btn-sm { width: 32px; height: 32px; padding: 6px; }
+
+/* Loading state */
+.btn-loading { opacity: 0.7; cursor: not-allowed; position: relative; }
+.btn-loading::after {
+  content: '';
+  width: 14px; height: 14px;
+  border: 2px solid rgba(0,0,0,0.3);
+  border-top-color: #000;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+  margin-left: 4px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ================================================================
+   CARDS
+   ================================================================ */
+.card {
+  background: var(--bg-card); border: 1px solid var(--border-faint);
+  border-radius: var(--r-lg); padding: var(--s5);
+  transition: border-color var(--dur-normal), transform var(--dur-normal) var(--ease-out);
+}
+.card:hover { border-color: var(--border-subtle); transform: translateY(-2px); }
+
+.card-brand {
+  background: var(--bg-card);
+  border: 1px solid var(--border-brand);
+  border-radius: var(--r-lg); padding: var(--s5);
+  box-shadow: var(--shadow-brand-sm);
+}
+
+.card-glass {
+  background: rgba(255,255,255,0.03);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: var(--r-lg); padding: var(--s5);
+}
+
+/* 3D Tilt Card (JS-enhanced) */
+.card-3d {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--r-xl); padding: var(--s6);
+  transform-style: preserve-3d;
+  transition: transform var(--dur-normal) var(--ease-out), box-shadow var(--dur-normal);
+  cursor: pointer; will-change: transform;
+  position: relative; overflow: hidden; contain: layout style;
+}
+.card-3d::before {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(circle at var(--mx,50%) var(--my,50%), rgba(255,184,0,0.08) 0%, transparent 60%);
+  border-radius: inherit; pointer-events: none;
+  transition: opacity var(--dur-normal);
+}
+.card-3d:hover { box-shadow: var(--shadow-brand), var(--shadow-lg); }
+
+.card-3d-depth {
+  transform: translateZ(20px);
+}
+
+/* ================================================================
+   INPUTS & FORMS
+   ================================================================ */
+.form-group { display: flex; flex-direction: column; gap: var(--s2); }
+.form-label {
+  font-family: var(--font-heading); font-size: 13px; font-weight: 600;
+  color: var(--text-2); letter-spacing: 0.02em;
+}
+.form-hint { font-size: 12px; color: var(--text-3); }
+.form-error { font-size: 12px; color: var(--red); }
+
+.input {
+  background: var(--bg-raised); border: 1px solid var(--border-subtle);
+  border-radius: var(--r-md); padding: 10px 16px;
+  font-family: var(--font-body); font-size: 14px; color: var(--text-1);
+  width: 100%; outline: none;
+  transition: border-color var(--dur-fast), box-shadow var(--dur-fast);
+}
+.input::placeholder { color: var(--text-4); }
+.input:focus {
+  border-color: var(--brand-dim);
+  box-shadow: 0 0 0 3px var(--brand-glow);
+}
+.input:hover:not(:focus) { border-color: var(--border-soft); }
+.input.error { border-color: var(--red); }
+.input.success { border-color: var(--green); }
+
+.select {
+  appearance: none; background: var(--bg-raised);
+  border: 1px solid var(--border-subtle); border-radius: var(--r-md);
+  padding: 10px 40px 10px 16px; font-family: var(--font-body);
+  font-size: 14px; color: var(--text-1); width: 100%; outline: none;
+  cursor: pointer; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23808080' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 14px center;
+  transition: border-color var(--dur-fast), box-shadow var(--dur-fast);
+}
+.select:focus { border-color: var(--brand-dim); box-shadow: 0 0 0 3px var(--brand-glow); }
+
+/* Progress/Range */
+.range-wrap { position: relative; }
+input[type=range] {
+  -webkit-appearance: none; appearance: none;
+  width: 100%; height: 4px; border-radius: var(--r-full);
+  background: var(--bg-float); outline: none; cursor: pointer;
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 18px; height: 18px;
+  border-radius: 50%; background: var(--brand);
+  border: 2px solid #000; box-shadow: 0 0 8px var(--brand-glow);
+  cursor: pointer;
+}
+
+/* ================================================================
+   TAGS & PILLS
+   ================================================================ */
+.pill {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 3px 10px; border-radius: var(--r-full);
+  font-family: var(--font-heading); font-size: 11px; font-weight: 600;
+  letter-spacing: 0.04em; white-space: nowrap;
+}
+.pill-brand { background: var(--brand-subtle); color: var(--brand); border: 1px solid var(--border-brand); }
+.pill-green { background: var(--green-bg); color: var(--green); border: 1px solid rgba(34,197,94,0.25); }
+.pill-blue  { background: var(--blue-bg);  color: var(--blue);  border: 1px solid rgba(96,165,250,0.25); }
+.pill-red   { background: var(--red-bg);   color: var(--red);   border: 1px solid rgba(248,113,113,0.25); }
+.pill-purple{ background: var(--purple-bg);color: var(--purple);border: 1px solid rgba(192,132,252,0.25); }
+
+/* ================================================================
+   GAMIFICATION — BADGES
+   ================================================================ */
+.badge-card {
+  display: flex; flex-direction: column; align-items: center; gap: var(--s3);
+  padding: var(--s5) var(--s4);
+  background: var(--bg-card); border: 1px solid var(--border-faint);
+  border-radius: var(--r-xl);
+  transition: transform var(--dur-normal) var(--ease-out), border-color var(--dur-normal), box-shadow var(--dur-normal);
+  cursor: pointer; text-align: center;
+  will-change: transform;
+}
+.badge-card:hover { transform: translateY(-4px) scale(1.02); }
+.badge-card.unlocked { border-color: var(--border-brand); box-shadow: var(--shadow-brand-sm); }
+.badge-card.locked { opacity: 0.35; filter: grayscale(0.8); }
+
+.badge-icon {
+  width: 64px; height: 64px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 28px; position: relative;
+  transition: transform var(--dur-normal) var(--ease-spring);
+}
+.badge-card:hover .badge-icon { transform: scale(1.12) rotate(-5deg); }
+.badge-icon::after {
+  content: ''; position: absolute; inset: -3px; border-radius: 50%;
+  border: 2px solid currentColor; opacity: 0.4;
+}
+
+.badge-name {
+  font-family: var(--font-heading); font-size: 12px; font-weight: 700;
+  color: var(--text-1); letter-spacing: 0.04em;
+}
+.badge-stage {
+  font-family: var(--font-mono); font-size: 9px; color: var(--text-3);
+  text-transform: uppercase; letter-spacing: 0.15em;
+}
+
+/* ================================================================
+   PROGRESS BARS
+   ================================================================ */
+.progress-wrap { display: flex; flex-direction: column; gap: var(--s2); }
+.progress-header { display: flex; justify-content: space-between; }
+.progress-label { font-family: var(--font-heading); font-size: 13px; font-weight: 600; color: var(--text-1); }
+.progress-value { font-family: var(--font-mono); font-size: 12px; color: var(--brand); }
+.progress-track {
+  height: 8px; background: var(--bg-float); border-radius: var(--r-full);
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%; border-radius: var(--r-full);
+  background: linear-gradient(90deg, var(--brand-dim), var(--brand), var(--brand-bright));
+  transition: width var(--dur-xslow) var(--ease-out);
+  position: relative;
+}
+.progress-fill::after {
+  content: ''; position: absolute; right: 0; top: 0; bottom: 0; width: 20px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3));
+  border-radius: var(--r-full);
+}
+.progress-track.thin { height: 4px; }
+.progress-track.thick { height: 12px; }
+
+/* Stage Progress */
+.stage-progress {
+  display: flex; align-items: center;
+  gap: 0; position: relative;
+}
+.stage-step {
+  display: flex; flex-direction: column; align-items: center;
+  gap: var(--s2); flex: 1; position: relative; z-index: 1;
+}
+.stage-dot {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: var(--bg-float); border: 2px solid var(--border-subtle);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-mono); font-size: 12px; color: var(--text-3);
+  font-weight: 600; transition: all var(--dur-normal) var(--ease-spring);
+  position: relative; z-index: 2;
+}
+.stage-step.done .stage-dot {
+  background: var(--brand); border-color: var(--brand); color: #000; font-weight: 700;
+}
+.stage-step.active .stage-dot {
+  background: var(--bg-card); border-color: var(--brand); color: var(--brand);
+  box-shadow: 0 0 16px var(--brand-glow);
+}
+.stage-step-label {
+  font-family: var(--font-heading); font-size: 10px; font-weight: 600;
+  color: var(--text-3); text-align: center; letter-spacing: 0.05em;
+  max-width: 72px; line-height: 1.3;
+}
+.stage-step.done .stage-step-label { color: var(--text-2); }
+.stage-step.active .stage-step-label { color: var(--brand); }
+.stage-connector {
+  flex: 1; height: 2px; background: var(--border-faint);
+  margin-top: -18px; position: relative; z-index: 0;
+  transition: background var(--dur-normal);
+}
+.stage-connector.done { background: var(--brand-dim); }
+
+/* ================================================================
+   XP / LEVEL BAR
+   ================================================================ */
+.xp-bar {
+  background: var(--bg-card); border: 1px solid var(--border-faint);
+  border-radius: var(--r-xl); padding: var(--s4) var(--s5);
+  display: flex; flex-direction: column; gap: var(--s2);
+}
+.xp-header { display: flex; justify-content: space-between; align-items: center; }
+.xp-level {
+  font-family: var(--font-display); font-size: 32px;
+  color: var(--brand); line-height: 1;
+}
+.xp-label { font-family: var(--font-mono); font-size: 10px; color: var(--text-3); }
+.xp-name { font-family: var(--font-heading); font-size: 16px; font-weight: 700; color: var(--text-1); }
+.xp-track {
+  height: 10px; background: var(--bg-void);
+  border-radius: var(--r-full); overflow: hidden;
+  border: 1px solid var(--border-faint);
+}
+@keyframes xp-pulse {
+  from { opacity: 0.5; }
+  to   { opacity: 1; }
+}
+.xp-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #FF8C00, var(--brand), var(--brand-bright));
+  border-radius: var(--r-full); width: 65%;
+  position: relative;
+}
+.xp-fill::after {
+  content: ''; position: absolute; inset: 0;
+  border-radius: var(--r-full);
+  box-shadow: 0 0 12px rgba(255,184,0,0.6);
+  animation: xp-pulse 2s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+.xp-nums {
+  display: flex; justify-content: space-between;
+  font-family: var(--font-mono); font-size: 10px; color: var(--text-3);
+}
+
+/* ================================================================
+   LEADERBOARD ROW
+   ================================================================ */
+.lb-row {
+  display: flex; align-items: center; gap: var(--s4);
+  padding: var(--s3) var(--s4);
+  border-radius: var(--r-md);
+  transition: background var(--dur-fast);
+}
+.lb-row:hover { background: var(--bg-float); }
+.lb-row.current { background: var(--brand-subtle); border: 1px solid var(--border-brand); border-radius: var(--r-md); }
+.lb-rank {
+  font-family: var(--font-display); font-size: 22px; min-width: 36px;
+  color: var(--text-3);
+}
+.lb-rank.gold { color: var(--brand); }
+.lb-rank.silver { color: #C0C0C0; }
+.lb-rank.bronze { color: #CD7F32; }
+.lb-avatar {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: var(--bg-float); border: 2px solid var(--border-subtle);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-heading); font-size: 13px; font-weight: 700;
+  color: var(--text-2);
+  flex-shrink: 0;
+}
+.lb-name { font-family: var(--font-heading); font-size: 14px; font-weight: 600; color: var(--text-1); flex: 1; }
+.lb-city { font-size: 12px; color: var(--text-3); }
+.lb-score {
+  font-family: var(--font-mono); font-size: 16px; font-weight: 600; color: var(--brand);
+}
+
+/* ================================================================
+   COUNTDOWN TIMER
+   ================================================================ */
+.countdown {
+  display: flex; gap: var(--s3); align-items: flex-start;
+}
+.cd-unit {
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+}
+.cd-num {
+  background: var(--bg-card); border: 1px solid var(--border-subtle);
+  border-radius: var(--r-md); padding: var(--s3) var(--s4);
+  font-family: var(--font-display); font-size: 44px; line-height: 1;
+  color: var(--text-1); min-width: 80px; text-align: center;
+}
+.cd-label {
+  font-family: var(--font-mono); font-size: 9px; color: var(--text-3);
+  letter-spacing: 0.2em; text-transform: uppercase;
+}
+.cd-sep {
+  font-family: var(--font-display); font-size: 40px; color: var(--brand);
+  margin-top: 8px; line-height: 1;
+  animation: blink 1s step-end infinite;
+}
+@keyframes blink { 50% { opacity: 0; } }
+
+/* ================================================================
+   TIER CARDS (Pro/Premium)
+   ================================================================ */
+.tier-card {
+  background: var(--bg-card); border: 1px solid var(--border-subtle);
+  border-radius: var(--r-xl); padding: var(--s6); position: relative;
+  overflow: hidden;
+  transition: transform var(--dur-normal) var(--ease-out), border-color var(--dur-normal), box-shadow var(--dur-normal);
+  will-change: transform;
+}
+.tier-card:hover { transform: translateY(-4px); }
+.tier-card.featured {
+  border-color: var(--brand);
+  box-shadow: var(--shadow-brand);
+  background: linear-gradient(160deg, var(--bg-float) 0%, var(--bg-card) 60%);
+}
+.tier-badge {
+  position: absolute; top: var(--s5); right: var(--s5);
+}
+.tier-name {
+  font-family: var(--font-display); font-size: 36px; color: var(--text-1);
+  margin-bottom: var(--s1); letter-spacing: 0.02em;
+}
+.tier-price {
+  font-family: var(--font-heading); font-size: 40px; font-weight: 800;
+  color: var(--brand); line-height: 1; margin-bottom: var(--s2);
+}
+.tier-price span { font-size: 18px; color: var(--text-3); font-weight: 400; }
+.tier-features { list-style: none; margin: var(--s5) 0; display: flex; flex-direction: column; gap: var(--s2); }
+.tier-feature {
+  display: flex; align-items: center; gap: var(--s3);
+  font-size: 14px; color: var(--text-2);
+}
+.feat-check {
+  width: 18px; height: 18px; flex-shrink: 0;
+  border-radius: 50%; background: var(--green-bg);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--green); font-size: 10px;
+}
+.feat-cross {
+  width: 18px; height: 18px; flex-shrink: 0;
+  border-radius: 50%; background: rgba(255,255,255,0.04);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--text-4); font-size: 10px;
+}
+
+/* ================================================================
+   FLOATING 3D ANIMATION
+   ================================================================ */
+@keyframes float-y {
+  0%, 100% { transform: translateY(0px) rotate(-2deg); }
+  50%       { transform: translateY(-16px) rotate(2deg); }
+}
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-10px); }
+}
+@keyframes glow-pulse {
+  0%, 100% { opacity: 0.4; }
+  50%       { opacity: 1; }
+}
+.float-y { animation: float-y 3.5s ease-in-out infinite; will-change: transform; }
+.float-slow { animation: float-slow 4s ease-in-out infinite; will-change: transform; }
+.glow-pulse { position: relative; }
+.glow-pulse::after {
+  content: ''; position: absolute; inset: -8px; border-radius: 50%;
+  box-shadow: 0 0 40px rgba(255,184,0,0.4), 0 0 80px rgba(255,184,0,0.15);
+  animation: glow-pulse 2.5s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* Orbit ring */
+@keyframes orbit {
+  from { transform: rotateZ(0deg) translateX(80px) rotateZ(0deg); }
+  to   { transform: rotateZ(360deg) translateX(80px) rotateZ(-360deg); }
+}
+.orbit-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--brand); position: absolute;
+  animation: orbit 4s linear infinite;
+  top: 50%; left: 50%; margin: -4px;
+  will-change: transform;
+}
+.orbit-ring {
+  width: 176px; height: 176px; border-radius: 50%;
+  border: 1px dashed rgba(255,184,0,0.2);
+  position: absolute; top: 50%; left: 50%;
+  margin: -88px;
+}
+
+/* ================================================================
+   MOTION TOKENS DISPLAY
+   ================================================================ */
+.motion-demo {
+  width: 40px; height: 40px; border-radius: var(--r-md);
+  background: var(--brand); cursor: pointer;
+  transition: transform 0.3s var(--ease-spring);
+}
+.motion-demo:hover { transform: scale(1.4); }
+.motion-row {
+  display: flex; align-items: center; gap: var(--s5); padding: var(--s4) 0;
+  border-bottom: 1px solid var(--border-faint);
+}
+.motion-row:last-child { border-bottom: none; }
+.motion-info { flex: 1; }
+.motion-name { font-family: var(--font-mono); font-size: 12px; color: var(--brand); }
+.motion-desc { font-size: 12px; color: var(--text-3); margin-top: 2px; }
+
+/* Badge copy table rows */
+.bdg-copy-row {
+  display: flex; align-items: flex-start; gap: var(--s4);
+  padding: var(--s3) 0; border-bottom: 1px solid var(--border-faint);
+}
+.bdg-copy-row:last-child { border-bottom: none; }
+.bdg-copy-label {
+  font-family: var(--font-mono); font-size: 11px; color: var(--brand);
+  min-width: 140px; flex-shrink: 0;
+}
+.bdg-copy-text { font-size: 14px; color: var(--text-2); }
+
+/* ================================================================
+   CODE BLOCK
+   ================================================================ */
+.code-block {
+  background: var(--bg-void); border: 1px solid var(--border-faint);
+  border-radius: var(--r-lg); padding: var(--s5) var(--s6);
+  font-family: var(--font-mono); font-size: 12px; color: var(--text-2);
+  line-height: 1.7; overflow-x: auto; position: relative;
+}
+.code-block .kw { color: var(--brand); }
+.code-block .prop { color: #C084FC; }
+.code-block .val { color: var(--green); }
+.code-block .cmt { color: var(--text-4); }
+.code-copy {
+  position: absolute; top: var(--s4); right: var(--s4);
+  background: var(--bg-float); border: 1px solid var(--border-faint);
+  color: var(--text-3); font-family: var(--font-mono); font-size: 10px;
+  padding: 4px 10px; border-radius: var(--r-sm); cursor: pointer;
+  transition: all var(--dur-fast);
+}
+.code-copy:hover { color: var(--text-1); border-color: var(--border-soft); }
+  
+/* ================================================================
+   THREE.JS SHOWCASE
+   ================================================================ */
+.three-showcase {
+  background: var(--bg-void); border: 1px solid var(--border-faint);
+  border-radius: var(--r-xl); overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+  min-height: 360px; position: relative;
+}
+.three-label {
+  position: absolute; bottom: var(--s5); left: var(--s5);
+  font-family: var(--font-mono); font-size: 10px; color: var(--text-4);
+  letter-spacing: 0.15em; text-transform: uppercase;
+}
+
+/* ================================================================
+   RESPONSIVE
+   ================================================================ */
+@media (max-width: 768px) {
+  nav { padding: 0 var(--s5); }
+  .nav-links { display: none; }
+  .section { padding: var(--s7) var(--s5); }
+  .grid-4 { grid-template-columns: repeat(2, minmax(0,1fr)); }
+  .grid-5 { grid-template-columns: repeat(3, minmax(0,1fr)); }
+  .grid-9 { grid-template-columns: repeat(5, minmax(0,1fr)); }
+  .hero { padding: var(--s10) var(--s5); }
+  .section-title { font-size: 40px; }
+}
+
+@media (max-width: 480px) {
+  nav { padding: 0 var(--s4); }
+  .section { padding: var(--s6) var(--s4); }
+  .section-title { font-size: 28px; }
+  .hero { padding: var(--s9) var(--s4); }
+
+  /* Grid collapses */
+  .grid-2 { grid-template-columns: 1fr; }
+  .grid-3 { grid-template-columns: 1fr; }
+  .grid-5 { grid-template-columns: repeat(2, minmax(0,1fr)); }
+  .grid-9 { grid-template-columns: repeat(4, minmax(0,1fr)); }
+
+  /* Countdown */
+  .countdown { gap: 8px; overflow-x: auto; flex-wrap: nowrap; }
+  .cd-num { font-size: 28px; min-width: 52px; padding: var(--s2) var(--s3); }
+
+  /* Stage progress — vertical stack */
+  .stage-progress { flex-direction: column; align-items: flex-start; gap: var(--s3); padding-left: var(--s4); }
+  .stage-step { flex-direction: row; align-items: center; gap: var(--s3); flex: none; width: 100%; }
+  .stage-step-label { max-width: none; text-align: left; }
+  .stage-connector { display: none; }
+
+  /* Badge copy table — stack label above copy text */
+  .bdg-copy-row { flex-direction: column; gap: var(--s2); }
+  .bdg-copy-label { min-width: 0; flex-shrink: 1; }
+
+  /* Type scale — stack label above sample, cap sample overflow */
+  .type-scale-row { flex-direction: column; align-items: flex-start; gap: var(--s2); }
+  .type-scale-label { width: auto; flex-shrink: 1; }
+  .type-scale-sample { max-width: 100%; overflow-x: hidden; }
+}
+
+@media (max-width: 375px) {
+  .grid-9 { grid-template-columns: repeat(3, minmax(0,1fr)); }
+  .grid-5 { grid-template-columns: repeat(2, minmax(0,1fr)); }
+  .countdown { gap: 6px; }
+  .cd-num { font-size: 24px; min-width: 44px; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <span class="nav-brand">ZER0.PRO × SUPER BUILDERS</span>
+  <ul class="nav-links">
+    <li><a href="#colors">Colors</a></li>
+    <li><a href="#type">Typography</a></li>
+    <li><a href="#components">Components</a></li>
+    <li><a href="#badges">Badges</a></li>
+    <li><a href="#3d">3D</a></li>
+    <li><a href="#motion">Motion</a></li>
+    <li><a href="#tokens">Tokens</a></li>
+  </ul>
+  <span class="nav-tag">v1.0 — 2025</span>
+</nav>
+
+<div class="page-wrap">
+
+<!-- ================================================================
+     HERO
+     ================================================================ -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+
+  <div class="hero-eyebrow">Design System — zer0.pro × Super Builders</div>
+
+  <div class="hero-name">SUPER<br><span>BUILDERS</span></div>
+  <div class="hero-sub">School Edition · Season 1 · 2025</div>
+
+  <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:48px;">
+    <span class="pill pill-brand">Class 8–12</span>
+    <span class="pill pill-green">100% Online</span>
+    <span class="pill pill-blue">₹1,00,000+ Prize Pool</span>
+    <span class="pill" style="background:var(--purple-bg);color:var(--purple);border:1px solid rgba(192,132,252,0.25);">2K–3K Students</span>
+  </div>
+
+  <div class="hero-stats">
+    <div>
+      <div class="hero-stat-val">8</div>
+      <div class="hero-stat-key">Color Tokens</div>
+    </div>
+    <div>
+      <div class="hero-stat-val">4</div>
+      <div class="hero-stat-key">Typefaces</div>
+    </div>
+    <div>
+      <div class="hero-stat-val">30+</div>
+      <div class="hero-stat-key">Components</div>
+    </div>
+    <div>
+      <div class="hero-stat-val">9</div>
+      <div class="hero-stat-key">Badges</div>
+    </div>
+    <div>
+      <div class="hero-stat-val">5</div>
+      <div class="hero-stat-key">Motion Curves</div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================
+     COLORS
+     ================================================================ -->
+<section id="colors" class="section">
+  <div class="section-label">01 / Colors</div>
+  <h2 class="section-title">COLOR SYSTEM</h2>
+  <p class="section-desc">Brand colors derived from the zer0.pro identity. Black void base + electric amber (#FFB800). Everything else serves these two.</p>
+
+  <!-- Primary Palette -->
+  <div class="sub-label">Brand Palette</div>
+  <div class="grid-5">
+    <div class="swatch"><div class="swatch-color" style="background:#FFB800;"></div><div class="swatch-info"><div class="swatch-name">Brand</div><div class="swatch-hex">#FFB800</div><div class="swatch-token">--brand</div></div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#FFCF40;"></div><div class="swatch-info"><div class="swatch-name">Brand Bright</div><div class="swatch-hex">#FFCF40</div><div class="swatch-token">--brand-bright</div></div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#CC9400;"></div><div class="swatch-info"><div class="swatch-name">Brand Dim</div><div class="swatch-hex">#CC9400</div><div class="swatch-token">--brand-dim</div></div></div>
+    <div class="swatch"><div class="swatch-color" style="background:rgba(255,184,0,0.20);border:1px solid rgba(255,184,0,0.3);"></div><div class="swatch-info"><div class="swatch-name">Brand Glow</div><div class="swatch-hex">rgba(255,184,0,0.20)</div><div class="swatch-token">--brand-glow</div></div></div>
+    <div class="swatch"><div class="swatch-color" style="background:rgba(255,184,0,0.07);border:1px solid rgba(255,184,0,0.2);"></div><div class="swatch-info"><div class="swatch-name">Brand Subtle</div><div class="swatch-hex">rgba(255,184,0,0.07)</div><div class="swatch-token">--brand-subtle</div></div></div>
+  </div>
+
+  <!-- Surfaces -->
+  <div class="sub-label">Background Stack</div>
+  <div class="surface-stack">
+    <div class="surf-row" style="background:#000000;"><span class="surf-label">--bg-void</span><span class="surf-hex">#000000</span><span style="color:#fff;font-size:13px;">Pure Black · Outermost shell, hero bg</span></div>
+    <div class="surf-row" style="background:#0A0A0A;"><span class="surf-label">--bg-base</span><span class="surf-hex">#0A0A0A</span><span style="color:#aaa;font-size:13px;">Page body background</span></div>
+    <div class="surf-row" style="background:#111111;"><span class="surf-label">--bg-raised</span><span class="surf-hex">#111111</span><span style="color:#aaa;font-size:13px;">Inputs, nav surface</span></div>
+    <div class="surf-row" style="background:#161616;"><span class="surf-label">--bg-card</span><span class="surf-hex">#161616</span><span style="color:#aaa;font-size:13px;">Cards, panels, modals</span></div>
+    <div class="surf-row" style="background:#1E1E1E;"><span class="surf-label">--bg-float</span><span class="surf-hex">#1E1E1E</span><span style="color:#aaa;font-size:13px;">Hover states, tooltips</span></div>
+    <div class="surf-row" style="background:#0D0D0D;"><span class="surf-label">--bg-inset</span><span class="surf-hex">#0D0D0D</span><span style="color:#aaa;font-size:13px;">Code blocks, recessed wells</span></div>
+  </div>
+
+  <!-- Semantic -->
+  <div class="sub-label">Semantic Colors</div>
+  <div class="grid-4">
+    <div class="swatch"><div class="swatch-color" style="background:#22C55E;"></div><div class="swatch-info"><div class="swatch-name">Success</div><div class="swatch-hex">#22C55E</div><div class="swatch-token">--green</div></div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#60A5FA;"></div><div class="swatch-info"><div class="swatch-name">Info</div><div class="swatch-hex">#60A5FA</div><div class="swatch-token">--blue</div></div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#F87171;"></div><div class="swatch-info"><div class="swatch-name">Danger</div><div class="swatch-hex">#F87171</div><div class="swatch-token">--red</div></div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#C084FC;"></div><div class="swatch-info"><div class="swatch-name">Premium</div><div class="swatch-hex">#C084FC</div><div class="swatch-token">--purple</div></div></div>
+  </div>
+
+  <!-- Text Hierarchy -->
+  <div class="sub-label">Text Hierarchy</div>
+  <div style="background:var(--bg-card);border:1px solid var(--border-faint);border-radius:var(--r-lg);padding:var(--s5) var(--s6);">
+    <div style="font-size:22px;color:#FFFFFF;font-weight:700;font-family:var(--font-heading);margin-bottom:8px;">Primary Text — #FFFFFF · --text-1</div>
+    <div style="font-size:18px;color:#C0C0C0;font-family:var(--font-heading);margin-bottom:8px;">Secondary Text — #C0C0C0 · --text-2</div>
+    <div style="font-size:15px;color:#808080;font-family:var(--font-heading);margin-bottom:8px;">Tertiary Text — #808080 · --text-3</div>
+    <div style="font-size:13px;color:#484848;font-family:var(--font-heading);margin-bottom:8px;">Disabled Text — #484848 · --text-4</div>
+    <div style="font-size:15px;color:#FFB800;font-family:var(--font-heading);font-weight:600;">Brand Text — #FFB800 · --text-brand</div>
+  </div>
+</section>
+
+<!-- ================================================================
+     TYPOGRAPHY
+     ================================================================ -->
+<section id="type" class="section">
+  <div class="section-label">02 / Typography</div>
+  <h2 class="section-title">TYPE SYSTEM</h2>
+  <p class="section-desc">Four fonts, one purpose each. Bebas Neue commands attention. Exo 2 governs structure. Plus Jakarta Sans carries content. JetBrains Mono speaks in code.</p>
+
+  <!-- Font Specimens -->
+  <div class="sub-label">Font Families</div>
+  <div style="display:flex;flex-direction:column;gap:var(--s4);">
+
+    <div class="type-specimen">
+      <div class="type-meta">
+        <span class="type-meta-name">--font-display · Bebas Neue</span>
+        <span class="type-meta-info">Google Fonts · Display only · All weights = Bold</span>
+      </div>
+      <div style="font-family:'Bebas Neue';font-size:72px;line-height:1;letter-spacing:0.02em;color:var(--text-1);">SUPER BUILDERS 2025</div>
+      <div style="font-family:'Bebas Neue';font-size:40px;line-height:1;letter-spacing:0.02em;color:var(--brand);">₹1,00,000 IN PRIZES</div>
+      <div style="font-family:'Bebas Neue';font-size:24px;line-height:1.2;letter-spacing:0.04em;color:var(--text-3);">ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789</div>
+    </div>
+
+    <div class="type-specimen">
+      <div class="type-meta">
+        <span class="type-meta-name">--font-heading · Exo 2</span>
+        <span class="type-meta-info">Google Fonts · Weights 300–900 · Use for headings + UI labels</span>
+      </div>
+      <div style="font-family:'Exo 2';font-size:40px;font-weight:800;line-height:1.1;color:var(--text-1);margin-bottom:8px;">Build the Future with AI</div>
+      <div style="font-family:'Exo 2';font-size:20px;font-weight:500;color:var(--text-2);margin-bottom:8px;">24-Hour Hackathon · Class 8–12 · India</div>
+      <div style="font-family:'Exo 2';font-size:14px;font-weight:600;color:var(--brand);letter-spacing:0.12em;text-transform:uppercase;">REGISTER NOW · MAY 25 DEADLINE</div>
+    </div>
+
+    <div class="type-specimen">
+      <div class="type-meta">
+        <span class="type-meta-name">--font-body · Plus Jakarta Sans</span>
+        <span class="type-meta-info">Google Fonts · Weights 300–800 · All body copy, descriptions</span>
+      </div>
+      <div style="font-family:'Plus Jakarta Sans';font-size:18px;font-weight:400;color:var(--text-1);line-height:1.7;margin-bottom:8px;">Super Builders is a 3-week online AI programme and 24-hour hackathon for Indian school students in Classes 8–12. Build real AI projects, win prizes, and get mentored by industry experts.</div>
+      <div style="font-family:'Plus Jakarta Sans';font-size:14px;color:var(--text-3);line-height:1.6;">All sessions are recorded and replay-accessible. Premium tier includes 1:1 mentor booking with two dedicated sessions. Parents receive weekly progress reports.</div>
+    </div>
+
+    <div class="type-specimen">
+      <div class="type-meta">
+        <span class="type-meta-name">--font-mono · JetBrains Mono</span>
+        <span class="type-meta-info">Google Fonts · For code, labels, stats, timestamps</span>
+      </div>
+      <div style="font-family:'JetBrains Mono';font-size:20px;font-weight:600;color:var(--brand);margin-bottom:8px;">--brand: #FFB800</div>
+      <div style="font-family:'JetBrains Mono';font-size:14px;color:var(--text-2);margin-bottom:8px;">Stage 2 of 5 · AI Quiz → Score: 8/10 · Shortlisted ✓</div>
+      <div style="font-family:'JetBrains Mono';font-size:12px;color:var(--text-3);">Jun 07 08:00:00 IST → Jun 08 08:00:00 IST · 24:00:00 remaining</div>
+    </div>
+  </div>
+
+  <!-- Type Scale -->
+  <div class="sub-label" style="margin-top:var(--s7);">Type Scale</div>
+  <div style="background:var(--bg-card);border:1px solid var(--border-faint);border-radius:var(--r-lg);overflow:hidden;">
+    <div class="type-scale-row" style="padding:var(--s5) var(--s6);">
+      <span class="type-scale-label">Hero · clamp(72–120px)<br>Bebas Neue</span>
+      <span class="type-scale-sample" style="font-family:'Bebas Neue';font-size:80px;line-height:1;color:var(--text-1);">BUILD</span>
+    </div>
+    <div class="type-scale-row" style="padding:var(--s5) var(--s6);">
+      <span class="type-scale-label">Display · clamp(40–64px)<br>Bebas Neue</span>
+      <span class="type-scale-sample" style="font-family:'Bebas Neue';font-size:48px;line-height:1;color:var(--text-1);">Super Builders</span>
+    </div>
+    <div class="type-scale-row" style="padding:var(--s4) var(--s6);">
+      <span class="type-scale-label">H1 · 36px / 800<br>Exo 2</span>
+      <span class="type-scale-sample" style="font-family:'Exo 2';font-size:36px;font-weight:800;color:var(--text-1);">Workshop 1: AI Fundamentals</span>
+    </div>
+    <div class="type-scale-row" style="padding:var(--s4) var(--s6);">
+      <span class="type-scale-label">H2 · 28px / 700<br>Exo 2</span>
+      <span class="type-scale-sample" style="font-family:'Exo 2';font-size:28px;font-weight:700;color:var(--text-1);">Your Project Dashboard</span>
+    </div>
+    <div class="type-scale-row" style="padding:var(--s3) var(--s6);">
+      <span class="type-scale-label">H3 · 22px / 700<br>Exo 2</span>
+      <span class="type-scale-sample" style="font-family:'Exo 2';font-size:22px;font-weight:700;color:var(--text-1);">Stage 3 — Payment Confirmation</span>
+    </div>
+    <div class="type-scale-row" style="padding:var(--s3) var(--s6);">
+      <span class="type-scale-label">Body Large · 16px / 400<br>Plus Jakarta Sans</span>
+      <span class="type-scale-sample" style="font-family:'Plus Jakarta Sans';font-size:16px;color:var(--text-1);">Submit your project before Jun 8 at 8am IST.</span>
+    </div>
+    <div class="type-scale-row" style="padding:var(--s3) var(--s6);">
+      <span class="type-scale-label">Body · 14px / 400<br>Plus Jakarta Sans</span>
+      <span class="type-scale-sample" style="font-family:'Plus Jakarta Sans';font-size:14px;color:var(--text-2);">Your shortlisted spot will be reserved until May 25. Complete payment to confirm.</span>
+    </div>
+    <div class="type-scale-row" style="padding:var(--s3) var(--s6);">
+      <span class="type-scale-label">Label · 12px / 600<br>Exo 2</span>
+      <span class="type-scale-sample" style="font-family:'Exo 2';font-size:12px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-2);">Registration Deadline</span>
+    </div>
+    <div class="type-scale-row" style="padding:var(--s3) var(--s6);">
+      <span class="type-scale-label">Mono · 11px / 500<br>JetBrains Mono</span>
+      <span class="type-scale-sample" style="font-family:'JetBrains Mono';font-size:11px;font-weight:500;letter-spacing:0.15em;text-transform:uppercase;color:var(--brand);">01 / FOUNDATIONS</span>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================
+     COMPONENTS
+     ================================================================ -->
+<section id="components" class="section">
+  <div class="section-label">03 / Components</div>
+  <h2 class="section-title">COMPONENTS</h2>
+  <p class="section-desc">All UI primitives. Every component uses the token system — no hardcoded values. Hover to see motion.</p>
+
+  <!-- Buttons -->
+  <div class="sub-label">Buttons</div>
+  <div style="background:var(--bg-card);border:1px solid var(--border-faint);border-radius:var(--r-lg);padding:var(--s6);">
+    <div class="row" style="margin-bottom:var(--s5);">
+      <button class="btn btn-primary btn-xl">Claim Your Spot 🚀</button>
+      <button class="btn btn-primary btn-lg">Register Now</button>
+      <button class="btn btn-primary">Apply Today</button>
+      <button class="btn btn-primary btn-sm">Submit</button>
+    </div>
+    <div class="row" style="margin-bottom:var(--s5);">
+      <button class="btn btn-secondary btn-lg">View Programme Details</button>
+      <button class="btn btn-secondary">Level Up</button>
+      <button class="btn btn-secondary btn-sm">Learn More</button>
+    </div>
+    <div class="row" style="margin-bottom:var(--s5);">
+      <button class="btn btn-ghost btn-lg">Download Certificate</button>
+      <button class="btn btn-ghost">View Dashboard</button>
+      <button class="btn btn-ghost btn-sm">Cancel</button>
+    </div>
+    <div class="row">
+      <button class="btn btn-danger">Withdraw Application</button>
+      <button class="btn btn-primary btn-loading">Processing...</button>
+    </div>
+  </div>
+
+  <!-- Pills/Tags -->
+  <div class="sub-label">Pills & Tags</div>
+  <div style="background:var(--bg-card);border:1px solid var(--border-faint);border-radius:var(--r-lg);padding:var(--s5);">
+    <div class="row">
+      <span class="pill pill-brand">zer0.pro</span>
+      <span class="pill pill-brand">Season 1</span>
+      <span class="pill pill-green">Active</span>
+      <span class="pill pill-green">Shortlisted ✓</span>
+      <span class="pill pill-blue">Pro Plan</span>
+      <span class="pill pill-blue">Workshop 1</span>
+      <span class="pill pill-red">Deadline: May 25</span>
+      <span class="pill pill-purple">Premium</span>
+      <span class="pill" style="background:var(--amber-bg);color:var(--amber);border:1px solid rgba(251,191,36,0.25);">Live Now</span>
+    </div>
+  </div>
+
+  <!-- Cards -->
+  <div class="sub-label">Cards</div>
+  <div class="grid-3">
+    <!-- Standard Card -->
+    <div class="card">
+      <div style="font-family:var(--font-mono);font-size:10px;color:var(--text-3);letter-spacing:0.15em;text-transform:uppercase;margin-bottom:8px;">Standard Card</div>
+      <div style="font-family:'Exo 2';font-size:18px;font-weight:700;color:var(--text-1);margin-bottom:8px;">Workshop 1 Complete</div>
+      <div style="font-size:13px;color:var(--text-2);margin-bottom:16px;">AI Fundamentals · 90 min · Recorded replay available on dashboard.</div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <span class="pill pill-green">Done</span>
+        <span style="font-family:'JetBrains Mono';font-size:11px;color:var(--text-3);">May 28</span>
+      </div>
+    </div>
+    <!-- Brand Card -->
+    <div class="card-brand">
+      <div style="font-family:var(--font-mono);font-size:10px;color:var(--brand);letter-spacing:0.15em;text-transform:uppercase;margin-bottom:8px;">Featured Card</div>
+      <div style="font-family:'Exo 2';font-size:18px;font-weight:700;color:var(--text-1);margin-bottom:8px;">🏆 You're Shortlisted!</div>
+      <div style="font-size:13px;color:var(--text-2);margin-bottom:16px;">Your AI quiz score of <strong style="color:var(--brand);">8/10</strong> qualifies you. Confirm your spot before May 25.</div>
+      <button class="btn btn-primary btn-sm">Confirm My Spot →</button>
+    </div>
+    <!-- Stat Card -->
+    <div class="card" style="display:flex;flex-direction:column;gap:16px;">
+      <div style="font-family:var(--font-mono);font-size:10px;color:var(--text-3);letter-spacing:0.15em;text-transform:uppercase;">Quick Stats</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div style="background:var(--bg-float);border-radius:var(--r-md);padding:12px;"><div style="font-family:'Bebas Neue';font-size:28px;color:var(--brand);">8/10</div><div style="font-size:11px;color:var(--text-3);">Quiz Score</div></div>
+        <div style="background:var(--bg-float);border-radius:var(--r-md);padding:12px;"><div style="font-family:'Bebas Neue';font-size:28px;color:var(--green);">3/3</div><div style="font-size:11px;color:var(--text-3);">Workshops</div></div>
+        <div style="background:var(--bg-float);border-radius:var(--r-md);padding:12px;"><div style="font-family:'Bebas Neue';font-size:28px;color:var(--blue);">1,240</div><div style="font-size:11px;color:var(--text-3);">XP Points</div></div>
+        <div style="background:var(--bg-float);border-radius:var(--r-md);padding:12px;"><div style="font-family:'Bebas Neue';font-size:28px;color:var(--purple);">#47</div><div style="font-size:11px;color:var(--text-3);">Leaderboard</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Inputs -->
+  <div class="sub-label">Forms</div>
+  <div style="background:var(--bg-card);border:1px solid var(--border-faint);border-radius:var(--r-lg);padding:var(--s6);">
+    <div class="grid-2" style="margin-bottom:var(--s4);">
+      <div class="form-group">
+        <label class="form-label">Full Name <span style="color:var(--red);">*</span></label>
+        <input class="input" type="text" placeholder="As on school records">
+        <span class="form-hint">Must match your school ID</span>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Grade / Class <span style="color:var(--red);">*</span></label>
+        <select class="select">
+          <option>Select your grade</option>
+          <option>Class 8</option><option>Class 9</option><option>Class 10</option>
+          <option>Class 11</option><option>Class 12</option>
+        </select>
+      </div>
+    </div>
+    <div class="grid-2" style="margin-bottom:var(--s4);">
+      <div class="form-group">
+        <label class="form-label">Email Address</label>
+        <input class="input success" type="email" value="student@email.com">
+        <span style="font-size:12px;color:var(--green);">✓ Valid email</span>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Referral Code</label>
+        <input class="input error" type="text" placeholder="Enter referral code">
+        <span class="form-error">Invalid referral code</span>
+      </div>
+    </div>
+    <div class="form-group" style="margin-bottom:var(--s4);">
+      <label class="form-label">Weekly Availability</label>
+      <div style="display:flex;align-items:center;gap:16px;">
+        <input type="range" min="5" max="40" value="15" id="avail-slider" style="flex:1;">
+        <span id="avail-val" style="font-family:'JetBrains Mono';font-size:14px;color:var(--brand);min-width:60px;">15 hrs</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stage Progress -->
+  <div class="sub-label">Stage Progress Tracker</div>
+  <div style="background:var(--bg-card);border:1px solid var(--border-faint);border-radius:var(--r-lg);padding:var(--s6) var(--s7);">
+    <div class="stage-progress">
+      <div class="stage-step done">
+        <div class="stage-dot">✓</div>
+        <div class="stage-step-label">Apply</div>
+      </div>
+      <div class="stage-connector done"></div>
+      <div class="stage-step done">
+        <div class="stage-dot">✓</div>
+        <div class="stage-step-label">AI Quiz</div>
+      </div>
+      <div class="stage-connector done"></div>
+      <div class="stage-step active">
+        <div class="stage-dot">3</div>
+        <div class="stage-step-label">Payment</div>
+      </div>
+      <div class="stage-connector"></div>
+      <div class="stage-step">
+        <div class="stage-dot">4</div>
+        <div class="stage-step-label">Build Sprint</div>
+      </div>
+      <div class="stage-connector"></div>
+      <div class="stage-step">
+        <div class="stage-dot">5</div>
+        <div class="stage-step-label">Judging</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Progress Bars -->
+  <div class="sub-label">Progress Bars</div>
+  <div style="background:var(--bg-card);border:1px solid var(--border-faint);border-radius:var(--r-lg);padding:var(--s6);display:flex;flex-direction:column;gap:var(--s5);">
+    <div class="progress-wrap">
+      <div class="progress-header"><span class="progress-label">Programme Completion</span><span class="progress-value">68%</span></div>
+      <div class="progress-track"><div class="progress-fill" style="width:68%;"></div></div>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-header"><span class="progress-label">Workshop Attendance</span><span class="progress-value">3 / 3</span></div>
+      <div class="progress-track"><div class="progress-fill" style="width:100%;background:linear-gradient(90deg,#16a34a,var(--green));"></div></div>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-header"><span class="progress-label">Project Submission</span><span class="progress-value">Pending</span></div>
+      <div class="progress-track thin"><div class="progress-fill" style="width:20%;"></div></div>
+    </div>
+  </div>
+
+  <!-- XP Bar -->
+  <div class="sub-label">XP / Level System</div>
+  <div class="xp-bar">
+    <div class="xp-header">
+      <div><div class="xp-level">LVL 4</div><div class="xp-label">BUILDER</div></div>
+      <div style="text-align:right;"><div class="xp-name">Arjun Sharma</div><div style="font-family:'JetBrains Mono';font-size:11px;color:var(--text-3);">Class 11 · Mumbai</div></div>
+    </div>
+    <div class="xp-track"><div class="xp-fill"></div></div>
+    <div class="xp-nums"><span>1,300 XP</span><span>Level 5 at 2,000 XP</span></div>
+  </div>
+
+  <!-- Countdown -->
+  <div class="sub-label">Countdown Timer</div>
+  <div style="background:var(--bg-card);border:1px solid var(--border-faint);border-radius:var(--r-lg);padding:var(--s6);display:flex;justify-content:center;">
+    <div>
+      <div style="font-family:'JetBrains Mono';font-size:11px;color:var(--text-3);text-align:center;letter-spacing:0.2em;text-transform:uppercase;margin-bottom:16px;">Hackathon Starts In</div>
+      <div class="countdown" id="countdown-display">
+        <div class="cd-unit"><div class="cd-num" id="cd-days">22</div><div class="cd-label">Days</div></div>
+        <div class="cd-sep">:</div>
+        <div class="cd-unit"><div class="cd-num" id="cd-hours">14</div><div class="cd-label">Hours</div></div>
+        <div class="cd-sep">:</div>
+        <div class="cd-unit"><div class="cd-num" id="cd-mins">37</div><div class="cd-label">Mins</div></div>
+        <div class="cd-sep">:</div>
+        <div class="cd-unit"><div class="cd-num" id="cd-secs">09</div><div class="cd-label">Secs</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tier Cards -->
+  <div class="sub-label">Pricing Tiers</div>
+  <div class="grid-2">
+    <div class="tier-card">
+      <div class="tier-name">PRO</div>
+      <div class="tier-price">₹1,499 <span>– ₹1,999</span></div>
+      <ul class="tier-features">
+        <li class="tier-feature"><span class="feat-check">✓</span>3 Live Workshops</li>
+        <li class="tier-feature"><span class="feat-check">✓</span>Group Mentorship</li>
+        <li class="tier-feature"><span class="feat-check">✓</span>Participation Certificate</li>
+        <li class="tier-feature"><span class="feat-check">✓</span>Digital Badge</li>
+        <li class="tier-feature"><span class="feat-cross">—</span>1:1 Mentor Sessions</li>
+        <li class="tier-feature"><span class="feat-cross">—</span>LinkedIn Certificate</li>
+        <li class="tier-feature"><span class="feat-cross">—</span>T-Shirt + Kit</li>
+      </ul>
+      <button class="btn btn-secondary" style="width:100%;">Choose Pro</button>
+    </div>
+    <div class="tier-card featured">
+      <div class="tier-badge"><span class="pill pill-brand">Most Popular ⭐</span></div>
+      <div class="tier-name" style="color:var(--brand);">PREMIUM</div>
+      <div class="tier-price">₹2,499 <span>– ₹2,999</span></div>
+      <ul class="tier-features">
+        <li class="tier-feature"><span class="feat-check">✓</span>3 Workshops + Bonus Session</li>
+        <li class="tier-feature"><span class="feat-check">✓</span>1:1 Mentor (2 Slots)</li>
+        <li class="tier-feature"><span class="feat-check">✓</span>Verified LinkedIn Certificate</li>
+        <li class="tier-feature"><span class="feat-check">✓</span>T-Shirt + Premium Kit</li>
+        <li class="tier-feature"><span class="feat-check">✓</span>Priority Judging Panel</li>
+        <li class="tier-feature"><span class="feat-check">✓</span>Parent Progress Report</li>
+        <li class="tier-feature"><span class="feat-check">✓</span>EMI: ₹999 now + rest later</li>
+      </ul>
+      <button class="btn btn-primary" style="width:100%;">Choose Premium 🚀</button>
+    </div>
+  </div>
+
+  <!-- Leaderboard -->
+  <div class="sub-label">Leaderboard Rows</div>
+  <div style="background:var(--bg-card);border:1px solid var(--border-faint);border-radius:var(--r-lg);overflow:hidden;">
+    <div style="padding:12px 16px;border-bottom:1px solid var(--border-faint);display:flex;justify-content:space-between;align-items:center;">
+      <span style="font-family:'Exo 2';font-size:14px;font-weight:700;color:var(--text-1);">Top Builders</span>
+      <span class="pill pill-green">Live</span>
+    </div>
+    <div style="padding:8px;">
+      <div class="lb-row"><span class="lb-rank gold">01</span><div class="lb-avatar" style="border-color:var(--brand);background:var(--brand-subtle);">PS</div><div><div class="lb-name">Priya Sharma</div><div class="lb-city">Class 12 · Delhi</div></div><div class="lb-score">9,840</div></div>
+      <div class="lb-row"><span class="lb-rank silver">02</span><div class="lb-avatar">RK</div><div><div class="lb-name">Rohit Kumar</div><div class="lb-city">Class 11 · Mumbai</div></div><div class="lb-score">9,210</div></div>
+      <div class="lb-row"><span class="lb-rank bronze">03</span><div class="lb-avatar">AJ</div><div><div class="lb-name">Ananya Joshi</div><div class="lb-city">Class 10 · Bangalore</div></div><div class="lb-score">8,750</div></div>
+      <div class="lb-row current"><span class="lb-rank" style="color:var(--brand);">47</span><div class="lb-avatar" style="border-color:var(--brand);color:var(--brand);">YOU</div><div><div class="lb-name" style="color:var(--brand);">Arjun Sharma</div><div class="lb-city">Class 11 · Pune</div></div><div class="lb-score">1,300</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================
+     BADGES
+     ================================================================ -->
+<section id="badges" class="section">
+  <div class="section-label">04 / Gamification</div>
+  <h2 class="section-title">BADGE SYSTEM</h2>
+  <p class="section-desc">9 badges across the full journey. Every milestone earns a badge with confetti animation. Locked badges appear greyed — visible but not achievable until earned.</p>
+
+  <div class="grid-9">
+    <div class="badge-card unlocked">
+      <div class="badge-icon" style="background:rgba(167,139,250,0.15);color:var(--bdg-explorer);">🧭</div>
+      <div class="badge-name">Explorer</div>
+      <div class="badge-stage">Stage 1</div>
+    </div>
+    <div class="badge-card unlocked">
+      <div class="badge-icon" style="background:rgba(96,165,250,0.15);color:var(--bdg-curious);">🧠</div>
+      <div class="badge-name">AI Curious</div>
+      <div class="badge-stage">Quiz ≥6/10</div>
+    </div>
+    <div class="badge-card unlocked">
+      <div class="badge-icon" style="background:rgba(52,211,153,0.15);color:var(--bdg-launcher);">💡</div>
+      <div class="badge-name">Idea Launcher</div>
+      <div class="badge-stage">Idea Sent</div>
+    </div>
+    <div class="badge-card unlocked">
+      <div class="badge-icon" style="background:rgba(255,184,0,0.15);color:var(--bdg-builder);">⚡</div>
+      <div class="badge-name">Builder</div>
+      <div class="badge-stage">Stage 3</div>
+    </div>
+    <div class="badge-card">
+      <div class="badge-icon" style="background:rgba(251,146,60,0.15);color:var(--bdg-warrior);">🔥</div>
+      <div class="badge-name">Workshop Warrior</div>
+      <div class="badge-stage">WS1 Done</div>
+    </div>
+    <div class="badge-card locked">
+      <div class="badge-icon" style="background:rgba(232,121,249,0.15);color:var(--bdg-expert);">🎯</div>
+      <div class="badge-name">Domain Expert</div>
+      <div class="badge-stage">WS2 Done</div>
+    </div>
+    <div class="badge-card locked">
+      <div class="badge-icon" style="background:rgba(129,140,248,0.15);color:var(--bdg-proto);">🛠️</div>
+      <div class="badge-name">Prototype Pro</div>
+      <div class="badge-stage">WS3 Done</div>
+    </div>
+    <div class="badge-card locked">
+      <div class="badge-icon" style="background:rgba(74,222,128,0.15);color:var(--bdg-hacker);">💻</div>
+      <div class="badge-name">Hacker</div>
+      <div class="badge-stage">Submitted</div>
+    </div>
+    <div class="badge-card locked" style="border-color:rgba(255,215,0,0.3);">
+      <div class="badge-icon" style="background:rgba(255,215,0,0.15);color:var(--bdg-super);">🏆</div>
+      <div class="badge-name">Super Builder</div>
+      <div class="badge-stage">Certificate</div>
+    </div>
+  </div>
+
+  <!-- Badge Copy Principles -->
+  <div style="background:var(--bg-card);border:1px solid var(--border-faint);border-radius:var(--r-lg);padding:var(--s6);margin-top:var(--s6);">
+    <div style="font-family:'Exo 2';font-size:16px;font-weight:700;color:var(--text-1);margin-bottom:var(--s5);">Badge Unlock Copy</div>
+    <div style="display:flex;flex-direction:column;gap:var(--s3);">
+      <div class="bdg-copy-row">
+        <span class="bdg-copy-label">Explorer</span>
+        <span class="bdg-copy-text">"Your journey begins. Welcome, Builder!"</span>
+      </div>
+      <div class="bdg-copy-row">
+        <span class="bdg-copy-label">AI Curious</span>
+        <span class="bdg-copy-text">"You've unlocked the next level. You're shortlisted!"</span>
+      </div>
+      <div class="bdg-copy-row">
+        <span class="bdg-copy-label">Builder</span>
+        <span class="bdg-copy-text">"You're officially a Super Builder. Let's go!"</span>
+      </div>
+      <div class="bdg-copy-row">
+        <span class="bdg-copy-label">Super Builder</span>
+        <span class="bdg-copy-text">"You did it. You are a Super Builder."</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================
+     3D COMPONENTS
+     ================================================================ -->
+<section id="3d" class="section">
+  <div class="section-label">05 / 3D Components</div>
+  <h2 class="section-title">3D SYSTEM</h2>
+  <p class="section-desc">Three strategies for 3D depth: CSS perspective tilt (mouse tracking), floating keyframe animations, and Three.js for complex scenes. Use sparingly — high impact, low density.</p>
+
+  <div class="grid-2" style="margin-bottom:var(--s6);">
+
+    <!-- CSS 3D Tilt Card -->
+    <div>
+      <div class="sub-label" style="margin-top:0;">CSS 3D Tilt — Hover Me</div>
+      <div class="card-3d" id="tilt-card" style="min-height:220px;display:flex;flex-direction:column;justify-content:space-between;">
+        <div>
+          <span class="pill pill-brand" style="margin-bottom:12px;display:inline-flex;">Premium Workshop</span>
+          <div class="card-3d-depth">
+            <div style="font-family:'Exo 2';font-size:22px;font-weight:800;color:var(--text-1);margin-bottom:8px;">Workshop 2: Domain Deep-Dive</div>
+            <div style="font-size:13px;color:var(--text-2);">AI in Health, Education, Fintech + Guest speaker from industry. 75 min live session.</div>
+          </div>
+        </div>
+        <div class="card-3d-depth" style="display:flex;justify-content:space-between;align-items:center;margin-top:16px;transform:translateZ(30px);">
+          <span style="font-family:'JetBrains Mono';font-size:11px;color:var(--text-3);">Jun 02 · 4PM IST</span>
+          <button class="btn btn-primary btn-sm">Add to Calendar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Floating Animation Demo -->
+    <div>
+      <div class="sub-label" style="margin-top:0;">Floating Animation</div>
+      <div style="background:var(--bg-card);border:1px solid var(--border-faint);border-radius:var(--r-xl);min-height:220px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;">
+        <!-- Orbit ring -->
+        <div class="orbit-ring"></div>
+        <div class="orbit-dot" style="animation-delay:0s;background:var(--brand);"></div>
+        <div class="orbit-dot" style="animation-delay:-2s;background:var(--blue);"></div>
+        <!-- Central floating badge -->
+        <div class="float-y glow-pulse" style="width:96px;height:96px;border-radius:50%;background:linear-gradient(135deg,#FF8C00,var(--brand),var(--brand-bright));display:flex;align-items:center;justify-content:center;font-size:42px;font-family:'Bebas Neue';color:#000;font-weight:900;z-index:2;position:relative;">0</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Three.js 3D Badge Showcase -->
+  <div class="sub-label">Three.js — Interactive 3D Trophy</div>
+  <div class="three-showcase">
+    <canvas id="three-canvas" style="display:block;"></canvas>
+    <div class="three-label">Three.js r128 · WebGL · Drag to rotate</div>
+    <div id="three-loading" style="position:absolute;font-family:'JetBrains Mono';font-size:11px;color:var(--text-4);letter-spacing:0.2em;">LOADING 3D SCENE...</div>
+  </div>
+
+  <!-- 3D Stat Cards (CSS perspective) -->
+  <div class="sub-label">3D Perspective Stats Grid</div>
+  <div class="grid-4">
+    <div style="perspective:800px;">
+      <div class="card" style="transform:rotateX(5deg);transform-origin:bottom;transition:transform 0.3s var(--ease-spring);" onmouseenter="this.style.transform='rotateX(0deg) scale(1.02)'" onmouseleave="this.style.transform='rotateX(5deg)'">
+        <div style="font-family:'Bebas Neue';font-size:48px;color:var(--brand);line-height:1;">2,847</div>
+        <div style="font-family:'Exo 2';font-size:12px;color:var(--text-3);font-weight:600;letter-spacing:0.05em;text-transform:uppercase;">Registrations</div>
+        <div style="font-size:12px;color:var(--green);margin-top:4px;">↑ 12% this week</div>
+      </div>
+    </div>
+    <div style="perspective:800px;">
+      <div class="card" style="transform:rotateX(5deg);transform-origin:bottom;transition:transform 0.3s var(--ease-spring);" onmouseenter="this.style.transform='rotateX(0deg) scale(1.02)'" onmouseleave="this.style.transform='rotateX(5deg)'">
+        <div style="font-family:'Bebas Neue';font-size:48px;color:var(--blue);line-height:1;">1,204</div>
+        <div style="font-family:'Exo 2';font-size:12px;color:var(--text-3);font-weight:600;letter-spacing:0.05em;text-transform:uppercase;">Paid Students</div>
+        <div style="font-size:12px;color:var(--green);margin-top:4px;">42% conversion</div>
+      </div>
+    </div>
+    <div style="perspective:800px;">
+      <div class="card" style="transform:rotateX(5deg);transform-origin:bottom;transition:transform 0.3s var(--ease-spring);" onmouseenter="this.style.transform='rotateX(0deg) scale(1.02)'" onmouseleave="this.style.transform='rotateX(5deg)'">
+        <div style="font-family:'Bebas Neue';font-size:48px;color:var(--purple);line-height:1;">387</div>
+        <div style="font-family:'Exo 2';font-size:12px;color:var(--text-3);font-weight:600;letter-spacing:0.05em;text-transform:uppercase;">Premium Users</div>
+        <div style="font-size:12px;color:var(--purple);margin-top:4px;">32% of paid</div>
+      </div>
+    </div>
+    <div style="perspective:800px;">
+      <div class="card" style="transform:rotateX(5deg);transform-origin:bottom;transition:transform 0.3s var(--ease-spring);" onmouseenter="this.style.transform='rotateX(0deg) scale(1.02)'" onmouseleave="this.style.transform='rotateX(5deg)'">
+        <div style="font-family:'Bebas Neue';font-size:48px;color:var(--green);line-height:1;">94%</div>
+        <div style="font-family:'Exo 2';font-size:12px;color:var(--text-3);font-weight:600;letter-spacing:0.05em;text-transform:uppercase;">Retention Rate</div>
+        <div style="font-size:12px;color:var(--green);margin-top:4px;">Post-payment</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================
+     MOTION
+     ================================================================ -->
+<section id="motion" class="section">
+  <div class="section-label">06 / Motion</div>
+  <h2 class="section-title">MOTION TOKENS</h2>
+  <p class="section-desc">Hover the squares to feel each easing curve. Spring for rewards and badges. Ease-out for entrances. Bounce for CTAs. Fast for hover states.</p>
+
+  <div style="background:var(--bg-card);border:1px solid var(--border-faint);border-radius:var(--r-lg);padding:var(--s6);">
+    <div class="motion-row">
+      <div class="motion-demo" style="transition:transform 0.25s cubic-bezier(0.34,1.56,0.64,1);background:var(--brand);" onmouseenter="this.style.transform='scale(1.6) rotate(-5deg)'" onmouseleave="this.style.transform=''"></div>
+      <div class="motion-info"><div class="motion-name">--ease-spring · cubic-bezier(0.34, 1.56, 0.64, 1)</div><div class="motion-desc">Badge unlocks, confetti, level-up animations. Overshoots then settles.</div></div>
+      <span style="font-family:'JetBrains Mono';font-size:11px;color:var(--text-3);">250ms</span>
+    </div>
+    <div class="motion-row">
+      <div class="motion-demo" style="transition:transform 0.4s cubic-bezier(0.16,1,0.3,1);background:var(--blue);" onmouseenter="this.style.transform='scale(1.6)'" onmouseleave="this.style.transform=''"></div>
+      <div class="motion-info"><div class="motion-name">--ease-out · cubic-bezier(0.16, 1, 0.30, 1)</div><div class="motion-desc">Page entrances, modals appearing, cards sliding in. Starts fast, decelerates.</div></div>
+      <span style="font-family:'JetBrains Mono';font-size:11px;color:var(--text-3);">400ms</span>
+    </div>
+    <div class="motion-row">
+      <div class="motion-demo" style="transition:transform 0.6s cubic-bezier(0.87,0,0.13,1);background:var(--purple);" onmouseenter="this.style.transform='scale(1.6)'" onmouseleave="this.style.transform=''"></div>
+      <div class="motion-info"><div class="motion-name">--ease-in-out · cubic-bezier(0.87, 0, 0.13, 1)</div><div class="motion-desc">Stage transitions, progress bar fills, smooth reveals.</div></div>
+      <span style="font-family:'JetBrains Mono';font-size:11px;color:var(--text-3);">600ms</span>
+    </div>
+    <div class="motion-row">
+      <div class="motion-demo" style="transition:transform 0.3s cubic-bezier(0.68,-0.55,0.27,1.55);background:var(--green);" onmouseenter="this.style.transform='scale(1.6) rotate(10deg)'" onmouseleave="this.style.transform=''"></div>
+      <div class="motion-info"><div class="motion-name">--ease-bounce · cubic-bezier(0.68, -0.55, 0.27, 1.55)</div><div class="motion-desc">CTA buttons, primary actions, call-to-register. Playful energy for teens.</div></div>
+      <span style="font-family:'JetBrains Mono';font-size:11px;color:var(--text-3);">300ms</span>
+    </div>
+    <div class="motion-row" style="border-bottom:none;">
+      <div class="motion-demo" style="transition:transform 0.15s linear;background:var(--text-3);" onmouseenter="this.style.transform='scale(1.6)'" onmouseleave="this.style.transform=''"></div>
+      <div class="motion-info"><div class="motion-name">--dur-fast · 150ms linear</div><div class="motion-desc">Hover states, focus rings, color transitions. Instant feedback.</div></div>
+      <span style="font-family:'JetBrains Mono';font-size:11px;color:var(--text-3);">150ms</span>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================
+     TOKENS REFERENCE
+     ================================================================ -->
+<section id="tokens" class="section">
+  <div class="section-label">07 / Tokens</div>
+  <h2 class="section-title">TOKEN REFERENCE</h2>
+  <p class="section-desc">Copy this into your <code>globals.css</code>. Every component in the system maps back to these variables only.</p>
+
+  <div class="code-block">
+    <button class="code-copy" onclick="copyTokens()">Copy</button>
+<pre><span class="cmt">/* Super Builders × zer0.pro — Design Tokens v1.0 */</span>
+<span class="kw">:root</span> {
+  <span class="cmt">/* === BRAND === */</span>
+  <span class="prop">--brand</span>:          <span class="val">#FFB800</span>;
+  <span class="prop">--brand-bright</span>:   <span class="val">#FFCF40</span>;
+  <span class="prop">--brand-dim</span>:      <span class="val">#CC9400</span>;
+  <span class="prop">--brand-glow</span>:     <span class="val">rgba(255, 184, 0, 0.20)</span>;
+  <span class="prop">--brand-subtle</span>:   <span class="val">rgba(255, 184, 0, 0.07)</span>;
+
+  <span class="cmt">/* === BACKGROUNDS === */</span>
+  <span class="prop">--bg-void</span>:   <span class="val">#000000</span>;
+  <span class="prop">--bg-base</span>:   <span class="val">#0A0A0A</span>;
+  <span class="prop">--bg-raised</span>: <span class="val">#111111</span>;
+  <span class="prop">--bg-card</span>:   <span class="val">#161616</span>;
+  <span class="prop">--bg-float</span>:  <span class="val">#1E1E1E</span>;
+  <span class="prop">--bg-inset</span>:  <span class="val">#0D0D0D</span>;
+
+  <span class="cmt">/* === BORDERS === */</span>
+  <span class="prop">--border-faint</span>:        <span class="val">rgba(255,255,255,0.05)</span>;
+  <span class="prop">--border-subtle</span>:       <span class="val">rgba(255,255,255,0.09)</span>;
+  <span class="prop">--border-soft</span>:         <span class="val">rgba(255,255,255,0.15)</span>;
+  <span class="prop">--border-brand</span>:        <span class="val">rgba(255,184,0,0.30)</span>;
+  <span class="prop">--border-brand-strong</span>: <span class="val">rgba(255,184,0,0.60)</span>;
+
+  <span class="cmt">/* === TEXT === */</span>
+  <span class="prop">--text-1</span>: <span class="val">#FFFFFF</span>;
+  <span class="prop">--text-2</span>: <span class="val">#C0C0C0</span>;
+  <span class="prop">--text-3</span>: <span class="val">#808080</span>;
+  <span class="prop">--text-4</span>: <span class="val">#484848</span>;
+  <span class="prop">--text-brand</span>: <span class="val">#FFB800</span>;
+
+  <span class="cmt">/* === SEMANTIC === */</span>
+  <span class="prop">--green</span>:  <span class="val">#22C55E</span>; <span class="prop">--green-bg</span>:  <span class="val">rgba(34,197,94,0.10)</span>;
+  <span class="prop">--blue</span>:   <span class="val">#60A5FA</span>; <span class="prop">--blue-bg</span>:   <span class="val">rgba(96,165,250,0.10)</span>;
+  <span class="prop">--red</span>:    <span class="val">#F87171</span>; <span class="prop">--red-bg</span>:    <span class="val">rgba(248,113,113,0.10)</span>;
+  <span class="prop">--purple</span>: <span class="val">#C084FC</span>; <span class="prop">--purple-bg</span>: <span class="val">rgba(192,132,252,0.10)</span>;
+  <span class="prop">--amber</span>:  <span class="val">#FBBF24</span>; <span class="prop">--amber-bg</span>:  <span class="val">rgba(251,191,36,0.10)</span>;
+
+  <span class="cmt">/* === TYPOGRAPHY === */</span>
+  <span class="prop">--font-display</span>: <span class="val">'Bebas Neue', 'Impact', sans-serif</span>;
+  <span class="prop">--font-heading</span>: <span class="val">'Exo 2', sans-serif</span>;
+  <span class="prop">--font-body</span>:    <span class="val">'Plus Jakarta Sans', sans-serif</span>;
+  <span class="prop">--font-mono</span>:    <span class="val">'JetBrains Mono', monospace</span>;
+
+  <span class="cmt">/* === SPACING === */</span>
+  <span class="prop">--s1</span>: 4px;  <span class="prop">--s2</span>: 8px;  <span class="prop">--s3</span>: 12px; <span class="prop">--s4</span>: 16px;
+  <span class="prop">--s5</span>: 24px; <span class="prop">--s6</span>: 32px; <span class="prop">--s7</span>: 48px; <span class="prop">--s8</span>: 64px;
+  <span class="prop">--s9</span>: 96px; <span class="prop">--s10</span>: 128px;
+
+  <span class="cmt">/* === RADIUS === */</span>
+  <span class="prop">--r-xs</span>: 4px; <span class="prop">--r-sm</span>: 6px;  <span class="prop">--r-md</span>: 10px;
+  <span class="prop">--r-lg</span>: 16px; <span class="prop">--r-xl</span>: 24px; <span class="prop">--r-full</span>: 9999px;
+
+  <span class="cmt">/* === SHADOWS === */</span>
+  <span class="prop">--shadow-sm</span>:    <span class="val">0 2px 8px rgba(0,0,0,0.4)</span>;
+  <span class="prop">--shadow-md</span>:    <span class="val">0 4px 24px rgba(0,0,0,0.5)</span>;
+  <span class="prop">--shadow-lg</span>:    <span class="val">0 8px 48px rgba(0,0,0,0.6)</span>;
+  <span class="prop">--shadow-brand</span>: <span class="val">0 0 32px rgba(255,184,0,0.25)</span>;
+
+  <span class="cmt">/* === MOTION === */</span>
+  <span class="prop">--ease-spring</span>: <span class="val">cubic-bezier(0.34, 1.56, 0.64, 1)</span>;
+  <span class="prop">--ease-out</span>:    <span class="val">cubic-bezier(0.16, 1, 0.30, 1)</span>;
+  <span class="prop">--ease-in-out</span>: <span class="val">cubic-bezier(0.87, 0, 0.13, 1)</span>;
+  <span class="prop">--ease-bounce</span>: <span class="val">cubic-bezier(0.68, -0.55, 0.27, 1.55)</span>;
+  <span class="prop">--dur-fast</span>:    <span class="val">150ms</span>;
+  <span class="prop">--dur-normal</span>:  <span class="val">250ms</span>;
+  <span class="prop">--dur-slow</span>:    <span class="val">400ms</span>;
+  <span class="prop">--dur-xslow</span>:   <span class="val">600ms</span>;
+}</pre>
+  </div>
+
+  <!-- Google Font Import Reference -->
+  <div class="sub-label" style="margin-top:var(--s7);">Font Imports</div>
+  <div class="code-block">
+<pre><span class="cmt">/* Add to &lt;head&gt; before any stylesheets */</span>
+<span class="kw">&lt;link</span> <span class="prop">rel</span>=<span class="val">"preconnect"</span> <span class="prop">href</span>=<span class="val">"https://fonts.googleapis.com"</span><span class="kw">&gt;</span>
+<span class="kw">&lt;link</span> <span class="prop">rel</span>=<span class="val">"preconnect"</span> <span class="prop">href</span>=<span class="val">"https://fonts.gstatic.com"</span> <span class="prop">crossorigin</span><span class="kw">&gt;</span>
+<span class="kw">&lt;link</span> <span class="prop">href</span>=<span class="val">"https://fonts.googleapis.com/css2?family=Bebas+Neue
+  &family=Exo+2:wght@300;400;500;600;700;800;900
+  &family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800
+  &family=JetBrains+Mono:wght@400;500;600
+  &display=swap"</span>
+  <span class="prop">rel</span>=<span class="val">"stylesheet"</span><span class="kw">&gt;</span></pre>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer style="padding:var(--s8) var(--s8);text-align:center;border-top:1px solid var(--border-faint);">
+  <div style="font-family:'Bebas Neue';font-size:48px;color:var(--text-4);letter-spacing:0.02em;margin-bottom:var(--s3);">SUPER BUILDERS</div>
+  <div style="font-family:'JetBrains Mono';font-size:11px;color:var(--text-4);letter-spacing:0.2em;">ZER0.PRO × DESIGN SYSTEM v1.0 × 2025</div>
+</footer>
+
+</div><!-- /page-wrap -->
+
+<!-- ================================================================
+     SCRIPTS
+     ================================================================ -->
+<script>
+// Slider
+const s = document.getElementById('avail-slider');
+const sv = document.getElementById('avail-val');
+if(s) s.addEventListener('input', () => sv.textContent = s.value + ' hrs');
+
+// Countdown to June 7 2025 8am IST
+function tick() {
+  const target = new Date('2025-06-07T08:00:00+05:30');
+  const now = new Date();
+  let diff = Math.max(0, target - now);
+  const days  = Math.floor(diff / 86400000); diff %= 86400000;
+  const hours = Math.floor(diff / 3600000);  diff %= 3600000;
+  const mins  = Math.floor(diff / 60000);    diff %= 60000;
+  const secs  = Math.floor(diff / 1000);
+  const pad = n => String(n).padStart(2,'0');
+  const d=document.getElementById('cd-days'),
+        h=document.getElementById('cd-hours'),
+        m=document.getElementById('cd-mins'),
+        sec=document.getElementById('cd-secs');
+  if(d) d.textContent = pad(days);
+  if(h) h.textContent = pad(hours);
+  if(m) m.textContent = pad(mins);
+  if(sec) sec.textContent = pad(secs);
+}
+tick(); setInterval(tick, 1000);
+
+// 3D Tilt Card
+const tiltCard = document.getElementById('tilt-card');
+if(tiltCard) {
+  let rafPending = false;
+  tiltCard.addEventListener('mousemove', e => {
+    if(rafPending) return;
+    rafPending = true;
+    requestAnimationFrame(() => {
+      const r = tiltCard.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width - 0.5;
+      const y = (e.clientY - r.top)  / r.height - 0.5;
+      tiltCard.style.transform = `perspective(1000px) rotateY(${x*18}deg) rotateX(${-y*18}deg) scale(1.02)`;
+      tiltCard.style.setProperty('--mx', `${(x+0.5)*100}%`);
+      tiltCard.style.setProperty('--my', `${(y+0.5)*100}%`);
+      rafPending = false;
+    });
+  });
+  tiltCard.addEventListener('mouseleave', () => {
+    tiltCard.style.transform = 'perspective(1000px) rotateY(0) rotateX(0) scale(1)';
+  });
+}
+
+// Copy tokens
+function copyTokens() {
+  const btn = document.querySelector('.code-copy');
+  const pre = document.querySelector('.code-block pre');
+  if(pre) {
+    navigator.clipboard.writeText(pre.textContent).then(() => {
+      if(btn) { btn.textContent = 'Copied!'; setTimeout(()=>btn.textContent='Copy',2000); }
+    });
+  }
+}
+</script>
+
+<!-- Three.js 3D Trophy Scene -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function() {
+  const loading = document.getElementById('three-loading');
+  const canvas = document.getElementById('three-canvas');
+  if(!canvas || typeof THREE === 'undefined') return;
+  if(loading) loading.style.display = 'none';
+
+  const W = canvas.parentElement.clientWidth || 800;
+  const H = 360;
+  canvas.width = W; canvas.height = H;
+
+  const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+  renderer.setSize(W, H);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.shadowMap.enabled = false;
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(45, W/H, 0.1, 100);
+  camera.position.set(0, 0, 6);
+
+  // Lighting
+  const ambient = new THREE.AmbientLight(0x111111, 1);
+  scene.add(ambient);
+
+  const goldLight = new THREE.PointLight(0xFFB800, 4, 20);
+  goldLight.position.set(3, 4, 4);
+  scene.add(goldLight);
+
+  const rimLight = new THREE.PointLight(0xFFD700, 2, 20);
+  rimLight.position.set(-3, -2, 2);
+  scene.add(rimLight);
+
+  const topLight = new THREE.PointLight(0xFFFFFF, 1, 10);
+  topLight.position.set(0, 5, 2);
+  scene.add(topLight);
+
+  // Gold material
+  const goldMat = new THREE.MeshPhongMaterial({
+    color: 0xFFB800, specular: 0xFFFFEE,
+    shininess: 300, emissive: 0x553300, emissiveIntensity: 0.1
+  });
+  const darkGoldMat = new THREE.MeshPhongMaterial({
+    color: 0xCC8800, specular: 0xFFCC00,
+    shininess: 200, emissive: 0x221100, emissiveIntensity: 0.1
+  });
+  const blackMat = new THREE.MeshPhongMaterial({ color: 0x111111, shininess: 20 });
+
+  const group = new THREE.Group();
+
+  // Hexagonal coin (main badge)
+  const hexGeo = new THREE.CylinderGeometry(1.2, 1.2, 0.22, 6, 1);
+  const hex = new THREE.Mesh(hexGeo, goldMat);
+  group.add(hex);
+
+  // Inner hex recess
+  const innerGeo = new THREE.CylinderGeometry(0.95, 0.95, 0.26, 6, 1);
+  const inner = new THREE.Mesh(innerGeo, darkGoldMat);
+  group.add(inner);
+
+  // Center star/emblem
+  const starGeo = new THREE.OctahedronGeometry(0.4, 0);
+  const star = new THREE.Mesh(starGeo, new THREE.MeshPhongMaterial({
+    color: 0xFFD700, specular: 0xFFFFFF, shininess: 400,
+    emissive: 0xFFAA00, emissiveIntensity: 0.2
+  }));
+  star.rotation.y = Math.PI / 8;
+  star.position.y = 0.15;
+  group.add(star);
+
+  // Outer ring
+  const ringGeo = new THREE.TorusGeometry(1.35, 0.06, 8, 60);
+  const ring = new THREE.Mesh(ringGeo, darkGoldMat);
+  ring.rotation.x = Math.PI/2;
+  group.add(ring);
+
+  // Small spheres on vertices of hex
+  for(let i = 0; i < 6; i++) {
+    const a = (i / 6) * Math.PI * 2;
+    const sphereGeo = new THREE.SphereGeometry(0.06, 8, 8);
+    const sphere = new THREE.Mesh(sphereGeo, goldMat);
+    sphere.position.set(Math.cos(a)*1.35, 0.14, Math.sin(a)*1.35);
+    group.add(sphere);
+  }
+
+  scene.add(group);
+
+  // Particles
+  const pCount = 160;
+  const pPos = new Float32Array(pCount * 3);
+  for(let i = 0; i < pCount * 3; i += 3) {
+    const r = 3 + Math.random() * 5;
+    const a1 = Math.random() * Math.PI * 2;
+    const a2 = (Math.random() - 0.5) * Math.PI;
+    pPos[i]   = r * Math.cos(a1) * Math.cos(a2);
+    pPos[i+1] = r * Math.sin(a2);
+    pPos[i+2] = r * Math.sin(a1) * Math.cos(a2);
+  }
+  const pGeo = new THREE.BufferGeometry();
+  pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
+  const pMat = new THREE.PointsMaterial({ color: 0xFFB800, size: 0.04, transparent: true, opacity: 0.5 });
+  const particles = new THREE.Points(pGeo, pMat);
+  scene.add(particles);
+
+  // Mouse drag
+  let isDragging = false, prevX = 0, prevY = 0;
+  let velX = 0.005, velY = 0.001;
+
+  canvas.addEventListener('mousedown', e => { isDragging = true; prevX = e.clientX; prevY = e.clientY; velX = 0; velY = 0; });
+  window.addEventListener('mouseup', () => { isDragging = false; });
+  window.addEventListener('mousemove', e => {
+    if(!isDragging) return;
+    const dx = e.clientX - prevX, dy = e.clientY - prevY;
+    velX = dx * 0.005; velY = dy * 0.005;
+    group.rotation.y += velX;
+    group.rotation.x += velY;
+    prevX = e.clientX; prevY = e.clientY;
+  });
+
+  // Touch
+  let pTouch = null;
+  canvas.addEventListener('touchstart', e => { pTouch = e.touches[0]; velX = 0; }, {passive:true});
+  canvas.addEventListener('touchmove', e => {
+    if(!pTouch) return;
+    const t = e.touches[0];
+    velX = (t.clientX - pTouch.clientX) * 0.005;
+    group.rotation.y += velX;
+    pTouch = t;
+  }, {passive:true});
+
+  // ResizeObserver — handles orientation change and window resize
+  const ro = new ResizeObserver(() => {
+    const newW = canvas.parentElement.clientWidth || 800;
+    renderer.setSize(newW, H);
+    camera.aspect = newW / H;
+    camera.updateProjectionMatrix();
+  });
+  ro.observe(canvas.parentElement);
+
+  // Animate
+  let t = 0;
+  function animate() {
+    t += 0.01;
+    if(!isDragging) {
+      group.rotation.y += velX;
+      group.rotation.x += velY;
+      velX *= 0.98; velY *= 0.98;
+      if(Math.abs(velX) < 0.001) velX = 0.005;
+    }
+    group.position.y = Math.sin(t * 0.8) * 0.12;
+    star.rotation.y += 0.03;
+    goldLight.intensity = 3.5 + Math.sin(t * 1.5) * 0.5;
+    particles.rotation.y = t * 0.05;
+    renderer.render(scene, camera);
+    requestAnimationFrame(animate);
+  }
+  animate();
+})();
+</script>
+
+</body>
+</html>

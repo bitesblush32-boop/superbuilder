@@ -36,7 +36,7 @@ export function StudentsFilterBar({ total, showing }: Props) {
 
   useEffect(() => () => { if (debounceRef.current) clearTimeout(debounceRef.current) }, [])
 
-  const inputBase = 'min-h-[40px] px-3 text-sm rounded-lg border bg-transparent outline-none transition-colors duration-150'
+  const inputBase = 'min-h-[40px] px-3 text-base rounded-lg border bg-transparent outline-none transition-colors duration-150'
   const inputStyle = {
     background:  'var(--bg-float)',
     borderColor: 'var(--border-subtle)',
@@ -52,8 +52,10 @@ export function StudentsFilterBar({ total, showing }: Props) {
           placeholder="Search name, email, school…"
           defaultValue={params.get('search') ?? ''}
           onChange={e => handleSearch(e.target.value)}
+          inputMode="search"
+          autoComplete="off"
           className={`${inputBase} flex-1 min-w-0`}
-          style={inputStyle}
+          style={{ ...inputStyle, fontSize: '16px' }}
         />
         <a
           href={`/api/admin/students/export?${params.toString()}`}
@@ -78,9 +80,11 @@ export function StudentsFilterBar({ total, showing }: Props) {
           style={inputStyle}
         >
           <option value="">All Stages</option>
-          {['1', '2', '3', '4', '5'].map(s => (
-            <option key={s} value={s}>Stage {s}</option>
-          ))}
+          <option value="1">S1 · Applying (DB 1)</option>
+          <option value="2">S1 · Quiz/Idea (DB 2)</option>
+          <option value="3">S1 · Pre-pay (DB 3)</option>
+          <option value="4">S2 · Workshops (DB 4)</option>
+          <option value="5">S3 · Hackathon (DB 5)</option>
         </select>
 
         <select
@@ -115,8 +119,10 @@ export function StudentsFilterBar({ total, showing }: Props) {
             if (debounceRef.current) clearTimeout(debounceRef.current)
             debounceRef.current = setTimeout(() => updateParam('city', e.target.value), 300)
           }}
+          inputMode="text"
+          autoComplete="off"
           className={inputBase}
-          style={{ ...inputStyle, width: '110px' }}
+          style={{ ...inputStyle, width: '110px', fontSize: '16px' }}
         />
       </div>
 

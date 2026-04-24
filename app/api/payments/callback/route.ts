@@ -62,5 +62,5 @@ export async function POST(req: NextRequest) {
     await addBadgeToStudent(payment.studentId, 'builder', 200)
   }
 
-  return NextResponse.redirect(`${APP_URL}/register/success`, { status: 303 })
+  return NextResponse.redirect(`${APP_URL}/dashboard`, { status: 303 })
 }

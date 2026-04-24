@@ -19,17 +19,17 @@ const FEATURES = [
 /* ─── variants ──────────────────────────────────────────────────────────────── */
 const soloCard: Variants = {
   hidden: { opacity: 0, x: -48 },
-  show:   { opacity: 1, x: 0, transition: { duration: 0.65, ease: EASE_OUT } },
+  show: { opacity: 1, x: 0, transition: { duration: 0.65, ease: EASE_OUT } },
 }
 
 const teamCard: Variants = {
   hidden: { opacity: 0, x: 48 },
-  show:   { opacity: 1, x: 0, transition: { duration: 0.65, ease: EASE_OUT } },
+  show: { opacity: 1, x: 0, transition: { duration: 0.65, ease: EASE_OUT } },
 }
 
 const headerAnim: Variants = {
   hidden: { opacity: 0, y: 20 },
-  show:   { opacity: 1, y: 0, transition: { duration: 0.55, ease: EASE_OUT } },
+  show: { opacity: 1, y: 0, transition: { duration: 0.55, ease: EASE_OUT } },
 }
 
 /* ─── FeatureRow ────────────────────────────────────────────────────────────── */
@@ -110,7 +110,7 @@ export function TierComparison() {
             viewport={{ once: true, margin: '-60px' }}
             className="relative rounded-[6px] border p-7 flex flex-col"
             style={{
-              background:  'var(--bg-card)',
+              background: 'var(--bg-card)',
               borderColor: 'var(--border-subtle)',
             }}
           >
@@ -150,21 +150,21 @@ export function TierComparison() {
             </ul>
 
             <Link
-              href="/register/stage-1"
-              className="flex items-center justify-center h-[50px] rounded-[4px] border font-heading font-bold text-[13px] tracking-[0.1em] uppercase transition-all duration-150"
+              href="/dashboard/apply"
+              className="flex items-center justify-center h-[50px] rounded-[4px] border font-heading font-bold text-[13px] tracking-[0.1em] uppercase transition-all duration-150 touch-manipulation active:opacity-70 active:scale-95"
               style={{
                 borderColor: 'var(--border-soft)',
-                color:       'var(--text-2)',
+                color: 'var(--text-2)',
               }}
               onMouseEnter={(e) => {
                 const el = e.currentTarget as HTMLElement
                 el.style.borderColor = 'var(--border-brand)'
-                el.style.color       = 'var(--text-brand)'
+                el.style.color = 'var(--text-brand)'
               }}
               onMouseLeave={(e) => {
                 const el = e.currentTarget as HTMLElement
                 el.style.borderColor = 'var(--border-soft)'
-                el.style.color       = 'var(--text-2)'
+                el.style.color = 'var(--text-2)'
               }}
             >
               Register Solo
@@ -179,18 +179,18 @@ export function TierComparison() {
             viewport={{ once: true, margin: '-60px' }}
             className="relative rounded-[6px] border p-7 flex flex-col"
             style={{
-              background:  'var(--bg-float)',
+              background: 'var(--bg-float)',
               borderColor: 'rgba(255,184,0,0.45)',
-              boxShadow:   '0 0 0 1px rgba(255,184,0,0.15), 0 8px 48px rgba(255,184,0,0.12), inset 0 1px 0 rgba(255,184,0,0.1)',
+              boxShadow: '0 0 0 1px rgba(255,184,0,0.15), 0 8px 48px rgba(255,184,0,0.12), inset 0 1px 0 rgba(255,184,0,0.1)',
             }}
           >
             {/* Save badge */}
             <div
               className="absolute -top-3.5 left-1/2 -translate-x-1/2 inline-flex items-center gap-1.5 px-4 h-7 rounded-full border font-mono text-[12px] tracking-wider uppercase font-semibold whitespace-nowrap"
               style={{
-                background:  'var(--brand)',
+                background: 'var(--brand)',
                 borderColor: 'rgba(255,184,0,0.6)',
-                color:       '#000',
+                color: '#000',
               }}
             >
               💰 Save ₹500/head
@@ -245,7 +245,7 @@ export function TierComparison() {
             <div
               className="mb-6 px-3.5 py-2.5 rounded-[4px] border"
               style={{
-                background:  'rgba(255,184,0,0.07)',
+                background: 'rgba(255,184,0,0.07)',
                 borderColor: 'rgba(255,184,0,0.25)',
               }}
             >
@@ -264,21 +264,21 @@ export function TierComparison() {
             </ul>
 
             <Link
-              href="/register/stage-1"
-              className="flex items-center justify-center gap-2 h-[50px] rounded-[4px] font-heading font-bold text-[13px] tracking-[0.1em] uppercase transition-all duration-150 text-black"
+              href="/dashboard/apply"
+              className="flex items-center justify-center gap-2 h-[50px] rounded-[4px] font-heading font-bold text-[13px] tracking-[0.1em] uppercase transition-all duration-150 touch-manipulation active:opacity-70 active:scale-95 text-black"
               style={{
                 background: 'var(--brand)',
-                boxShadow:  '0 0 0 1px rgba(255,184,0,0.4), 0 4px 24px rgba(255,184,0,0.3)',
+                boxShadow: '0 0 0 1px rgba(255,184,0,0.4), 0 4px 24px rgba(255,184,0,0.3)',
               }}
               onMouseEnter={(e) => {
                 const el = e.currentTarget as HTMLElement
                 el.style.background = 'var(--brand-bright)'
-                el.style.boxShadow  = '0 0 0 1px rgba(255,184,0,0.6), 0 6px 32px rgba(255,184,0,0.45)'
+                el.style.boxShadow = '0 0 0 1px rgba(255,184,0,0.6), 0 6px 32px rgba(255,184,0,0.45)'
               }}
               onMouseLeave={(e) => {
                 const el = e.currentTarget as HTMLElement
                 el.style.background = 'var(--brand)'
-                el.style.boxShadow  = '0 0 0 1px rgba(255,184,0,0.4), 0 4px 24px rgba(255,184,0,0.3)'
+                el.style.boxShadow = '0 0 0 1px rgba(255,184,0,0.4), 0 4px 24px rgba(255,184,0,0.3)'
               }}
             >
               Register as Team

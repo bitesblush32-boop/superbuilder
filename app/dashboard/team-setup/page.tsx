@@ -1,12 +1,12 @@
-import { auth }               from '@clerk/nextjs/server'
-import { redirect }           from 'next/navigation'
-import { db }                 from '@/lib/db'
-import { students }           from '@/lib/db/schema'
-import { eq }                 from 'drizzle-orm'
+import { auth } from '@clerk/nextjs/server'
+import { redirect } from 'next/navigation'
+import { db } from '@/lib/db'
+import { students } from '@/lib/db/schema'
+import { eq } from 'drizzle-orm'
 import { getTeamWithMembers } from '@/lib/db/queries/teams'
-import { checkStageLock }     from '@/lib/auth/stageLock'
-import { StageLocked }        from '@/components/stage/StageLocked'
-import { TeamManageClient }   from '@/app/register/team/_components/TeamManageClient'
+import { checkStageLock } from '@/lib/auth/stageLock'
+import { StageLocked } from '@/components/stage/StageLocked'
+import { TeamManageClient } from '@/app/dashboard/team-setup/_components/TeamManageClient'
 
 export const dynamic = 'force-dynamic'
 
@@ -38,17 +38,17 @@ export default async function DashboardTeamSetupPage() {
         studentName={student.fullName.split(' ')[0]}
         teamRole={student.teamRole}
         team={team ? {
-          id:          team.id,
-          name:        team.name,
-          code:        team.code,
+          id: team.id,
+          name: team.name,
+          code: team.code,
           memberCount: team.memberCount,
-          maxSize:     team.maxSize,
-          isLocked:    team.isLocked,
-          members:     team.members.map(m => ({
-            id:       m.id,
+          maxSize: team.maxSize,
+          isLocked: team.isLocked,
+          members: team.members.map(m => ({
+            id: m.id,
             fullName: m.fullName,
-            grade:    m.grade,
-            city:     m.city,
+            grade: m.grade,
+            city: m.city,
             teamRole: m.teamRole,
           })),
         } : null}

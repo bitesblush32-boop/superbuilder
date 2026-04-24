@@ -200,11 +200,11 @@ function WorkshopCard({
 }
 
 export default async function WorkshopsPage() {
-  const { isOpen } = await checkStageLock(5)
+  const { isOpen } = await checkStageLock(2)
   if (!isOpen) redirect('/dashboard')
 
   const { student } = await getStudentOrRedirect(4)
-  if (!student) redirect('/register')
+  if (!student) redirect('/dashboard/apply')
 
   const [allItems, attendanceRows] = await Promise.all([
     getScheduleItems('dashboard'),

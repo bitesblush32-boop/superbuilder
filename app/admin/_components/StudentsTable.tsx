@@ -16,7 +16,11 @@ const STAGE_COLORS: Record<string, string> = {
   '5': 'var(--bdg-super, #FFD700)',
 }
 const STAGE_LABELS: Record<string, string> = {
-  '1': 'Applied', '2': 'Quiz', '3': 'Pre-pay', '4': 'Paid', '5': 'Submitted',
+  '1': 'S1 · Applying',
+  '2': 'S1 · Quiz/Idea',
+  '3': 'S1 · Pre-pay',
+  '4': 'S2 · Workshops',
+  '5': 'S3 · Hackathon',
 }
 
 function initials(name: string): string {

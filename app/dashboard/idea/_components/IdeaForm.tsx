@@ -294,11 +294,12 @@ function DomainCard({
 function SidePanel({ domain }: { domain: DomainValue | undefined }) {
   const tips = domain ? (DOMAIN_TIPS[domain] ?? DOMAIN_TIPS.default) : DOMAIN_TIPS.default
 
+  // Only on 2xl+ (≥1536px): calc(50% + 472px) accounts for the 240px sidebar,
+  // placing the panel 16px past the max-w-2xl form's right edge at any viewport.
   return (
-    // Fixed position calculated to sit just right of the centered max-w-xl content
     <div
-      className="hidden xl:block fixed w-[234px]"
-      style={{ top: '180px', left: 'calc(50vw + 310px)' }}
+      className="hidden 2xl:block fixed w-[234px]"
+      style={{ top: '180px', left: 'calc(50% + 472px)' }}
       aria-label="Idea tips panel"
     >
       <AnimatePresence mode="wait">
@@ -428,6 +429,7 @@ export function IdeaForm({ lockedDomain }: { lockedDomain: DomainValue }) {
       <BadgeUnlock badge={pendingBadge} onDismiss={handleBadgeDismiss} />
       <SidePanel domain={selectedDomain} />
 
+      <div className="max-w-2xl mx-auto px-4 md:px-6 pt-5 pb-12">
       <form onSubmit={onSubmit} noValidate className="flex flex-col gap-6">
 
         {/* ── Page header ─────────────────────────────────────────────────── */}
@@ -614,7 +616,7 @@ export function IdeaForm({ lockedDomain }: { lockedDomain: DomainValue }) {
                         onClick={() => field.onChange(sel ? undefined : opt)}
                         className="flex items-center gap-1.5 rounded-full text-sm font-body font-medium transition-all active:scale-95 select-none"
                         style={{
-                          minHeight: '40px',
+                          minHeight: '44px',
                           padding: '0 16px',
                           background: sel ? 'rgba(255,184,0,0.10)' : 'var(--bg-float)',
                           border: `1.5px solid ${sel ? 'var(--brand)' : 'var(--border-subtle)'}`,
@@ -732,6 +734,7 @@ export function IdeaForm({ lockedDomain }: { lockedDomain: DomainValue }) {
           </p>
         </motion.div>
       </form>
+      </div>
     </>
   )
 }

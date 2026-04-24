@@ -14,7 +14,7 @@ Please execute the following refactoring plan to fix our routing issues, sync ad
 **1. Move Routes to Dashboard:**
 *   Move `app/register/stage-2/domain` -> `app/dashboard/domain`
 *   Move `app/register/stage-2/idea` -> `app/dashboard/idea`
-*   Move `app/register/stage-2/orientation` -> `app/dashboard/orientation`
+*   Move `app/register/stage-2/orientation` -> `app/dashboard/intro`
 *   Move `app/register/stage-2/quiz` -> `app/dashboard/quiz`
 *   Move `app/register/stage-3/engage` -> `app/dashboard/engage`
 *   Move `app/register/stage-3/pay` -> `app/dashboard/pay`
@@ -23,18 +23,18 @@ Please execute the following refactoring plan to fix our routing issues, sync ad
 
 **2. Update Navigation Logic in `lib/auth/getStudentOrRedirect.ts`:**
 *   In `getStage2SubRoute`, modify the returned strings to match the new dashboard routes:
-    *   `/register/stage-2/orientation` -> `/dashboard/orientation`
+    *   `/register/stage-2/orientation` -> `/dashboard/intro`
     *   `/register/stage-2/domain` -> `/dashboard/domain`
     *   `/register/stage-2/quiz` -> `/dashboard/quiz`
 
 **3. Update Hardcoded Links in `app/dashboard/page.tsx`:**
 *   In the `NEXT_STEP` dictionary mapping, update the `href` strings:
-    *   `href: '/register/stage-2/orientation'` -> `href: '/dashboard/orientation'`
+    *   `href: '/register/stage-2/orientation'` -> `href: '/dashboard/intro'`
     *   `href: '/register/stage-3/engage'` -> `href: '/dashboard/engage'`
 
 **4. Admin Stage Sync in `app/admin/(protected)/stages/_components/StagesClient.tsx`:**
 *   Update `STAGE_META` descriptions. In `stage_1_open`, change `name: 'Applications'` to `name: 'Applications & Team Building'`. Change description to "Students fill in personal info, parent details, and create/join a team."
 
 **5. Wire dynamic admin videos into Orientation:**
-*   **In `app/dashboard/orientation/page.tsx`**: Add Drizzle query to fetch from `schedule_items` table where `targetSection === 'orientation'` and `isVisible === true`. Pass the returned items down to the client component.
-*   **In `app/dashboard/orientation/_components/OrientationClient.tsx`**: Add `adminVideos` to props. Map through the videos array to render dynamic YouTube iframes using the `url` from the database. Hide the static hardcoded "Watch First" `<iframe>` if dynamic videos exist.
+*   **In `app/dashboard/intro/page.tsx`**: Add Drizzle query to fetch from `schedule_items` table where `targetSection === 'orientation'` and `isVisible === true`. Pass the returned items down to the client component.
+*   **In `app/dashboard/intro/_components/OrientationClient.tsx`**: Add `adminVideos` to props. Map through the videos array to render dynamic YouTube iframes using the `url` from the database. Hide the static hardcoded "Watch First" `<iframe>` if dynamic videos exist.

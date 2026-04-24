@@ -9,9 +9,13 @@ export const metadata = {
 }
 
 export default async function EngagePage() {
-  const { isOpen } = await checkStageLock(4)
+  const { isOpen } = await checkStageLock(1)
   if (!isOpen) redirect('/dashboard')
 
-  await getStudentOrRedirect(3)
+  const { student } = await getStudentOrRedirect(3)
+
+  // Already completed engage — skip straight to payment
+  if (student?.engageAnswers) redirect('/dashboard/pay')
+
   return <EngageForm />
 }

@@ -9,40 +9,58 @@ type Setting = typeof appSettings.$inferSelect
 
 const STAGE_META: Record<string, {
   num:         number
+  displayNum:  number
   name:        string
   emoji:       string
+  dates:       string
   description: string
   color:       string
+  dbStages:    string[]
 }> = {
   stage_1_open: {
-    num: 1, name: 'Apply', emoji: '📝',
-    description: 'Students fill in personal info, parent consent, and create or join a team.',
+    num: 1, displayNum: 1,
+    name: 'Apply & Prepare',
+    emoji: '📝',
+    dates: 'Apr 23 – May 30',
+    description: 'Opens registration. Students complete personal info, parent consent, team setup, intro page, domain selection, AI quiz, idea submission, and payment.',
     color: '#A78BFA',
+    dbStages: ['1', '2', '3'],
   },
   stage_2_open: {
-    num: 2, name: 'Orientation', emoji: '🧭',
-    description: 'Students watch the welcome video, review programme rules, and acknowledge to proceed.',
+    num: 2, displayNum: 2,
+    name: 'Workshops',
+    emoji: '🎓',
+    dates: 'Jun 3–5',
+    description: 'Unlocks the dashboard for paid students. Workshop 1 (Jun 3), Workshop 2 (Jun 4), Workshop 3 (Jun 5). Students attend live sessions and earn badges.',
     color: '#60A5FA',
+    dbStages: ['4'],
   },
   stage_3_open: {
-    num: 3, name: 'Domain & Quiz', emoji: '🧠',
-    description: 'Students pick their hackathon domain (locked after selection), complete the 10-question domain quiz (6/10 to pass, max 2 attempts), and submit their idea pitch.',
-    color: '#34D399',
+    num: 3, displayNum: 3,
+    name: 'Hackathon',
+    emoji: '🚀',
+    dates: 'Jun 7–8',
+    description: '24-hour hackathon window. Jun 7 8AM IST → Jun 8 8AM IST. Students build and submit their AI projects. Project submission form unlocks.',
+    color: '#FB923C',
+    dbStages: ['5'],
   },
   stage_4_open: {
-    num: 4, name: 'Payment', emoji: '💳',
-    description: 'Engage re-anchor questions, tier selection (Pro / Premium), and Razorpay checkout with team discount applied server-side.',
-    color: '#FB923C',
+    num: 4, displayNum: 4,
+    name: 'Demo Day',
+    emoji: '🏅',
+    dates: 'Jun 27',
+    description: 'Demo Day and winner announcement. Results published, leaderboard finalised. Students can view their scores and rankings.',
+    color: '#C084FC',
+    dbStages: [],
   },
   stage_5_open: {
-    num: 5, name: 'Build Phase', emoji: '🚀',
-    description: 'Paid students access workshops, mentor sessions (Premium), live leaderboard, and project submission during the 24h hackathon window.',
-    color: '#FFB800',
-  },
-  stage_6_open: {
-    num: 6, name: 'Certificates', emoji: '🏆',
-    description: 'Results published, leaderboard finalised, winners announced, and certificates available for download.',
+    num: 5, displayNum: 5,
+    name: 'Certificates & Prizes',
+    emoji: '🏆',
+    dates: 'Jul 1',
+    description: 'Certificates go live for download. Prize distribution begins. LinkedIn verified certificates enabled for Premium participants.',
     color: '#FFD700',
+    dbStages: [],
   },
 }
 
@@ -113,6 +131,9 @@ function StageToggle({ setting }: { setting: Setting }) {
               {isOpen ? '● OPEN' : '○ LOCKED'}
             </span>
           </div>
+          <p className="font-mono text-[11px] mb-0.5" style={{ color: 'var(--text-4)' }}>
+            {meta.dates}
+          </p>
           <p className="font-body text-xs leading-snug hidden sm:block" style={{ color: 'var(--text-3)' }}>
             {meta.description}
           </p>

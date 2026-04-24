@@ -90,6 +90,7 @@ const gridVariants: Variants = {
 const cardVariants: Variants = {
   hidden: { opacity: 0, y: 24 },
   show:   { opacity: 1, y: 0, transition: { duration: 0.5, ease: EASE_OUT } },
+  hover:  { y: -6, transition: { type: 'spring', stiffness: 300, damping: 20 } },
 }
 
 const headerVariants: Variants = {
@@ -102,18 +103,26 @@ function DomainCard({ domain }: { domain: typeof DOMAINS[number] }) {
   return (
     <motion.div
       variants={cardVariants}
-      whileHover={{
-        y: -6,
-        borderColor: 'rgba(255,184,0,0.5)',
-        boxShadow: '0 0 0 1px rgba(255,184,0,0.2), 0 12px 40px rgba(255,184,0,0.1)',
-        transition: { type: 'spring', stiffness: 300, damping: 20 },
-      }}
+      whileHover="hover"
       className="relative rounded-[6px] border p-6 flex flex-col gap-4 cursor-default"
       style={{
         background:  'var(--bg-card)',
         borderColor: 'var(--border-faint)',
       }}
     >
+      {/* Hover glow overlay — opacity-only animation, GPU composited */}
+      <motion.div
+        variants={{ hover: { opacity: 1 } }}
+        initial={{ opacity: 0 }}
+        transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+        className="absolute inset-0 rounded-[6px] pointer-events-none"
+        style={{
+          boxShadow: '0 0 0 1px rgba(255,184,0,0.2), 0 12px 40px rgba(255,184,0,0.1)',
+          border:    '1px solid rgba(255,184,0,0.5)',
+        }}
+        aria-hidden="true"
+      />
+
       {/* Bottom accent line */}
       <div
         className="absolute bottom-0 left-6 right-6 h-px"

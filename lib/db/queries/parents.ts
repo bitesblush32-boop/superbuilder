@@ -2,6 +2,13 @@ import { db } from '@/lib/db'
 import { parents } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
 
+export async function markParentEmailVerified(studentId: string): Promise<void> {
+  await db
+    .update(parents)
+    .set({ emailVerified: true })
+    .where(eq(parents.studentId, studentId))
+}
+
 export type Parent    = typeof parents.$inferSelect
 export type NewParent = typeof parents.$inferInsert
 

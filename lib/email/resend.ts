@@ -1,0 +1,10 @@
+import { Resend } from 'resend'
+
+if (!process.env.RESEND_API_KEY) {
+  throw new Error('RESEND_API_KEY is not set')
+}
+
+export const resend = new Resend(process.env.RESEND_API_KEY)
+
+export const FROM_EMAIL = process.env.FROM_EMAIL ?? 'admin@superbuilder.org'
+export const APP_URL    = process.env.NEXT_PUBLIC_APP_URL ?? 'https://www.superbuilder.org'

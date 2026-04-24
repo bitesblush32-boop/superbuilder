@@ -4,7 +4,6 @@ import Link from 'next/link'
 import dynamic from 'next/dynamic'
 import { motion, type Variants } from 'framer-motion'
 import { useCountdown } from '@/hooks/useCountdown'
-import { HACKATHON_START, REG_DEADLINE } from '@/lib/content/programme'
 
 /* Three.js — lazy loaded with ssr:false so it never runs during SSR and
    gets code-split into its own chunk, keeping the landing page bundle small. */
@@ -136,9 +135,15 @@ function PerspectiveGrid() {
 /* ═══════════════════════════════════════════════════════════════════════════
    HeroSection
 ═══════════════════════════════════════════════════════════════════════════ */
-export function HeroSection() {
-  const { days: hackDays, expired: hackStarted } = useCountdown(HACKATHON_START)
-  const { days: regDays, expired: regClosed } = useCountdown(REG_DEADLINE)
+export function HeroSection({
+  hackathonStartISO,
+  regDeadlineISO,
+}: {
+  hackathonStartISO: string
+  regDeadlineISO: string
+}) {
+  const { days: hackDays, expired: hackStarted } = useCountdown(new Date(hackathonStartISO))
+  const { days: regDays, expired: regClosed } = useCountdown(new Date(regDeadlineISO))
 
   const daysLabel = regClosed
     ? hackStarted
@@ -246,7 +251,7 @@ export function HeroSection() {
             className="flex flex-wrap justify-center md:justify-start gap-2 mb-8"
           >
             <Pill label="Class 8–12" color="brand" />
-            <Pill label="100% Online" color="green" />
+            <Pill label="Hybrid Mode" color="green" />
             <Pill label="₹1,00,000+ Prize Pool" color="purple" />
             <Pill label="Jun 7–8, 2026" color="blue" />
           </motion.div>
@@ -263,8 +268,8 @@ export function HeroSection() {
               transition={{ type: 'spring', stiffness: 420, damping: 12 }}
             >
               <Link
-                href="/register/stage-1"
-                className="flex items-center justify-center gap-2 h-[54px] px-8 rounded-[4px] font-heading font-bold tracking-[0.1em] uppercase text-[14px] text-black w-full sm:w-auto"
+                href="/dashboard/apply"
+                className="flex items-center justify-center gap-2 h-[54px] px-8 rounded-[4px] font-heading font-bold tracking-[0.1em] uppercase text-[14px] text-black w-full sm:w-auto transition-all duration-150 touch-manipulation active:opacity-70 active:scale-95"
                 style={{
                   background: 'var(--brand)',
                   boxShadow:
@@ -283,7 +288,7 @@ export function HeroSection() {
             >
               <Link
                 href="#parents"
-                className="flex items-center justify-center gap-2 h-[54px] px-7 rounded-[4px] font-heading font-semibold tracking-[0.08em] uppercase text-[13px] border transition-colors duration-150 w-full sm:w-auto"
+                className="flex items-center justify-center gap-2 h-[54px] px-7 rounded-[4px] font-heading font-semibold tracking-[0.08em] uppercase text-[13px] border transition-all duration-150 touch-manipulation active:opacity-70 active:scale-95 w-full sm:w-auto"
                 style={{
                   borderColor: 'var(--border-subtle)',
                   color: 'var(--text-2)',
@@ -302,44 +307,6 @@ export function HeroSection() {
                 For Parents →
               </Link>
             </motion.div>
-          </motion.div>
-
-          {/* Stats bar */}
-          <motion.div
-            variants={fadeUp}
-            className="mt-8 pt-6 w-full"
-            style={{ borderTop: '1px solid var(--border-faint)' }}
-          >
-            <div className="flex flex-wrap justify-center md:justify-start gap-x-5 gap-y-1.5">
-              {[
-                { value: '2,847', label: 'Registered' },
-                { value: '38', label: 'Cities' },
-                { value: daysLabel, label: '' },
-                { value: '₹1L+', label: 'Prize Pool' },
-              ].map(({ value, label }, i) => (
-                <span
-                  key={i}
-                  className="font-mono text-[13px] tracking-wide flex items-baseline gap-1.5"
-                  style={{ color: 'var(--text-3)' }}
-                >
-                  <span
-                    className="font-semibold"
-                    style={{ color: 'var(--text-2)' }}
-                  >
-                    {value}
-                  </span>
-                  {label && <span>{label}</span>}
-                  {i < 3 && (
-                    <span
-                      className="ml-1 opacity-30 select-none"
-                      aria-hidden="true"
-                    >
-                      ·
-                    </span>
-                  )}
-                </span>
-              ))}
-            </div>
           </motion.div>
         </motion.div>
       </div>

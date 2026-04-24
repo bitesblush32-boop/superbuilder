@@ -9,14 +9,14 @@ export const metadata = {
 
 const EXPECTED_STAGE_KEYS = [
   'stage_1_open', 'stage_2_open', 'stage_3_open',
-  'stage_4_open', 'stage_5_open', 'stage_6_open',
+  'stage_4_open', 'stage_5_open',
 ]
 
 export default async function AdminStagesPage() {
   const settings = await getAllSettings()
   const settingMap = new Map(settings.map(s => [s.key, s]))
 
-  // Ensure all 6 stage rows appear in the UI even if not yet seeded in DB
+  // Ensure all 5 stage rows appear in the UI even if not yet seeded in DB
   const stageSettings = EXPECTED_STAGE_KEYS.map(key =>
     settingMap.get(key) ?? { key, value: 'false', label: null, updatedAt: new Date() }
   )
