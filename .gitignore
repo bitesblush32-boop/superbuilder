@@ -22,7 +22,6 @@ graphify-out
 
 # production
 /build
-/design_system
 /documentation
 # misc
 .DS_Store
@@ -45,13 +44,13 @@ yarn-error.log*
 next-env.d.ts
 .clerk/.tmp/README.md
 .clerk/.tmp/keyless.json
-super-builders-design-system.html
+
 lib/db/migrations/meta/0001_snapshot.json
 lib/db/migrations/0001_marvelous_ben_parker.sql
 
 # clerk configuration (can include secrets)
 /.clerk/
-super-builders-design-system.html
+
 .claude/settings.local.json
 lib/db/migrations/0001_marvelous_ben_parker.sql
 lib/db/migrations/meta/_journal.json
