@@ -1,10 +1,10 @@
 import { db } from '@/lib/db'
 import {
-  students, payments, quizAttempts, parents, ideaSubmissions, projects, scores, commsLog, teams,
+  students, payments, quizAttempts, parents, ideaSubmissions, projects, scores, commsLog, teams, referrals,
 } from '@/lib/db/schema'
 import {
   eq, count, sum, gte, lte, desc, asc, isNotNull, isNull, and, or, ilike, notInArray, sql, inArray,
-  getTableColumns,
+  getTableColumns, aliasedTable,
 } from 'drizzle-orm'
 import crypto from 'crypto'
 
@@ -753,4 +753,85 @@ export async function insertCommsLog(entry: {
     error:       entry.error       ?? null,
     triggeredBy: entry.triggeredBy ?? null,
   })
+}
+
+// ─── Referral Queries ─────────────────────────────────────────────────────────
+
+export interface ReferralRecord {
+  id:            string
+  referrerId:    string
+  referrerName:  string
+  referrerEmail: string
+  refereeId:     string
+  refereeName:   string
+  refereeEmail:  string
+  paid:          boolean | null
+  voucherSent:   boolean | null
+  createdAt:     Date | null
+}
+
+export async function getReferralActivity(limit = 100): Promise<ReferralRecord[]> {
+  const referrerAlias = aliasedTable(students, 'referrer')
+  const refereeAlias  = aliasedTable(students, 'referee')
+
+  const rows = await db
+    .select({
+      id:            referrals.id,
+      referrerId:    referrals.referrerId,
+      referrerName:  referrerAlias.fullName,
+      referrerEmail: referrerAlias.email,
+      refereeId:     referrals.refereeId,
+      refereeName:   refereeAlias.fullName,
+      refereeEmail:  refereeAlias.email,
+      paid:          referrals.paid,
+      voucherSent:   referrals.voucherSent,
+      createdAt:     referrals.createdAt,
+    })
+    .from(referrals)
+    .leftJoin(referrerAlias, eq(referrals.referrerId, referrerAlias.id))
+    .leftJoin(refereeAlias,  eq(referrals.refereeId, refereeAlias.id))
+    .orderBy(desc(referrals.createdAt))
+    .limit(limit)
+
+  return rows as ReferralRecord[]
+}
+
+export interface TopReferrer {
+  referrerId:          string
+  referrerName:        string
+  referrerEmail:       string
+  referrerPhone:       string | null
+  successfulReferrals: number
+  voucherSent:         boolean
+}
+
+export async function getTopReferrers(): Promise<TopReferrer[]> {
+  const rows = await db
+    .select({
+      referrerId:          referrals.referrerId,
+      referrerName:        students.fullName,
+      referrerEmail:       students.email,
+      referrerPhone:       students.phone,
+      successfulReferrals: count(referrals.id),
+      voucherSent:         sql<boolean>`bool_or(${referrals.voucherSent})`,
+    })
+    .from(referrals)
+    .where(eq(referrals.paid, true))
+    .innerJoin(students, eq(referrals.referrerId, students.id))
+    .groupBy(referrals.referrerId, students.fullName, students.email, students.phone)
+    .orderBy(desc(count(referrals.id)))
+    .limit(50)
+
+  return rows.map(r => ({
+    ...r,
+    successfulReferrals: Number(r.successfulReferrals),
+    voucherSent: Boolean(r.voucherSent),
+  }))
+}
+
+export async function markVoucherSent(referrerId: string): Promise<void> {
+  await db
+    .update(referrals)
+    .set({ voucherSent: true })
+    .where(eq(referrals.referrerId, referrerId))
 }

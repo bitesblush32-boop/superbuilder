@@ -31,6 +31,7 @@ interface Props {
   studentId: string
   studentName: string
   teamRole: string | null
+  referralCode: string
   team: TeamInfo | null
 }
 
@@ -445,9 +446,136 @@ function NoTeamView({ studentName, onDone }: { studentName: string; onDone: () =
   return null
 }
 
+// ─── Referral section ─────────────────────────────────────────────────────────
+
+const REWARD_TIERS = [
+  { refs: 1,   reward: '+500 XP',                           badge: 'CONNECTOR Badge',          color: '#A78BFA', emoji: '🔗' },
+  { refs: 2,   reward: '₹200 Amazon voucher + 500 XP',      badge: null,                        color: '#60A5FA', emoji: '🎁' },
+  { refs: 3,   reward: '₹500 Amazon voucher',               badge: 'SQUAD BUILDER Badge',       color: '#34D399', emoji: '🤝' },
+  { refs: 5,   reward: '₹1,000 Amazon voucher',             badge: 'Priority mentor + leaderboard feature', color: '#FFB800', emoji: '⭐' },
+  { refs: 10,  reward: '₹2,000 voucher + Free entry S2',    badge: 'LEGEND Badge',              color: '#FB923C', emoji: '🏆' },
+  { refs: '🥇', reward: '₹5,000 voucher + Lifetime membership', badge: 'Featured on social',   color: '#FFD700', emoji: '👑' },
+]
+
+function ReferralSection({ referralCode }: { referralCode: string }) {
+  const [copied, setCopied] = useState(false)
+
+  const handleCopy = () => {
+    if (!referralCode) return
+    navigator.clipboard.writeText(referralCode).then(() => {
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    })
+  }
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.42, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
+      className="flex flex-col gap-4 mt-2"
+    >
+      {/* Divider */}
+      <div className="flex items-center gap-3">
+        <div className="flex-1 h-px" style={{ background: 'var(--border-faint)' }} />
+        <span className="text-[11px] font-mono tracking-[0.15em] uppercase" style={{ color: 'var(--text-4)' }}>
+          Refer &amp; Earn
+        </span>
+        <div className="flex-1 h-px" style={{ background: 'var(--border-faint)' }} />
+      </div>
+
+      {/* Your referral code */}
+      <div
+        className="rounded-2xl p-5 flex flex-col gap-4"
+        style={{ background: 'rgba(255,184,0,0.06)', border: '1.5px solid rgba(255,184,0,0.25)' }}
+      >
+        <div>
+          <p className="font-mono text-[10px] tracking-[0.2em] uppercase mb-1" style={{ color: 'var(--text-4)' }}>
+            Your Referral Code
+          </p>
+          <p className="font-mono font-bold tracking-[0.25em] text-2xl" style={{ color: 'var(--brand)' }}>
+            {referralCode || '—'}
+          </p>
+          <p className="text-xs font-body mt-1" style={{ color: 'var(--text-3)' }}>
+            Share this with friends — every paid referral earns you XP + rewards
+          </p>
+        </div>
+
+        <button
+          type="button"
+          onClick={handleCopy}
+          disabled={!referralCode}
+          className="flex items-center justify-center gap-2 rounded-xl font-heading font-semibold text-sm transition-all active:scale-95"
+          style={{
+            minHeight: '44px',
+            background: copied ? 'rgba(34,197,94,0.12)' : 'var(--bg-float)',
+            border: `1px solid ${copied ? 'rgba(34,197,94,0.4)' : 'var(--border-soft)'}`,
+            color: copied ? 'var(--green)' : 'var(--text-2)',
+          }}
+        >
+          {copied ? '✓ Copied to clipboard!' : '📋 Copy Referral Code'}
+        </button>
+      </div>
+
+      {/* Reward tiers */}
+      <div
+        className="rounded-2xl overflow-hidden"
+        style={{ background: 'var(--bg-card)', border: '1px solid var(--border-faint)' }}
+      >
+        <div className="px-4 py-3 border-b flex items-center gap-2" style={{ borderColor: 'var(--border-faint)' }}>
+          <span className="text-base">🎯</span>
+          <p className="text-[11px] font-mono uppercase tracking-[0.12em]" style={{ color: 'var(--text-3)' }}>
+            Refer a Friend &amp; Earn Rewards
+          </p>
+        </div>
+
+        <div className="p-4 flex flex-col gap-2">
+          <p className="text-xs font-body mb-2" style={{ color: 'var(--text-3)' }}>
+            Each successful referral (friend who pays) boosts your XP on the leaderboard. 🚀
+          </p>
+          {REWARD_TIERS.map((tier, i) => (
+            <div
+              key={i}
+              className="flex items-start gap-3 rounded-xl p-3"
+              style={{ background: 'var(--bg-float)', border: '1px solid var(--border-faint)' }}
+            >
+              <div
+                className="flex-shrink-0 w-9 h-9 rounded-full flex items-center justify-center font-mono font-bold text-xs"
+                style={{ background: `${tier.color}18`, color: tier.color, border: `1.5px solid ${tier.color}40` }}
+              >
+                {typeof tier.refs === 'number' ? tier.refs : tier.emoji}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold font-body" style={{ color: 'var(--text-1)' }}>
+                  {tier.emoji} {tier.reward}
+                </p>
+                {tier.badge && (
+                  <p className="text-xs font-mono mt-0.5" style={{ color: tier.color }}>
+                    + {tier.badge}
+                  </p>
+                )}
+                {typeof tier.refs === 'number' && (
+                  <p className="text-[11px] font-mono mt-0.5" style={{ color: 'var(--text-4)' }}>
+                    {tier.refs} paid referral{tier.refs > 1 ? 's' : ''}
+                  </p>
+                )}
+                {typeof tier.refs === 'string' && (
+                  <p className="text-[11px] font-mono mt-0.5" style={{ color: 'var(--text-4)' }}>
+                    Top referrer in India
+                  </p>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </motion.div>
+  )
+}
+
 // ─── Main exported component ──────────────────────────────────────────────────
 
-export function TeamManageClient({ studentId: _studentId, studentName, teamRole, team: initialTeam }: Props) {
+export function TeamManageClient({ studentId: _studentId, studentName, teamRole, referralCode, team: initialTeam }: Props) {
   const router = useRouter()
   const { reset: resetRegistration } = useRegistrationStore()
   const [team, setTeam] = useState(initialTeam)
@@ -619,6 +747,9 @@ export function TeamManageClient({ studentId: _studentId, studentName, teamRole,
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Referral section — below team choice, always visible once code is available */}
+      {referralCode && <ReferralSection referralCode={referralCode} />}
     </div>
   )
 }

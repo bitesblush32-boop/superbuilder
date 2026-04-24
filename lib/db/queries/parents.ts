@@ -44,7 +44,6 @@ export async function upsertParent(data: NewParent): Promise<Parent> {
         consentGiven:       data.consentGiven,
         consentAt:          data.consentGiven ? now : undefined,
         safetyAcknowledged: data.safetyAcknowledged,
-        emergencyContact:   data.emergencyContact,
       })
       .where(eq(parents.studentId, data.studentId))
       .returning()

@@ -10,6 +10,7 @@ const NAV_ITEMS = [
   { href: '/admin/stages', label: 'Stage Control', emoji: '🎚️' },
   { href: '/admin/students', label: 'Students', emoji: '👥' },
   { href: '/admin/payments', label: 'Payments', emoji: '💳' },
+  { href: '/admin/referrals', label: 'Referrals', emoji: '🔗' },
   { href: '/admin/teams', label: 'Teams', emoji: '🤝' },
   { href: '/admin/projects', label: 'Projects', emoji: '📁' },
   { href: '/admin/judging', label: 'Judging', emoji: '⚖️' },

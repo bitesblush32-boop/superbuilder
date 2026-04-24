@@ -5,14 +5,15 @@ import { eq, sql } from 'drizzle-orm'
 export type Student    = typeof students.$inferSelect
 export type NewStudent = typeof students.$inferInsert
 
-// 8-character uppercase alphanumeric code — e.g. "A3BX72QK"
-export function generateReferralCode(): string {
-  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789' // no ambiguous I/1/O/0
-  let code = ''
-  for (let i = 0; i < 8; i++) {
-    code += chars[Math.floor(Math.random() * chars.length)]
-  }
-  return code
+// Contextual referral code — format: [FIRSTNAME][CITY_3][2_RANDOM]
+// e.g. RIYAPUN3X, ARJUNDEL7K — max ~13 chars, fits varchar(20)
+export function generateReferralCode(firstName: string, city: string): string {
+  const chars  = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789' // no ambiguous I/1/O/0
+  const name   = (firstName || 'USER').replace(/\s+/g, '').toUpperCase().slice(0, 8)
+  const prefix = (city || '').replace(/[^A-Za-z]/g, '').toUpperCase().slice(0, 3).padEnd(3, 'X')
+  let token = ''
+  for (let i = 0; i < 2; i++) token += chars[Math.floor(Math.random() * chars.length)]
+  return `${name}${prefix}${token}`
 }
 
 export async function getStudentByClerkId(clerkId: string): Promise<Student | null> {

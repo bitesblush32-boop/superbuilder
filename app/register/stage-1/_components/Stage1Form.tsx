@@ -510,14 +510,13 @@ export function Stage1Form({
   // ── Reactive "Submit" disabled check for sub-step 2 ────────────────────────
   const [
     parentName, relationship, parentEmail, parentPhone,
-    consentGiven, safetyAcknowledged, emergencyContact,
+    consentGiven, safetyAcknowledged,
   ] = useWatch({
     control,
     name: [
       'parent.parentName', 'parent.relationship',
       'parent.parentEmail', 'parent.parentPhone',
       'parent.consentGiven', 'parent.safetyAcknowledged',
-      'parent.emergencyContact',
     ],
   })
 
@@ -527,11 +526,10 @@ export function Stage1Form({
     parentEmail?.includes('@') &&
     parentPhone && /^[6-9]\d{9}$/.test(parentPhone) &&
     consentGiven === true &&
-    safetyAcknowledged === true &&
-    emergencyContact
+    safetyAcknowledged === true
   ), [
     parentName, relationship, parentEmail, parentPhone,
-    consentGiven, safetyAcknowledged, emergencyContact,
+    consentGiven, safetyAcknowledged,
   ])
 
   // ── Navigation ──────────────────────────────────────────────────────────────
@@ -932,7 +930,7 @@ export function Stage1Form({
                         <FieldLabel>Friend&apos;s Referral Code</FieldLabel>
                         <TextInput
                           {...register('referralCode')}
-                          placeholder="e.g. AB3X72QK"
+                          placeholder="e.g. RIYAPUN3X"
                           inputMode="text"
                           autoComplete="off"
                           autoCapitalize="characters"
@@ -1011,18 +1009,6 @@ export function Stage1Form({
                       <FieldError message={errors.parent?.parentPhone?.message} />
                     </div>
 
-                    <div>
-                      <FieldLabel required>Emergency Contact Number</FieldLabel>
-                      <TextInput
-                        {...register('parent.emergencyContact')}
-                        type="tel"
-                        placeholder="Alternate number to reach your family"
-                        inputMode="numeric"
-                        autoComplete="tel"
-                        hasError={!!errors.parent?.emergencyContact}
-                      />
-                      <FieldError message={errors.parent?.emergencyContact?.message} />
-                    </div>
                   </FormCard>
 
                   {/* Card 2 · Consent */}

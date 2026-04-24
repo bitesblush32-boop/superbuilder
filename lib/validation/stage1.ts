@@ -13,7 +13,7 @@ const indianPhone = z
   .regex(/^[6-9]\d{9}$/, 'Enter a valid 10-digit Indian mobile number')
 
 // Zod v4: custom messages use { error: "..." }, not { errorMap: () => ... }
-export const stage1Schema = z.object({
+const stage1SchemaBase = z.object({
   // ── Student ──────────────────────────────────────────────────────────────
   fullName: z.string().min(2, 'Full name must be at least 2 characters'),
 
@@ -91,13 +91,26 @@ export const stage1Schema = z.object({
     safetyAcknowledged: z.literal(true, {
       error: 'Safety acknowledgement is required to proceed',
     }),
-
-    emergencyContact: z.string().min(1, 'Emergency contact number is required'),
   }),
 })
 
-export type Stage1FormData = z.infer<typeof stage1Schema>
-
 // Personal info only — used for Step 1 → Step 2 auto-save (no parent fields)
-export const personalInfoSchema = stage1Schema.omit({ parent: true })
+export const personalInfoSchema = stage1SchemaBase.omit({ parent: true })
 export type PersonalInfoData = z.infer<typeof personalInfoSchema>
+
+// Full schema with cross-field phone validation (student phone ≠ parent phone)
+export const stage1Schema = stage1SchemaBase.superRefine((data, ctx) => {
+  if (
+    data.phone &&
+    data.parent?.parentPhone &&
+    data.phone === data.parent.parentPhone
+  ) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "Student's and parent's phone numbers must be different",
+      path: ['parent', 'parentPhone'],
+    })
+  }
+})
+
+export type Stage1FormData = z.infer<typeof stage1Schema>

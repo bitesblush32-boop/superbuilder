@@ -80,7 +80,10 @@ export async function POST(req: Request) {
       if (!student) return
 
       // d. Generate referral code if not already set
-      const referralCode = student.referralCode ?? generateReferralCode()
+      const referralCode = student.referralCode ?? generateReferralCode(
+        student.fullName.split(' ')[0],
+        student.city ?? '',
+      )
 
       // e. Update student: isPaid, stage, referralCode
       await tx

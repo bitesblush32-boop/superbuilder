@@ -48,7 +48,8 @@ export async function upsertStudentPersonalInfo(data: unknown): Promise<{
 
   // Use existing referral code or generate a fresh one for first-time saves
   const existing     = await getStudentByClerkId(userId)
-  const referralCode = existing?.referralCode ?? generateReferralCode()
+  const firstName    = parsed.data.fullName.split(' ')[0]
+  const referralCode = existing?.referralCode ?? generateReferralCode(firstName, parsed.data.city)
   const referredBy   = existing?.referredBy   ?? parsed.data.referralCode ?? null
 
   await dbUpsertPersonalInfo(userId, email, referralCode, {
@@ -155,7 +156,7 @@ export async function submitStage1(data: unknown): Promise<{
 
   if (existing) {
     // Returning student — upsert personal info + upsert parent, then check stage
-    const referralCode = existing.referralCode ?? generateReferralCode()
+    const referralCode = existing.referralCode ?? generateReferralCode(form.fullName.split(' ')[0], form.city)
     await dbUpsertPersonalInfo(userId, email, referralCode, {
       fullName:        form.fullName,
       dateOfBirth:     form.dateOfBirth,
@@ -183,7 +184,6 @@ export async function submitStage1(data: unknown): Promise<{
       relationship:       form.parent.relationship,
       consentGiven:       form.parent.consentGiven as boolean,
       safetyAcknowledged: form.parent.safetyAcknowledged as boolean,
-      emergencyContact:   form.parent.emergencyContact,
     })
 
     // If badge was already awarded (stage >= 2), skip badge/stage logic
@@ -198,7 +198,7 @@ export async function submitStage1(data: unknown): Promise<{
   }
 
   // Brand-new student path
-  const referralCode = generateReferralCode()
+  const referralCode = generateReferralCode(form.fullName.split(' ')[0], form.city)
   const student = await createStudent({
     clerkId:         userId,
     email,
@@ -232,7 +232,6 @@ export async function submitStage1(data: unknown): Promise<{
     consentGiven:       form.parent.consentGiven as boolean,
     consentAt:          new Date(),
     safetyAcknowledged: form.parent.safetyAcknowledged as boolean,
-    emergencyContact:   form.parent.emergencyContact,
   })
 
   // Award Explorer badge + 50 XP, then advance to stage 2

@@ -24,6 +24,7 @@ export default async function TeamPage() {
       studentId={student.id}
       studentName={student.fullName.split(' ')[0]}
       teamRole={student.teamRole}
+      referralCode={student.referralCode ?? ''}
       team={team ? {
         id:          team.id,
         name:        team.name,
