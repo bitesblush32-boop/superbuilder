@@ -43,14 +43,20 @@ export async function POST() {
     memberCount = teamData?.memberCount ?? 1
   }
 
-  const priceRupees = memberCount >= 2 ? pricing.priceTeam : pricing.priceSolo
-  const amount = priceRupees * 100 // convert to paise
+  const basePrice   = memberCount >= 2 ? pricing.priceTeam : pricing.priceSolo
+  const quizBonus   = student.quizPerfect ? 500 : 0
+  const priceRupees = Math.max(999, basePrice - quizBonus)
+  const amount      = priceRupees * 100 // convert to paise
 
   const order = await rzp.orders.create({
     amount,
     currency: 'INR',
     receipt: `sb_${student.id.slice(0, 8)}_${Date.now()}`,
-    notes: { studentId: student.id, memberCount: String(memberCount) },
+    notes: {
+      studentId:        student.id,
+      memberCount:      String(memberCount),
+      quizPerfectBonus: quizBonus > 0 ? '500' : '0',
+    },
   })
 
   await createPendingPayment({

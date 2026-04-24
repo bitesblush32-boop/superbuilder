@@ -441,6 +441,30 @@ export function QuizShell({ domain, attemptCount, isLocked, lastAttemptAt }: Qui
             </div>
           )}
 
+          {/* Perfect score celebration */}
+          {passed && score === 10 && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 8 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.6, ease: EASE_OUT }}
+              className="w-full rounded-2xl p-4 mb-4 text-center"
+              style={{
+                background: 'linear-gradient(135deg, rgba(34,197,94,0.10) 0%, rgba(255,184,0,0.08) 100%)',
+                border: '1px solid rgba(34,197,94,0.35)',
+              }}
+            >
+              <p className="font-display text-2xl tracking-wide mb-1" style={{ color: 'var(--brand)' }}>
+                🎉 PERFECT SCORE!
+              </p>
+              <p className="font-body text-sm mb-2" style={{ color: 'var(--green)' }}>
+                You've earned a <strong>₹500 discount</strong> on your registration!
+              </p>
+              <p className="font-mono text-[11px]" style={{ color: 'var(--text-3)' }}>
+                The discount is automatically applied at checkout — no code needed.
+              </p>
+            </motion.div>
+          )}
+
           {/* CTA */}
           {passed ? (
             <button
@@ -491,7 +515,6 @@ export function QuizShell({ domain, attemptCount, isLocked, lastAttemptAt }: Qui
 
         <BadgeUnlock badge={pendingBadge} onDismiss={() => {
           setPendingBadge(null)
-          router.push('/dashboard/idea')
         }} />
       </>
     )

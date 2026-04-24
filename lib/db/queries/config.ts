@@ -49,23 +49,22 @@ export type ScheduleItem = {
 // ─── Defaults (fallback to programme.ts values) ───────────────────────────────
 
 export const DEFAULT_DATES: DatesConfig = {
-  regDeadlineISO: '2026-05-25T23:59:59+05:30',
-  regDeadlineDisplay: 'May 25',
+  regDeadlineISO: '2026-05-30T23:59:59+05:30',
+  regDeadlineDisplay: 'May 30',
   hackathonStartISO: '2026-06-07T08:00:00+05:30',
   hackathonEndISO: '2026-06-08T08:00:00+05:30',
-  resultsDisplay: 'Jun 9–10',
+  resultsDisplay: 'Jun 27',
   phases: [
-    { num: 1, name: 'Application & Registration', dates: '[DATE]–May 25', milestone: 'Applications close' },
-    { num: 2, name: 'Orientation & Onboarding', dates: 'May 26–Jun 1', milestone: 'Welcome + Discord' },
-    { num: 3, name: 'Workshops ×3', dates: 'May 26–Jun 5', milestone: '3 workshops' },
-    { num: 4, name: 'Build Phase', dates: 'Jun 1–Jun 6', milestone: 'Projects built' },
-    { num: 5, name: 'Hackathon + Showcase', dates: 'Jun 7–8', milestone: '24h hackathon' },
-    { num: 6, name: 'Winners + Certificates', dates: 'Jun 9–10', milestone: 'Prizes + certs' },
+    { num: 1, name: 'Application & Registration', dates: 'Now–May 30', milestone: 'Applications close' },
+    { num: 2, name: 'Orientation & Workshops', dates: 'Jun 3–5', milestone: '3 workshops' },
+    { num: 3, name: 'Build Phase', dates: 'Jun 5–Jun 6', milestone: 'Projects built' },
+    { num: 4, name: 'Hackathon + Showcase', dates: 'Jun 7–8', milestone: '24h hackathon' },
+    { num: 5, name: 'Demo Day + Certificates', dates: 'Jun 27 / Jul 1', milestone: 'Prizes + certs' },
   ],
   workshops: [
-    { id: 1, title: 'AI Fundamentals + Tools Overview', outcome: 'Use 3+ AI tools confidently', duration: 90, dateRange: 'May 26, 6PM IST · 90 mins', badge: 'WARRIOR' },
-    { id: 2, title: 'Domain Deep-Dive + Problem Framing', outcome: 'Problem statement finalised', duration: 75, dateRange: 'Jun 1–3', badge: 'DOMAIN_EXPERT' },
-    { id: 3, title: 'Build Sprint + Prototype', outcome: 'Working prototype ready', duration: 90, dateRange: 'Jun 3–5', badge: 'PROTOTYPE_PRO' },
+    { id: 1, title: 'AI Fundamentals + Tools Overview', outcome: 'Use 3+ AI tools confidently', duration: 90, dateRange: 'Jun 3, 6PM IST · 90 mins', badge: 'WARRIOR' },
+    { id: 2, title: 'Domain Deep-Dive + Problem Framing', outcome: 'Problem statement finalised', duration: 75, dateRange: 'Jun 4, 6PM IST · 75 mins', badge: 'DOMAIN_EXPERT' },
+    { id: 3, title: 'Build Sprint + Prototype', outcome: 'Working prototype ready', duration: 90, dateRange: 'Jun 5, 6PM IST · 90 mins', badge: 'PROTOTYPE_PRO' },
   ],
 }
 

@@ -257,7 +257,8 @@ function parentConfirmationEmail({
       ['Jun 1–3', 'Workshop 2 — Domain Deep-Dive'],
       ['Jun 3–5', 'Workshop 3 — Build Sprint'],
       ['Jun 7–8', '24-hour Hackathon'],
-      ['Jun 9–10', 'Results + Certificates'],
+      ['Jun 27', 'Demo Day — Results Announced'],
+      ['Jul 1', 'Certificates Go Live'],
     ].map(([date, desc]) => `
             <tr>
               <td style="padding:6px 12px 6px 0;color:#FFB800;white-space:nowrap;font-size:12px">${date}</td>

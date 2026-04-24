@@ -22,7 +22,7 @@ const STAGE_ROUTES: Record<string, string> = {
  * Does NOT check quiz attempts (requires a separate DB query — handled in register/page.tsx).
  */
 export function getStage2SubRoute(student: Student): string {
-  if (!student.orientationComplete) return '/dashboard/orientation'
+  if (!student.orientationComplete) return '/dashboard/intro'
   if (!student.hackathonDomain)     return '/dashboard/domain'
   // quiz + idea sub-steps require extra queries — caller handles these
   return '/dashboard/quiz'

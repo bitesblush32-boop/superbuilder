@@ -51,7 +51,8 @@ const DEFAULT_KEY_DATES: KeyDate[] = [
   { label: 'Workshop 2 (Domain)',     date: 'Jun 1–3',                           active: false },
   { label: 'Workshop 3 (Build)',      date: 'Jun 3–5',                           active: false },
   { label: 'Hackathon',               date: 'Jun 7–8 · 24 hours! 🔥',            active: false },
-  { label: 'Results + Certificates',  date: 'Jun 9–10 🏆',                       active: false },
+  { label: 'Demo Day',                 date: 'Jun 27 🏅',                         active: false },
+  { label: 'Certificates',            date: 'Jul 1 🏆',                           active: false },
 ]
 
 // ─── Programme rules ─────────────────────────────────────────────────────────

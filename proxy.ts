@@ -27,7 +27,7 @@ export default clerkMiddleware(async (auth, req) => {
   // 2. Admin protected routes — cookie-only check, no Clerk involved
   if (isAdminProtected(req)) {
     const cookie = req.headers.get('cookie') ?? ''
-    const match  = cookie.match(/(?:^|;\s*)admin_session=([^;]+)/)
+    const match = cookie.match(/(?:^|;\s*)admin_session=([^;]+)/)
     const hasSession = !!(match?.[1] && match[1].length > 0)
 
     if (!hasSession) {

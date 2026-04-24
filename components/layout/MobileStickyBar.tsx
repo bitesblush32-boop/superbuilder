@@ -62,13 +62,13 @@ export function MobileStickyBar() {
             <div
               className="flex items-center justify-between gap-3 px-4 border-t"
               style={{
-                background:   'rgba(22, 22, 22, 0.95)',
+                background: 'rgba(22, 22, 22, 0.95)',
                 backdropFilter: 'blur(16px)',
                 WebkitBackdropFilter: 'blur(16px)',
-                borderColor:  'rgba(255,184,0,0.3)',
-                paddingTop:   '12px',
+                borderColor: 'rgba(255,184,0,0.3)',
+                paddingTop: '12px',
                 paddingBottom: 'calc(12px + env(safe-area-inset-bottom, 0px))',
-                minHeight:    '60px',
+                minHeight: '60px',
               }}
             >
               {/* Left: countdown */}
@@ -98,7 +98,7 @@ export function MobileStickyBar() {
                   className="flex items-center justify-center gap-1.5 h-[44px] px-5 rounded-[4px] font-heading font-bold text-[13px] tracking-[0.08em] uppercase text-black"
                   style={{
                     background: 'var(--brand)',
-                    boxShadow:  '0 0 0 1px rgba(255,184,0,0.4), 0 4px 16px rgba(255,184,0,0.3)',
+                    boxShadow: '0 0 0 1px rgba(255,184,0,0.4), 0 4px 16px rgba(255,184,0,0.3)',
                   }}
                 >
                   Register Now 🚀

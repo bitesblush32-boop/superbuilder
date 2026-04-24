@@ -10,7 +10,7 @@ export const metadata = {
   title: 'Certificate — Super Builders',
 }
 
-const CERTS_LIVE = new Date('2026-06-10T00:00:00+05:30')
+const CERTS_LIVE = new Date('2026-07-01T00:00:00+05:30')
 
 // LinkedIn deep-link for adding a certification
 function linkedInCertUrl(studentId: string, name: string) {
@@ -27,7 +27,7 @@ function linkedInCertUrl(studentId: string, name: string) {
 }
 
 export default async function CertificatePage() {
-  const { isOpen } = await checkStageLock(6)
+  const { isOpen } = await checkStageLock(5)
   if (!isOpen) redirect('/dashboard')
 
   const { student } = await getStudentOrRedirect(4)
@@ -56,9 +56,9 @@ export default async function CertificatePage() {
             {/* Locked */}
             <LockedSection
               emoji="🏆"
-              title="Certificate Unlocks Jun 10"
-              reason="Certificates are issued after judging completes. Submit your project on Jun 7–8 to qualify."
-              unlocksAt="Jun 10, 2026"
+              title="Certificate Unlocks Jul 1"
+              reason="Certificates are issued after Demo Day judging on Jun 27. Submit your project on Jun 7–8 to qualify."
+              unlocksAt="Jul 1, 2026"
             />
 
             {/* Badge teaser */}
@@ -125,7 +125,7 @@ export default async function CertificatePage() {
                   >
                     <span className="text-2xl">🔒</span>
                     <span className="font-heading font-semibold text-sm" style={{ color: 'var(--text-2)' }}>
-                      Unlocks Jun 10
+                      Unlocks Jul 1
                     </span>
                   </div>
                 </div>

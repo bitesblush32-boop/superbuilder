@@ -9,15 +9,23 @@ interface StageLockedProps {
 }
 
 const STAGE_NAMES: Record<number, string> = {
-  1: 'Applications',
-  2: 'Orientation & Quiz',
-  3: 'Payment',
-  4: 'Build Phase',
-  5: 'Certificates',
+  1: 'Apply & Prepare',
+  2: 'Workshops',
+  3: 'Hackathon',
+  4: 'Demo Day',
+  5: 'Certificates & Prizes',
 }
 
 const STAGE_EMOJIS: Record<number, string> = {
-  1: '📝', 2: '🧠', 3: '💳', 4: '🚀', 5: '🏆',
+  1: '📝', 2: '🎓', 3: '🚀', 4: '🏅', 5: '🏆',
+}
+
+const STAGE_DATES: Record<number, string> = {
+  1: 'Apr 23 – May 30, 2026',
+  2: 'Jun 3–5, 2026',
+  3: 'Jun 7–8, 2026',
+  4: 'Jun 27, 2026',
+  5: 'Jul 1, 2026',
 }
 
 export function StageLocked({ stageNum, message }: StageLockedProps) {
@@ -59,10 +67,13 @@ export function StageLocked({ stageNum, message }: StageLockedProps) {
 
       {/* Label */}
       <p
-        className="font-mono text-[11px] tracking-[0.25em] uppercase mb-3"
+        className="font-mono text-[11px] tracking-[0.25em] uppercase mb-1"
         style={{ color: 'var(--text-brand)' }}
       >
         Stage {stageNum} · {name}
+      </p>
+      <p className="font-mono text-[11px] mb-3" style={{ color: 'var(--text-4)' }}>
+        Opens: {STAGE_DATES[stageNum]}
       </p>
 
       {/* Heading */}

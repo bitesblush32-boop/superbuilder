@@ -79,6 +79,7 @@ export const students = pgTable('students', {
   certificateUrl:       text('certificate_url'),
   engageAnswers:        jsonb('engage_answers'), // { goal: string, confidence: number, winBoast: string }
   orientationComplete:  boolean('orientation_complete').default(false).notNull(),
+  quizPerfect:          boolean('quiz_perfect').default(false).notNull(),
   hackathonDomain:      domainEnum('hackathon_domain'),
   createdAt:            timestamp('created_at').defaultNow().notNull(),
   updatedAt:       timestamp('updated_at').defaultNow().notNull(),

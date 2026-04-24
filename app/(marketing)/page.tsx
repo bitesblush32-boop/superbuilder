@@ -24,7 +24,7 @@ export const revalidate = 60
 export const metadata: Metadata = {
   title: 'Super Builders — AI Hackathon for School Students | zer0.pro',
   description:
-    "India's #1 AI programme for Class 8–12 students. 3-week online programme + 24-hour hackathon. ₹1,00,000+ prizes. Register before May 25.",
+    "India's #1 AI programme for Class 8–12 students. 3-week online programme + 24-hour hackathon. ₹1,00,000+ prizes. Register before May 30.",
   keywords: [
     'AI hackathon India',
     'school hackathon 2026',

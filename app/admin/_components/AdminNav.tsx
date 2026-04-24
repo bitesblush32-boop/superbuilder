@@ -94,9 +94,29 @@ export function AdminSidebar() {
       {/* Footer */}
       <div className="pb-2 border-t" style={{ borderColor: 'var(--border-faint)' }}>
         <SignOutButton />
-        <p className="px-4 pb-3 text-xs" style={{ color: 'var(--text-4)' }}>
+        <p className="px-4 pb-1 text-xs" style={{ color: 'var(--text-4)' }}>
           Season 1 · 2026
         </p>
+        <div className="px-4 pb-3 flex flex-wrap gap-1">
+          {([
+            { label: 'S1', open: true  },
+            { label: 'S2', open: false },
+            { label: 'S3', open: false },
+            { label: 'S4', open: false },
+            { label: 'S5', open: false },
+          ] as const).map(({ label, open }) => (
+            <span
+              key={label}
+              className="font-mono text-[10px] px-1.5 py-0.5 rounded"
+              style={{
+                background: open ? 'rgba(34,197,94,0.1)' : 'var(--bg-float)',
+                color:      open ? 'var(--green)' : 'var(--text-4)',
+              }}
+            >
+              {label}: {open ? '●' : '○'}
+            </span>
+          ))}
+        </div>
       </div>
     </aside>
   )

@@ -10,12 +10,12 @@ const EASE_OUT = [0.16, 1, 0.3, 1] as const
 /* ─── Variants ───────────────────────────────────────────────────────────────── */
 const containerVariants: Variants = {
   hidden: {},
-  show:   { transition: { staggerChildren: 0.1, delayChildren: 0.05 } },
+  show: { transition: { staggerChildren: 0.1, delayChildren: 0.05 } },
 }
 
 const fadeUpVariants: Variants = {
   hidden: { opacity: 0, y: 24 },
-  show:   { opacity: 1, y: 0, transition: { duration: 0.6, ease: EASE_OUT } },
+  show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: EASE_OUT } },
 }
 
 /* ─── CountdownUnit ──────────────────────────────────────────────────────────── */
@@ -26,11 +26,11 @@ function CountdownUnit({ value, label }: { value: number; label: string }) {
       <div
         className="relative w-[46px] sm:w-[64px] h-[40px] sm:h-[56px] rounded-[4px] border flex items-center justify-center font-display leading-none"
         style={{
-          fontSize:    'clamp(20px, 5vw, 40px)',
-          background:  'rgba(255,184,0,0.06)',
+          fontSize: 'clamp(20px, 5vw, 40px)',
+          background: 'rgba(255,184,0,0.06)',
           borderColor: 'rgba(255,184,0,0.25)',
-          color:       'var(--text-brand)',
-          boxShadow:   '0 0 20px rgba(255,184,0,0.1), inset 0 1px 0 rgba(255,184,0,0.08)',
+          color: 'var(--text-brand)',
+          boxShadow: '0 0 20px rgba(255,184,0,0.1), inset 0 1px 0 rgba(255,184,0,0.08)',
         }}
       >
         {display}
@@ -56,7 +56,7 @@ export function FinalCTA({
   regDeadlineISO,
   regDeadlineDisplay,
 }: {
-  regDeadlineISO:     string
+  regDeadlineISO: string
   regDeadlineDisplay: string
 }) {
   const { days, hours, mins, secs, expired } = useCountdown(new Date(regDeadlineISO))
@@ -143,8 +143,8 @@ export function FinalCTA({
           variants={fadeUpVariants}
           className="font-display leading-none tracking-tight mb-6"
           style={{
-            fontSize:   'clamp(48px, 7vw, 96px)',
-            color:      'var(--text-brand)',
+            fontSize: 'clamp(48px, 7vw, 96px)',
+            color: 'var(--text-brand)',
             textShadow: '0 0 80px rgba(255,184,0,0.3)',
           }}
         >
@@ -174,7 +174,7 @@ export function FinalCTA({
               className="flex items-end gap-2 sm:gap-3"
               aria-label={`Registration closes in ${days} days ${hours} hours ${mins} minutes ${secs} seconds`}
             >
-              <CountdownUnit value={days}  label="Days"    />
+              <CountdownUnit value={days} label="Days" />
               <span
                 className="font-display leading-none pb-[28px] sm:pb-[32px] text-[20px] sm:text-[28px]"
                 style={{ color: 'rgba(255,184,0,0.4)' }}
@@ -182,7 +182,7 @@ export function FinalCTA({
               >
                 :
               </span>
-              <CountdownUnit value={hours} label="Hours"   />
+              <CountdownUnit value={hours} label="Hours" />
               <span
                 className="font-display leading-none pb-[28px] sm:pb-[32px] text-[20px] sm:text-[28px]"
                 style={{ color: 'rgba(255,184,0,0.4)' }}
@@ -190,7 +190,7 @@ export function FinalCTA({
               >
                 :
               </span>
-              <CountdownUnit value={mins}  label="Mins" />
+              <CountdownUnit value={mins} label="Mins" />
               <span
                 className="font-display leading-none pb-[28px] sm:pb-[32px] text-[20px] sm:text-[28px]"
                 style={{ color: 'rgba(255,184,0,0.4)' }}
@@ -198,7 +198,7 @@ export function FinalCTA({
               >
                 :
               </span>
-              <CountdownUnit value={secs}  label="Secs" />
+              <CountdownUnit value={secs} label="Secs" />
             </div>
           )}
         </motion.div>
@@ -219,7 +219,7 @@ export function FinalCTA({
               className="flex items-center justify-center gap-2 h-[56px] px-10 rounded-[4px] font-heading font-bold tracking-[0.1em] uppercase text-[15px] text-black w-full sm:w-auto transition-all duration-150 touch-manipulation active:opacity-70 active:scale-95"
               style={{
                 background: 'var(--brand)',
-                boxShadow:  '0 0 0 1px rgba(255,184,0,0.5), 0 4px 32px rgba(255,184,0,0.4)',
+                boxShadow: '0 0 0 1px rgba(255,184,0,0.5), 0 4px 32px rgba(255,184,0,0.4)',
               }}
             >
               Claim Your Spot
@@ -237,17 +237,17 @@ export function FinalCTA({
               className="flex items-center justify-center gap-2 h-[56px] px-8 rounded-[4px] font-heading font-semibold tracking-[0.08em] uppercase text-[13px] border transition-all duration-150 touch-manipulation active:opacity-70 active:scale-95 w-full sm:w-auto"
               style={{
                 borderColor: 'var(--border-subtle)',
-                color:       'var(--text-3)',
+                color: 'var(--text-3)',
               }}
               onMouseEnter={(e) => {
                 const el = e.currentTarget as HTMLElement
                 el.style.borderColor = 'var(--border-brand)'
-                el.style.color       = 'var(--text-brand)'
+                el.style.color = 'var(--text-brand)'
               }}
               onMouseLeave={(e) => {
                 const el = e.currentTarget as HTMLElement
                 el.style.borderColor = 'var(--border-subtle)'
-                el.style.color       = 'var(--text-3)'
+                el.style.color = 'var(--text-3)'
               }}
             >
               <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4" aria-hidden="true">

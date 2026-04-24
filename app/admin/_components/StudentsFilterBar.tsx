@@ -80,9 +80,11 @@ export function StudentsFilterBar({ total, showing }: Props) {
           style={inputStyle}
         >
           <option value="">All Stages</option>
-          {['1', '2', '3', '4', '5'].map(s => (
-            <option key={s} value={s}>Stage {s}</option>
-          ))}
+          <option value="1">S1 · Applying (DB 1)</option>
+          <option value="2">S1 · Quiz/Idea (DB 2)</option>
+          <option value="3">S1 · Pre-pay (DB 3)</option>
+          <option value="4">S2 · Workshops (DB 4)</option>
+          <option value="5">S3 · Hackathon (DB 5)</option>
         </select>
 
         <select

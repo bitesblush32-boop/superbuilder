@@ -1,13 +1,13 @@
-import { auth }                 from '@clerk/nextjs/server'
-import { redirect }             from 'next/navigation'
-import { db }                   from '@/lib/db'
-import { students }             from '@/lib/db/schema'
-import { eq }                   from 'drizzle-orm'
-import { checkStageLock }       from '@/lib/auth/stageLock'
-import { StageLocked }          from '@/components/stage/StageLocked'
-import { Stage1Form }           from '@/app/register/stage-1/_components/Stage1Form'
+import { auth } from '@clerk/nextjs/server'
+import { redirect } from 'next/navigation'
+import { db } from '@/lib/db'
+import { students } from '@/lib/db/schema'
+import { eq } from 'drizzle-orm'
+import { checkStageLock } from '@/lib/auth/stageLock'
+import { StageLocked } from '@/components/stage/StageLocked'
+import { Stage1Form } from '@/app/register/stage-1/_components/Stage1Form'
 import { getParentByStudentId } from '@/lib/db/queries/parents'
-import type { Stage1FormData }  from '@/lib/validation/stage1'
+import type { Stage1FormData } from '@/lib/validation/stage1'
 
 export const dynamic = 'force-dynamic'
 
@@ -57,36 +57,36 @@ export default async function DashboardApplyPage({
     const parent = await getParentByStudentId(student.id)
 
     initialData = {
-      fullName:        student.fullName        ?? undefined,
-      dateOfBirth:     student.dateOfBirth     ?? undefined,
-      gender:          (student.gender as Stage1FormData['gender']) ?? undefined,
-      grade:           (student.grade  as Stage1FormData['grade'])  ?? undefined,
-      schoolName:      student.schoolName      ?? undefined,
-      city:            student.city            ?? undefined,
-      state:           student.state           ?? undefined,
-      phone:           student.phone           ?? undefined,
-      codingExp:       (student.codingExp as Stage1FormData['codingExp']) ?? undefined,
-      interests:       (student.interests ?? []) as string[],
+      fullName: student.fullName ?? undefined,
+      dateOfBirth: student.dateOfBirth ?? undefined,
+      gender: (student.gender as Stage1FormData['gender']) ?? undefined,
+      grade: (student.grade as Stage1FormData['grade']) ?? undefined,
+      schoolName: student.schoolName ?? undefined,
+      city: student.city ?? undefined,
+      state: student.state ?? undefined,
+      phone: student.phone ?? undefined,
+      codingExp: (student.codingExp as Stage1FormData['codingExp']) ?? undefined,
+      interests: (student.interests ?? []) as string[],
       availabilityHrs: (student.availabilityHrs as Stage1FormData['availabilityHrs']) ?? undefined,
-      deviceAccess:    (student.deviceAccess   as Stage1FormData['deviceAccess'])   ?? undefined,
-      tshirtSize:      (student.tshirtSize     as Stage1FormData['tshirtSize'])     ?? undefined,
+      deviceAccess: (student.deviceAccess as Stage1FormData['deviceAccess']) ?? undefined,
+      tshirtSize: (student.tshirtSize as Stage1FormData['tshirtSize']) ?? undefined,
       instagramHandle: student.instagramHandle ?? undefined,
-      linkedinHandle:  student.linkedinHandle  ?? undefined,
+      linkedinHandle: student.linkedinHandle ?? undefined,
       ...(parent ? {
         parent: {
-          parentName:         parent.fullName,
-          parentEmail:        parent.email,
-          parentPhone:        parent.phone,
-          relationship:       (parent.relationship as Stage1FormData['parent']['relationship']) ?? 'guardian',
-          consentGiven:       parent.consentGiven       as true,
+          parentName: parent.fullName,
+          parentEmail: parent.email,
+          parentPhone: parent.phone,
+          relationship: (parent.relationship as Stage1FormData['parent']['relationship']) ?? 'guardian',
+          consentGiven: parent.consentGiven as true,
           safetyAcknowledged: parent.safetyAcknowledged as true,
-          emergencyContact:   parent.emergencyContact   ?? '',
+          emergencyContact: parent.emergencyContact ?? '',
         },
       } : {}),
     }
   }
 
-  const params      = await searchParams
+  const params = await searchParams
   // If they have a student record already, default to step 1 unless ?step=2 asked
   const initialStep = params?.step === '2' ? 2 : 1
 

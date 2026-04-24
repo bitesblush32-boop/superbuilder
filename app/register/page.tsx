@@ -32,12 +32,12 @@ export default async function RegisterPage() {
   if (stage === '2') {
     if (!openStages[2]) redirect('/stage-locked?stage=2')
 
-    if (!student.orientationComplete) redirect('/dashboard/orientation')
-    if (!student.hackathonDomain)     redirect('/dashboard/domain')
+    if (!student.orientationComplete) redirect('/dashboard/intro')
+    if (!student.hackathonDomain) redirect('/dashboard/domain')
 
     const { quizPassed, ideaSubmitted } = await getStage2Checkpoint(student.id)
 
-    if (!quizPassed)    redirect('/dashboard/quiz')
+    if (!quizPassed) redirect('/dashboard/quiz')
     if (!ideaSubmitted) redirect('/dashboard/idea')
 
     // All stage 2 sub-steps complete

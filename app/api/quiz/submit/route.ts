@@ -102,9 +102,10 @@ export async function POST(req: Request) {
 
     // Advance student within stage 2 — they can now access idea submission
     // (currentStage stays '2'; sub-routing in getStudentOrRedirect reads quizAttempts)
+    // Also flag perfect score for ₹500 payment discount
     await db
       .update(students)
-      .set({ updatedAt: new Date() })
+      .set({ updatedAt: new Date(), ...(score === 10 ? { quizPerfect: true } : {}) })
       .where(eq(students.id, student.id))
   }
 

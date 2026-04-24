@@ -9,7 +9,7 @@ export const metadata = {
 }
 
 export default async function IdeaPage() {
-  const { isOpen } = await checkStageLock(3)
+  const { isOpen } = await checkStageLock(1)
   if (!isOpen) redirect('/dashboard')
 
   const { student } = await getStudentOrRedirect(2)

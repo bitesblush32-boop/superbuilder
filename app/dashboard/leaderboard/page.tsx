@@ -1,7 +1,7 @@
 import { redirect }             from 'next/navigation'
-import { desc }                  from 'drizzle-orm'
-import { db }                    from '@/lib/db'
-import { students }              from '@/lib/db/schema'
+import { desc, eq, sql }        from 'drizzle-orm'
+import { db }                   from '@/lib/db'
+import { students, quizAttempts } from '@/lib/db/schema'
 import { getStudentOrRedirect }  from '@/lib/auth/getStudentOrRedirect'
 import { LeaderboardClient }     from './_components/LeaderboardClient'
 import type { LeaderboardEntry } from './_components/LeaderboardClient'
@@ -17,44 +17,60 @@ export default async function LeaderboardPage() {
   const { student } = await getStudentOrRedirect(2)
   if (!student) redirect('/register')
 
-  // Fetch top 50 + enough to find current student rank
+  // CTE: best quiz score per student
+  const bestScoresCTE = db.$with('best_scores').as(
+    db
+      .select({
+        studentId: quizAttempts.studentId,
+        best:      sql<number>`max(${quizAttempts.score})`.as('best'),
+      })
+      .from(quizAttempts)
+      .groupBy(quizAttempts.studentId),
+  )
+
+  // Fetch top 500 (enough to compute rank) with quiz scores joined
   const allRanked = await db
+    .with(bestScoresCTE)
     .select({
-      id:       students.id,
-      fullName: students.fullName,
-      city:     students.city,
-      xpPoints: students.xpPoints,
-      badges:   students.badges,
-      tier:     students.tier,
+      id:            students.id,
+      fullName:      students.fullName,
+      city:          students.city,
+      xpPoints:      students.xpPoints,
+      badges:        students.badges,
+      tier:          students.tier,
+      bestQuizScore: bestScoresCTE.best,
     })
     .from(students)
-    // show all paid students — add eq(students.isPaid, true) filter when ready
+    .leftJoin(bestScoresCTE, eq(students.id, bestScoresCTE.studentId))
     .orderBy(desc(students.xpPoints))
-    .limit(500)  // enough to compute rank for current student
+    .limit(500)
 
   const myRankIndex = allRanked.findIndex(s => s.id === student.id)
   const myRank      = myRankIndex === -1 ? allRanked.length + 1 : myRankIndex + 1
+  const myRanked    = myRankIndex !== -1 ? allRanked[myRankIndex] : null
 
   const top50: LeaderboardEntry[] = allRanked.slice(0, 50).map((s, i) => ({
-    rank:      i + 1,
-    id:        s.id,
-    firstName: s.fullName.split(' ')[0],
-    city:      s.city ?? null,
-    xpPoints:  s.xpPoints,
-    badges:    (s.badges as string[]) ?? [],
-    tier:      s.tier ?? null,
-    isYou:     s.id === student.id,
+    rank:          i + 1,
+    id:            s.id,
+    firstName:     s.fullName.split(' ')[0],
+    city:          s.city ?? null,
+    xpPoints:      s.xpPoints,
+    badges:        (s.badges as string[]) ?? [],
+    tier:          s.tier ?? null,
+    isYou:         s.id === student.id,
+    bestQuizScore: s.bestQuizScore ?? null,
   }))
 
   const myEntry: LeaderboardEntry = {
-    rank:      myRank,
-    id:        student.id,
-    firstName: student.fullName.split(' ')[0],
-    city:      student.city ?? null,
-    xpPoints:  student.xpPoints,
-    badges:    (student.badges as string[]) ?? [],
-    tier:      student.tier ?? null,
-    isYou:     true,
+    rank:          myRank,
+    id:            student.id,
+    firstName:     student.fullName.split(' ')[0],
+    city:          student.city ?? null,
+    xpPoints:      student.xpPoints,
+    badges:        (student.badges as string[]) ?? [],
+    tier:          student.tier ?? null,
+    isYou:         true,
+    bestQuizScore: myRanked?.bestQuizScore ?? null,
   }
 
   return (

@@ -31,7 +31,7 @@ const STUDENT_FAQS = [
   },
   {
     q: 'How does the 24-hour hackathon work?',
-    a: 'The hackathon runs from June 7 at 8:00 AM IST to June 8 at 8:00 AM IST — fully online. You build your project, record a 3-minute demo video, and submit before the deadline. Judges score independently, and results are announced on June 9–10. You can build solo or as a team. Sleep is optional 😄',
+    a: 'The hackathon runs from June 7 at 8:00 AM IST to June 8 at 8:00 AM IST — fully online. You build your project, record a 3-minute demo video, and submit before the deadline. Judges score independently, and results are announced on June 27 at Demo Day. You can build solo or as a team. Sleep is optional 😄',
   },
   {
     q: 'What prizes can I win?',
@@ -39,7 +39,7 @@ const STUDENT_FAQS = [
   },
   {
     q: 'When do I receive my certificate?',
-    a: 'Completion certificates are issued on June 9–10 for all students who submit a project during the hackathon. Premium tier participants also receive a verified LinkedIn certificate that can be added directly to your LinkedIn profile — a real, verifiable credential.',
+    a: 'Completion certificates are issued on July 1 for all students who submit a project during the hackathon. Results and winners are announced on June 27 at Demo Day. Premium tier participants also receive a verified LinkedIn certificate that can be added directly to your LinkedIn profile — a real, verifiable credential.',
   },
   {
     q: 'How does the referral programme work?',
@@ -58,7 +58,7 @@ const PARENT_FAQS = [
   },
   {
     q: 'What is the refund policy?',
-    a: 'Full refund if the programme does not start as scheduled on May 26. No forms, no questions asked — refund is processed within 5–7 business days. If your child has a documented medical emergency after joining, contact us directly and we will assess on a case-by-case basis. We want every family to feel safe making this investment.',
+    a: 'Full refund if the programme does not start as scheduled on June 3. No forms, no questions asked — refund is processed within 5–7 business days. If your child has a documented medical emergency after joining, contact us directly and we will assess on a case-by-case basis. We want every family to feel safe making this investment.',
   },
   {
     q: 'Will this interfere with my child\'s board exam preparation?',

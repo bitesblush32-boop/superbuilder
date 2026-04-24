@@ -282,15 +282,13 @@ function BulkCard({ onSent }: { onSent: (r: TriggerResult) => void }) {
   // Rough count estimate — for now just show "will send to segment" text
   const segmentLabel: Record<string, string> = {
     all:     'All students',
-    paid:    'Paid students',
-    free:    'Free / unpaid students',
-    premium: 'Premium tier',
-    pro:     'Pro tier',
-    stage_1: 'Stage 1 students',
-    stage_2: 'Stage 2 students',
-    stage_3: 'Stage 3 students',
-    stage_4: 'Paid / Stage 4',
-    stage_5: 'Submitted / Stage 5',
+    paid:    'Paid students (Stage 2+)',
+    free:    'Unpaid students (Stage 1)',
+    stage_1: 'Stage 1 — Applying (DB:1)',
+    stage_2: 'Stage 1 — Quiz/Idea (DB:2)',
+    stage_3: 'Stage 1 — Pre-pay (DB:3)',
+    stage_4: 'Stage 2 — Workshops (DB:4)',
+    stage_5: 'Stage 3 — Hackathon (DB:5)',
   }
 
   async function send() {
@@ -527,14 +525,14 @@ export function CommsClient({
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <TriggerCard
-            title="Stage 1 Incomplete (>48h)"
+            title="Application Incomplete (>48h) — Stage 1"
             description="Applied but never submitted their application"
             count={counts.stage1Incomplete}
             triggerType="stage1_incomplete"
             onSent={handleSent}
           />
           <TriggerCard
-            title="Quiz Not Started (>24h)"
+            title="Quiz Not Attempted (>24h) — Stage 1"
             description="Shortlisted but quiz not yet attempted after 24h"
             count={counts.quizNotStarted}
             triggerType="quiz_not_started"

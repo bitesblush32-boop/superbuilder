@@ -50,6 +50,27 @@
       "when": 1776600000000,
       "tag": "0006_seed_app_settings",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1776700000000,
+      "tag": "0007_flat_pricing",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1776800000000,
+      "tag": "0008_quiz_perfect",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1776900000000,
+      "tag": "0009_stage_labels",
+      "breakpoints": true
     }
   ]
 }

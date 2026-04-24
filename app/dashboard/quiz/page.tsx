@@ -12,14 +12,14 @@ export const metadata = {
 }
 
 export default async function QuizPage() {
-  const { isOpen } = await checkStageLock(3)
+  const { isOpen } = await checkStageLock(1)
   if (!isOpen) redirect('/dashboard')
 
   const { student } = await getStudentOrRedirect(2)
   if (!student) redirect('/dashboard/apply')
 
   // Guard: must have completed prior sub-steps
-  if (!student.orientationComplete) redirect('/dashboard/orientation')
+  if (!student.orientationComplete) redirect('/dashboard/intro')
   if (!student.hackathonDomain)     redirect('/dashboard/domain')
 
   // Fetch all prior attempts ordered newest-first

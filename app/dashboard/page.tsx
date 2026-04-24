@@ -1,7 +1,7 @@
 import { redirect }             from 'next/navigation'
 import Link                      from 'next/link'
 import { getStudentOrRedirect, getStage2Checkpoint } from '@/lib/auth/getStudentOrRedirect'
-import { HACKATHON_START }       from '@/lib/content/programme'
+import { HACKATHON_START, DEMO_DAY, CERTS_LIVE } from '@/lib/content/programme'
 import { HackathonCountdown }    from './_components/HackathonCountdown'
 import { XPSection }             from './_components/XPSection'
 
@@ -42,8 +42,10 @@ export default async function DashboardPage() {
   const firstName    = student.fullName.split(' ')[0]
   const earnedBadges = (student.badges as string[]) ?? []
   const now          = new Date()
-  const isLive       = now >= HACKATHON_START && now <= HACK_END
-  const isOver       = now > HACK_END
+  const isLive        = now >= HACKATHON_START && now <= HACK_END
+  const isOver        = now > HACK_END
+  const demoDayPassed = now > DEMO_DAY
+  const certsLive     = now >= CERTS_LIVE
 
   // ── Build journey steps ────────────────────────────────────────────────────
   // Apply is always complete (they're on the dashboard)
@@ -68,7 +70,7 @@ export default async function DashboardPage() {
     },
     {
       id: 'orient', label: 'Orientation', emoji: '🎓',
-      href: '/dashboard/orientation',
+      href: '/dashboard/intro',
       completed: orientDone, active: orientActive, locked: false,
     },
     {
@@ -101,7 +103,7 @@ export default async function DashboardPage() {
   // The active step drives the primary CTA
   const activeStep = journeySteps.find(s => s.active)
   const ctaLabels: Record<string, string> = {
-    orient: 'Start Orientation →',
+    orient: 'Complete Intro →',
     domain: 'Pick Your Domain →',
     quiz:   'Take the AI Quiz →',
     idea:   'Launch Your Idea →',
@@ -187,6 +189,16 @@ export default async function DashboardPage() {
               <p className="font-mono text-[10px]" style={{ color: 'var(--text-4)' }}>
                 {journeySteps.filter(s => s.completed).length} / {journeySteps.length} done
               </p>
+            </div>
+
+            {/* Stage 1 label */}
+            <div className="px-5 pt-3 pb-0">
+              <span
+                className="font-mono text-[9px] tracking-[0.2em] uppercase px-2 py-0.5 rounded"
+                style={{ background: 'rgba(167,139,250,0.1)', color: '#A78BFA' }}
+              >
+                STAGE 1 — APPLY &amp; PREPARE
+              </span>
             </div>
 
             {/* Step track — horizontal scroll on mobile */}
@@ -327,7 +339,11 @@ export default async function DashboardPage() {
                   HACKATHON COMPLETE 🏆
                 </p>
                 <p className="font-body text-sm mb-4" style={{ color: 'var(--text-3)' }}>
-                  Results and certificates go live Jun 9–10. Check back soon!
+                  {certsLive
+                    ? 'Certificates are live! Download yours now.'
+                    : demoDayPassed
+                    ? 'Certificates go live Jul 1. Check back soon!'
+                    : 'Results announced Jun 27 at Demo Day. Certificates go live Jul 1.'}
                 </p>
                 <Link
                   href="/dashboard/certificate"
@@ -368,6 +384,31 @@ export default async function DashboardPage() {
           </div>
         )}
 
+        {/* C2 — Demo Day widget (paid, post-hackathon, pre-Demo Day) */}
+        {student.isPaid && isOver && !demoDayPassed && (
+          <div
+            className="rounded-2xl p-5 border"
+            style={{ background: 'rgba(192,132,252,0.06)', borderColor: 'rgba(192,132,252,0.25)' }}
+          >
+            <p className="font-mono text-[10px] tracking-[0.2em] uppercase mb-2" style={{ color: 'var(--purple)' }}>
+              🎤 Coming Up
+            </p>
+            <p className="font-display text-2xl tracking-wide mb-1" style={{ color: 'var(--text-1)' }}>
+              DEMO DAY — JUN 27
+            </p>
+            <p className="font-body text-sm mb-4" style={{ color: 'var(--text-3)' }}>
+              Winners announced live on Jun 27 at 10:00 AM IST. Certificates go live Jul 1.
+            </p>
+            <Link
+              href="/dashboard/certificate"
+              className="inline-flex items-center gap-2 min-h-[44px] px-5 rounded-xl font-heading font-semibold text-sm border transition-all active:scale-95"
+              style={{ borderColor: 'rgba(192,132,252,0.35)', color: 'var(--purple)' }}
+            >
+              📜 View Certificate Page
+            </Link>
+          </div>
+        )}
+
         {/* D — Hackathon countdown + stats (paid students only) */}
         {student.isPaid && (
           <>
@@ -388,6 +429,22 @@ export default async function DashboardPage() {
               <p className="text-center font-mono text-[11px] mt-4" style={{ color: 'var(--text-4)' }}>
                 Jun 7, 8:00 AM → Jun 8, 8:00 AM IST · 24 hours
               </p>
+              <div className="flex flex-wrap justify-center gap-1.5 mt-2">
+                {([
+                  { label: 'Workshops', dates: 'Jun 3–5' },
+                  { label: 'Hackathon', dates: 'Jun 7–8' },
+                  { label: 'Demo Day',  dates: 'Jun 27'  },
+                  { label: 'Certs',     dates: 'Jul 1'   },
+                ] as const).map(({ label, dates }) => (
+                  <span
+                    key={label}
+                    className="font-mono text-[9px] px-2 py-0.5 rounded-full border"
+                    style={{ borderColor: 'var(--border-faint)', color: 'var(--text-4)' }}
+                  >
+                    {label}: {dates}
+                  </span>
+                ))}
+              </div>
             </div>
 
             <div className="grid grid-cols-3 gap-3">

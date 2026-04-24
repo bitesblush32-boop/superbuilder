@@ -30,21 +30,23 @@ const TYPE_COLORS: Record<string, string> = {
 }
 
 const STAGE_OPTIONS = [
-  { value: '1',         label: 'Stage 1 — Apply' },
-  { value: '2',         label: 'Stage 2 — Orientation & Learning' },
-  { value: '3',         label: 'Stage 3 — Payment' },
-  { value: '4',         label: 'Stage 4 — Build Phase' },
-  { value: '5',         label: 'Stage 5 — Certificates' },
-  { value: 'dashboard', label: 'Dashboard (all paid students)' },
-  { value: 'all',       label: 'All Stages' },
+  { value: '1',         label: 'Stage 1 — Apply & Prepare (DB: 1-3)' },
+  { value: '2',         label: 'Stage 1 — Quiz/Idea phase (DB: 2)' },
+  { value: '3',         label: 'Stage 1 — Pre-payment (DB: 3)' },
+  { value: '4',         label: 'Stage 2 — Workshops (DB: 4, paid)' },
+  { value: '5',         label: 'Stage 3 — Hackathon (DB: 5)' },
+  { value: 'dashboard', label: 'All paid students dashboard' },
+  { value: 'all',       label: 'All stages' },
 ]
 
 const SECTION_OPTIONS = [
   { value: 'general',     label: 'General' },
-  { value: 'orientation', label: 'Orientation' },
-  { value: 'workshop_1',  label: 'Workshop 1' },
-  { value: 'workshop_2',  label: 'Workshop 2' },
-  { value: 'workshop_3',  label: 'Workshop 3' },
+  { value: 'orientation', label: 'Intro / Orientation' },
+  { value: 'workshop_1',  label: 'Workshop 1 (Jun 3)' },
+  { value: 'workshop_2',  label: 'Workshop 2 (Jun 4)' },
+  { value: 'workshop_3',  label: 'Workshop 3 (Jun 5)' },
+  { value: 'hackathon',   label: 'Hackathon (Jun 7-8)' },
+  { value: 'demo_day',    label: 'Demo Day (Jun 27)' },
 ]
 
 // ── Sub-components ────────────────────────────────────────────────────────────
@@ -159,7 +161,7 @@ function TimelineTab({ dates, onSave }: { dates: DatesConfig; onSave: (d: DatesC
           <Input label="Hackathon End ISO" value={d.hackathonEndISO}
             onChange={v => setField('hackathonEndISO', v)} placeholder="2026-06-08T08:00:00+05:30" />
           <Input label="Results Display (shown in text)" value={d.resultsDisplay}
-            onChange={v => setField('resultsDisplay', v)} placeholder="Jun 9–10" />
+            onChange={v => setField('resultsDisplay', v)} placeholder="Jun 27" />
         </div>
       </section>
 
@@ -187,7 +189,7 @@ function TimelineTab({ dates, onSave }: { dates: DatesConfig; onSave: (d: DatesC
       <section className="rounded-xl border p-5 space-y-4"
         style={{ background: 'var(--bg-card)', borderColor: 'var(--border-faint)' }}>
         <h3 className="text-sm font-heading font-bold uppercase tracking-wider" style={{ color: 'var(--text-brand)' }}>
-          Programme Phases (shown on landing page timeline)
+          Programme Phases (5-Stage Structure)
         </h3>
         {d.phases.map((ph, i) => (
           <div key={ph.num} className="grid grid-cols-1 md:grid-cols-3 gap-3 items-end">

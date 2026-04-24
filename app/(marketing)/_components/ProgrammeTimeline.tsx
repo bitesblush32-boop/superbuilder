@@ -6,7 +6,7 @@ import type { PhaseEntry, WorkshopEntry } from '@/lib/db/queries/config'
 import { BADGES } from '@/lib/gamification/badges'
 
 /* ─── Config ─────────────────────────────────────────────────────────────────── */
-// Phase 1 = Registration (currently open). Update as programme progresses.
+// Display Stage 1 = Apply & Prepare (currently open). Update as programme progresses.
 const ACTIVE_PHASE = 1
 
 const EASE_OUT = [0.16, 1, 0.3, 1] as const

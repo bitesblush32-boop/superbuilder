@@ -5,6 +5,7 @@ import { useRouter }        from 'next/navigation'
 import { motion, useInView } from 'framer-motion'
 import { completeOrientation } from '@/lib/actions/registration'
 import type { ScheduleItem }   from '@/lib/db/queries/config'
+import { CalendarView }        from './CalendarView'
 
 // ─── Animation wrapper ────────────────────────────────────────────────────────
 function FadeUp({
@@ -43,19 +44,6 @@ function SectionHeading({ children }: { children: React.ReactNode }) {
   )
 }
 
-// ─── Key dates card ──────────────────────────────────────────────────────────
-type KeyDate = { label: string; date: string; active: boolean }
-
-const DEFAULT_KEY_DATES: KeyDate[] = [
-  { label: 'Orientation',             date: 'Today — you\'re here! 🎉',        active: true  },
-  { label: 'Workshop 1 (AI Basics)',  date: 'May 26, 6PM IST · 90 mins',        active: false },
-  { label: 'Workshop 2 (Domain)',     date: 'Jun 1–3',                           active: false },
-  { label: 'Workshop 3 (Build)',      date: 'Jun 3–5',                           active: false },
-  { label: 'Hackathon',               date: 'Jun 7–8 · 24 hours! 🔥',            active: false },
-  { label: 'Demo Day',                 date: 'Jun 27 🏅',                         active: false },
-  { label: 'Certificates',            date: 'Jul 1 🏆',                           active: false },
-]
-
 // ─── Programme rules ─────────────────────────────────────────────────────────
 const RULES = [
   'I will attend at least 2 of the 3 workshops (or watch replays)',
@@ -67,12 +55,11 @@ const RULES = [
 // ─── Main component ──────────────────────────────────────────────────────────
 export function OrientationClient({
   firstName,
-  keyDates = DEFAULT_KEY_DATES,
   adminVideos = [],
 }: {
   studentId:    string
   firstName:    string
-  keyDates?:    KeyDate[]
+  keyDates?:    { label: string; date: string; active: boolean }[]  // kept for compat, unused
   adminVideos?: Pick<ScheduleItem, 'id' | 'title' | 'description' | 'url'>[]
 }) {
   const router  = useRouter()
@@ -121,44 +108,8 @@ export function OrientationClient({
             This is going to be intense, fun, and unforgettable. 🧠
           </p>
 
-          {/* Key dates */}
-          <div
-            className="rounded-xl border overflow-hidden mt-2"
-            style={{ borderColor: 'var(--border-subtle)', background: 'var(--bg-card)' }}
-          >
-            <div
-              className="px-4 py-2.5 border-b"
-              style={{ borderColor: 'var(--border-faint)', background: 'var(--bg-raised)' }}
-            >
-              <p className="text-xs font-mono tracking-widest uppercase" style={{ color: 'var(--text-3)' }}>
-                Programme Schedule
-              </p>
-            </div>
-            <div className="divide-y" style={{ '--tw-divide-opacity': 1 } as React.CSSProperties}>
-              {keyDates.map((item) => (
-                <div
-                  key={item.label}
-                  className="flex items-center justify-between px-4 py-3 gap-3"
-                  style={{
-                    background: item.active ? 'var(--brand-subtle)' : 'transparent',
-                  }}
-                >
-                  <span
-                    className="text-sm font-medium"
-                    style={{ color: item.active ? 'var(--text-brand)' : 'var(--text-2)' }}
-                  >
-                    {item.label}
-                  </span>
-                  <span
-                    className="text-xs text-right shrink-0"
-                    style={{ color: item.active ? 'var(--brand)' : 'var(--text-3)' }}
-                  >
-                    {item.date}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
+          {/* Interactive programme calendar */}
+          <CalendarView />
         </div>
       </FadeUp>
 
