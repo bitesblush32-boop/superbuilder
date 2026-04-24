@@ -80,7 +80,6 @@ export default async function DashboardApplyPage({
           relationship: (parent.relationship as Stage1FormData['parent']['relationship']) ?? 'guardian',
           consentGiven: parent.consentGiven as true,
           safetyAcknowledged: parent.safetyAcknowledged as true,
-          emergencyContact: parent.emergencyContact ?? '',
         },
       } : {}),
     }

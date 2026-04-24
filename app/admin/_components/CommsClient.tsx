@@ -497,6 +497,103 @@ function CommsLogTable({ log }: { log: CommsLogEntry[] }) {
   )
 }
 
+// ─── Custom One-off Email card ────────────────────────────────────────────────
+function CustomEmailCard({ onSent }: { onSent: (r: TriggerResult) => void }) {
+  const [recipient, setRecipient] = useState('')
+  const [subject,   setSubject]   = useState('')
+  const [body,      setBody]      = useState('')
+  const [loading,   setLoading]   = useState(false)
+
+  const isValid = recipient.includes('@') && subject.trim() && body.trim()
+
+  async function send() {
+    if (!isValid) return
+    setLoading(true)
+    try {
+      const res = await fetch('/api/admin/comms/trigger', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({
+          triggerType:     'custom_email',
+          channel:         'email',
+          customRecipient: recipient,
+          customSubject:   subject,
+          customBody:      body,
+        }),
+      })
+      const data: TriggerResult = await res.json()
+      onSent(data)
+      if (data.sent > 0) {
+        setRecipient('')
+        setSubject('')
+        setBody('')
+      }
+    } catch {
+      onSent({ sent: 0, failed: 1, total: 0, message: 'Network error' })
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const inputStyle = {
+    background:  'var(--bg-float)',
+    borderColor: 'var(--border-subtle)',
+    color:       'var(--text-1)',
+  }
+
+  return (
+    <div
+      className="rounded-xl p-4 border space-y-3"
+      style={{ background: 'var(--bg-card)', borderColor: 'var(--border-faint)' }}
+    >
+      <div>
+        <h3 className="font-semibold" style={{ color: 'var(--text-1)' }}>Custom Email</h3>
+        <p className="text-xs mt-0.5" style={{ color: 'var(--text-3)' }}>
+          Send a one-off email to any address — student, parent, or external contact.
+        </p>
+      </div>
+
+      <input
+        type="email"
+        value={recipient}
+        onChange={e => setRecipient(e.target.value)}
+        placeholder="recipient@example.com"
+        className="w-full min-h-[40px] px-3 text-sm rounded-lg border outline-none"
+        style={inputStyle}
+      />
+
+      <input
+        type="text"
+        value={subject}
+        onChange={e => setSubject(e.target.value)}
+        placeholder="Subject line"
+        className="w-full min-h-[40px] px-3 text-sm rounded-lg border outline-none"
+        style={inputStyle}
+      />
+
+      <textarea
+        value={body}
+        onChange={e => setBody(e.target.value)}
+        rows={5}
+        placeholder="Email body — plain text, will be rendered in our branded template."
+        className="w-full px-3 py-2.5 text-sm rounded-lg border resize-none outline-none"
+        style={inputStyle}
+      />
+
+      <div className="flex justify-end">
+        <button
+          onClick={send}
+          disabled={!isValid || loading}
+          className="min-h-[40px] px-6 text-sm rounded-lg font-medium disabled:opacity-30 transition-opacity"
+          style={{ background: 'var(--brand)', color: 'var(--bg-void)' }}
+        >
+          {loading ? 'Sending…' : 'Send Email'}
+        </button>
+      </div>
+    </div>
+  )
+}
+
 // ─── Main export ──────────────────────────────────────────────────────────────
 export function CommsClient({
   counts,
@@ -542,6 +639,7 @@ export function CommsClient({
 
         <ShortlistedCard counts={counts.notPaid} onSent={handleSent} />
         <BulkCard onSent={handleSent} />
+        <CustomEmailCard onSent={handleSent} />
       </section>
 
       {/* Section 2 — Log */}

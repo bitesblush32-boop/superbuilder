@@ -15,6 +15,9 @@ interface CalEvent {
 
 // ─── Programme data (hardcoded) ───────────────────────────────────────────────
 const EVENTS: Record<string, CalEvent[]> = {
+  '2026-04-23': [
+    { type: 'stage1', label: 'Applications Open', detail: 'Stage 1 begins — fill your application, parent consent & team setup', emoji: '🚀' },
+  ],
   '2026-06-03': [
     { type: 'workshop', label: 'Orientation Session', detail: 'Welcome · Full programme briefing · Community intro', emoji: '🎓' },
     { type: 'workshop', label: 'Workshop 1 — AI Fundamentals', detail: 'AI tools overview · Use 3+ AI tools confidently · 90 mins', emoji: '🤖' },
@@ -44,6 +47,7 @@ const STAGE1_START = new Date(2026, 3, 23)
 const STAGE1_END   = new Date(2026, 4, 30)
 
 const MONTHS = [
+  { year: 2026, month: 3, label: 'Apr',  full: 'April 2026' },
   { year: 2026, month: 4, label: 'May',  full: 'May 2026'  },
   { year: 2026, month: 5, label: 'Jun',  full: 'June 2026' },
   { year: 2026, month: 6, label: 'Jul',  full: 'July 2026' },

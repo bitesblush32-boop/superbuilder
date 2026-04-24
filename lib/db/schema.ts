@@ -99,6 +99,7 @@ export const parents = pgTable('parents', {
   consentAt:          timestamp('consent_at'),
   safetyAcknowledged: boolean('safety_acknowledged').default(false).notNull(),
   emergencyContact:   varchar('emergency_contact', { length: 20 }),
+  emailVerified:      boolean('email_verified').default(false).notNull(),
   createdAt:          timestamp('created_at').defaultNow(),
 })
 

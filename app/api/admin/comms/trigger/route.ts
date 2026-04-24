@@ -7,10 +7,14 @@ import { z } from 'zod'
 
 // ─── Validation ───────────────────────────────────────────────────────────────
 const BodySchema = z.object({
-  triggerType: z.string(),
-  segment: z.string().optional(),
-  message: z.string().max(1000).optional(),  // for bulk
-  channel: z.enum(['email', 'whatsapp', 'both']).default('both'),
+  triggerType:      z.string(),
+  segment:          z.string().optional(),
+  message:          z.string().max(1000).optional(),  // for bulk
+  channel:          z.enum(['email', 'whatsapp', 'both']).default('both'),
+  // Custom email fields (triggerType === 'custom_email')
+  customRecipient:  z.string().email().optional(),
+  customSubject:    z.string().max(200).optional(),
+  customBody:       z.string().max(5000).optional(),
 })
 
 // ─── Template map ─────────────────────────────────────────────────────────────
@@ -116,11 +120,53 @@ export async function POST(req: Request) {
     return Response.json({ error: parsed.error.flatten() }, { status: 400 })
   }
 
-  const { triggerType, segment, message, channel } = parsed.data
+  const { triggerType, segment, message, channel, customRecipient, customSubject, customBody } = parsed.data
 
   const allowed = await checkRateLimit(userId)
   if (!allowed) {
     return Response.json({ error: 'Rate limited — max 100 sends per minute' }, { status: 429 })
+  }
+
+  // ── Custom one-off email to any address ────────────────────────────────────
+  if (triggerType === 'custom_email') {
+    if (!customRecipient || !customSubject || !customBody) {
+      return Response.json({ error: 'customRecipient, customSubject and customBody are required' }, { status: 400 })
+    }
+    try {
+      const resendClient = new Resend(process.env.RESEND_API_KEY)
+      const html = `<!DOCTYPE html><html><body style="background:#0A0A0A;color:#C0C0C0;font-family:sans-serif;padding:40px 16px;max-width:560px;margin:0 auto">
+<p style="font-size:15px;line-height:1.7;color:#fff;margin:0 0 20px;white-space:pre-wrap">${customBody.replace(/</g, '&lt;')}</p>
+<p style="margin-top:32px;font-size:12px;color:#484848">Super Builders · zer0.pro · 2026</p>
+</body></html>`
+      await resendClient.emails.send({
+        from:    `Super Builders <${process.env.FROM_EMAIL ?? 'admin@superbuilder.org'}>`,
+        to:      [customRecipient],
+        subject: customSubject,
+        html,
+      })
+      await insertCommsLog({
+        studentId:   undefined,
+        studentName: undefined,
+        template:    'custom_email',
+        recipient:   customRecipient,
+        channel:     'email',
+        status:      'sent',
+        triggeredBy: userId,
+      })
+      return Response.json({ sent: 1, failed: 0, total: 1 })
+    } catch (e) {
+      await insertCommsLog({
+        studentId:   undefined,
+        studentName: undefined,
+        template:    'custom_email',
+        recipient:   customRecipient,
+        channel:     'email',
+        status:      'failed',
+        error:       e instanceof Error ? e.message : String(e),
+        triggeredBy: userId,
+      })
+      return Response.json({ sent: 0, failed: 1, total: 1 })
+    }
   }
 
   const targets = await getStudentsForTrigger(triggerType, segment)

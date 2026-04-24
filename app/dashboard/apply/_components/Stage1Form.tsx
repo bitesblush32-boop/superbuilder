@@ -410,6 +410,256 @@ function CTAButton({
   )
 }
 
+// ─── Inline parent email OTP verification ─────────────────────────────────────
+
+type OtpStatus = 'idle' | 'sending' | 'sent' | 'verifying'
+
+function ParentEmailVerify({
+  value,
+  onChange,
+  onBlur,
+  error,
+  isVerified,
+  onVerified,
+  onReset,
+  disabled,
+  parentName,
+  studentName,
+}: {
+  value:       string
+  onChange:    (v: string) => void
+  onBlur?:     () => void
+  error?:      string
+  isVerified:  boolean
+  onVerified:  (email: string) => void
+  onReset:     () => void
+  disabled?:   boolean
+  parentName:  string
+  studentName: string
+}) {
+  const [status,   setStatus]   = useState<OtpStatus>('idle')
+  const [otpValue, setOtpValue] = useState('')
+  const [otpError, setOtpError] = useState('')
+  const [cooldown, setCooldown] = useState(0)
+  const [sentTo,   setSentTo]   = useState('')
+
+  // Cooldown countdown
+  useEffect(() => {
+    if (cooldown <= 0) return
+    const t = setTimeout(() => setCooldown(c => c - 1), 1000)
+    return () => clearTimeout(t)
+  }, [cooldown])
+
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    onChange(e.target.value)
+    // Any email change after sending resets the OTP flow
+    if (status !== 'idle') {
+      setStatus('idle')
+      setOtpValue('')
+      setOtpError('')
+    }
+    onReset()
+  }
+
+  const sendOtp = async () => {
+    const trimmed = value.trim()
+    if (!trimmed.includes('@') || !trimmed.includes('.')) {
+      setOtpError('Enter a valid email first')
+      return
+    }
+    setStatus('sending')
+    setOtpError('')
+    try {
+      const res = await fetch('/api/email/send-parent-otp', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ email: trimmed, parentName, studentName }),
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        setOtpError(data.error ?? 'Failed to send code. Try again.')
+        setStatus('idle')
+        return
+      }
+      setSentTo(trimmed)
+      setStatus('sent')
+      setCooldown(30)
+    } catch {
+      setOtpError('Network error. Check your connection.')
+      setStatus('idle')
+    }
+  }
+
+  const verifyOtp = async () => {
+    if (otpValue.length < 6) {
+      setOtpError('Enter the full 6-digit code')
+      return
+    }
+    setStatus('verifying')
+    setOtpError('')
+    try {
+      const res = await fetch('/api/email/verify-parent-otp', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ email: sentTo, otp: otpValue }),
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        setOtpError(data.error ?? 'Incorrect code.')
+        setStatus('sent')
+        return
+      }
+      onVerified(sentTo)
+    } catch {
+      setOtpError('Network error. Try again.')
+      setStatus('sent')
+    }
+  }
+
+  // ── Verified state ──
+  if (isVerified) {
+    return (
+      <div
+        className="flex items-center justify-between gap-3 rounded-xl px-4"
+        style={{
+          minHeight: '48px',
+          background: 'rgba(34,197,94,0.06)',
+          border:     '1.5px solid rgba(34,197,94,0.35)',
+        }}
+      >
+        <span className="font-body text-sm truncate" style={{ color: 'var(--text-2)' }}>{sentTo || value}</span>
+        <div className="flex items-center gap-1.5 shrink-0">
+          <div
+            className="flex items-center justify-center rounded-full"
+            style={{ width: 20, height: 20, background: 'var(--green)' }}
+          >
+            <Check size={11} strokeWidth={3} color="#000" />
+          </div>
+          <span className="font-mono text-[11px] font-bold tracking-wide" style={{ color: 'var(--green)' }}>
+            Verified
+          </span>
+        </div>
+      </div>
+    )
+  }
+
+  const canSend = status !== 'sending' && status !== 'verifying' && !(status === 'sent' && cooldown > 0) && !disabled
+
+  return (
+    <div className="flex flex-col gap-2.5">
+      {/* Email input row */}
+      <div className="flex gap-2">
+        <input
+          type="email"
+          value={value}
+          onChange={handleEmailChange}
+          onBlur={onBlur}
+          placeholder="parent@email.com"
+          inputMode="email"
+          autoComplete="email"
+          autoCapitalize="none"
+          disabled={status === 'sending' || disabled}
+          className="flex-1 rounded-xl px-4 font-body transition-colors outline-none placeholder:opacity-40"
+          style={{
+            minHeight:  '48px',
+            background: 'var(--bg-inset)',
+            border:     `1px solid ${error && !otpError ? 'rgba(248,113,113,0.45)' : 'var(--border-subtle)'}`,
+            color:      'var(--text-1)',
+            fontSize:   '16px',
+          }}
+        />
+        <button
+          type="button"
+          onClick={status === 'sent' ? sendOtp : sendOtp}
+          disabled={!canSend}
+          className="rounded-xl font-heading font-bold text-[11px] tracking-wider transition-all active:scale-95 shrink-0 flex items-center justify-center gap-1"
+          style={{
+            minHeight:  '48px',
+            padding:    '0 14px',
+            background: canSend ? 'rgba(255,184,0,0.10)' : 'var(--bg-float)',
+            border:     `1.5px solid ${canSend ? 'rgba(255,184,0,0.4)' : 'var(--border-faint)'}`,
+            color:      canSend ? 'var(--brand)' : 'var(--text-4)',
+            cursor:     canSend ? 'pointer' : 'not-allowed',
+            whiteSpace: 'nowrap',
+          }}
+        >
+          {status === 'sending'
+            ? <Loader2 size={14} className="animate-spin" />
+            : status === 'sent' && cooldown > 0
+            ? `Resend ${cooldown}s`
+            : status === 'sent'
+            ? 'Resend'
+            : 'Send Code'}
+        </button>
+      </div>
+
+      {/* OTP input — shown after code is sent */}
+      <AnimatePresence>
+        {(status === 'sent' || status === 'verifying') && (
+          <motion.div
+            initial={{ opacity: 0, y: -6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -4 }}
+            transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+            className="flex flex-col gap-2"
+          >
+            <p className="text-[11px] font-mono" style={{ color: 'var(--text-4)' }}>
+              Code sent to <span style={{ color: 'var(--text-2)' }}>{sentTo}</span>
+            </p>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                inputMode="numeric"
+                autoComplete="one-time-code"
+                maxLength={6}
+                placeholder="000000"
+                value={otpValue}
+                onChange={e => {
+                  setOtpValue(e.target.value.replace(/\D/g, '').slice(0, 6))
+                  setOtpError('')
+                }}
+                className="flex-1 rounded-xl px-4 font-mono text-center text-xl tracking-[0.5em] outline-none transition-colors placeholder:opacity-30 placeholder:tracking-normal"
+                style={{
+                  minHeight:  '52px',
+                  background: 'var(--bg-inset)',
+                  border:     `1.5px solid ${otpError ? 'rgba(248,113,113,0.45)' : 'rgba(255,184,0,0.3)'}`,
+                  color:      'var(--brand)',
+                  fontSize:   '22px',
+                }}
+              />
+              <button
+                type="button"
+                onClick={verifyOtp}
+                disabled={otpValue.length < 6 || status === 'verifying' || disabled}
+                className="rounded-xl font-heading font-bold text-[11px] tracking-wider transition-all active:scale-95 shrink-0 flex items-center justify-center gap-1"
+                style={{
+                  minHeight:  '52px',
+                  padding:    '0 16px',
+                  background: otpValue.length === 6 ? 'linear-gradient(135deg,#FFB800,#FFCF40)' : 'var(--bg-float)',
+                  border:     'none',
+                  color:      otpValue.length === 6 ? '#000' : 'var(--text-4)',
+                  cursor:     otpValue.length === 6 ? 'pointer' : 'not-allowed',
+                  boxShadow:  otpValue.length === 6 ? 'var(--shadow-brand-sm)' : 'none',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                {status === 'verifying'
+                  ? <Loader2 size={14} className="animate-spin" />
+                  : <><Check size={13} strokeWidth={3} /> Verify</>}
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Errors */}
+      {(otpError || error) && (
+        <FieldError message={otpError || error} />
+      )}
+    </div>
+  )
+}
+
 // ─── Main exported form ───────────────────────────────────────────────────────
 
 
@@ -427,9 +677,10 @@ export function Stage1Form({
   const { setStage1SubStep } = useRegistrationStore()
   const [subStep, setSubStep] = useState<1 | 2>(initialStep)
   const [direction, setDirection] = useState<1 | -1>(1)
-  const [submitting, setSubmitting] = useState(false)
-  const [serverError, setServerError] = useState<string | null>(null)
-  const [pendingBadge, setPendingBadge] = useState<BadgeId | null>(null)
+  const [submitting,          setSubmitting]          = useState(false)
+  const [serverError,         setServerError]         = useState<string | null>(null)
+  const [pendingBadge,        setPendingBadge]        = useState<BadgeId | null>(null)
+  const [parentEmailVerified, setParentEmailVerified] = useState(false)
 
   // Sync initial sub-step to store on mount
   useEffect(() => {
@@ -510,14 +761,13 @@ export function Stage1Form({
   // ── Reactive "Submit" disabled check for sub-step 2 ────────────────────────
   const [
     parentName, relationship, parentEmail, parentPhone,
-    consentGiven, safetyAcknowledged, emergencyContact,
+    consentGiven, safetyAcknowledged,
   ] = useWatch({
     control,
     name: [
       'parent.parentName', 'parent.relationship',
       'parent.parentEmail', 'parent.parentPhone',
       'parent.consentGiven', 'parent.safetyAcknowledged',
-      'parent.emergencyContact',
     ],
   })
 
@@ -525,13 +775,14 @@ export function Stage1Form({
     parentName?.length >= 2 &&
     relationship &&
     parentEmail?.includes('@') &&
+    parentEmailVerified &&
     parentPhone && /^[6-9]\d{9}$/.test(parentPhone) &&
+    parentPhone !== phone &&
     consentGiven === true &&
-    safetyAcknowledged === true &&
-    emergencyContact
+    safetyAcknowledged === true
   ), [
-    parentName, relationship, parentEmail, parentPhone,
-    consentGiven, safetyAcknowledged, emergencyContact,
+    parentName, relationship, parentEmail, parentEmailVerified,
+    parentPhone, phone, consentGiven, safetyAcknowledged,
   ])
 
   // ── Navigation ──────────────────────────────────────────────────────────────
@@ -944,7 +1195,7 @@ export function Stage1Form({
                   </FormCard>
 
                   {/* Next CTA */}
-                  <CTAButton onClick={handleNext}>
+                  <CTAButton onClick={handleNext} disabled={!step1Ready}>
                     Parent Details
                     <ChevronRight size={18} strokeWidth={2.5} />
                   </CTAButton>
@@ -986,16 +1237,27 @@ export function Stage1Form({
 
                     <div>
                       <FieldLabel required>Parent Email</FieldLabel>
-                      <TextInput
-                        {...register('parent.parentEmail')}
-                        type="email"
-                        placeholder="parent@email.com"
-                        inputMode="email"
-                        autoComplete="email"
-                        autoCapitalize="none"
-                        hasError={!!errors.parent?.parentEmail}
+                      <Controller
+                        control={control}
+                        name="parent.parentEmail"
+                        render={({ field }) => (
+                          <ParentEmailVerify
+                            value={field.value ?? ''}
+                            onChange={field.onChange}
+                            onBlur={field.onBlur}
+                            error={errors.parent?.parentEmail?.message}
+                            isVerified={parentEmailVerified}
+                            onVerified={(email) => {
+                              setParentEmailVerified(true)
+                              field.onChange(email)
+                            }}
+                            onReset={() => setParentEmailVerified(false)}
+                            disabled={submitting}
+                            parentName={parentName ?? ''}
+                            studentName={fullName ?? ''}
+                          />
+                        )}
                       />
-                      <FieldError message={errors.parent?.parentEmail?.message} />
                     </div>
 
                     <div>
@@ -1011,18 +1273,6 @@ export function Stage1Form({
                       <FieldError message={errors.parent?.parentPhone?.message} />
                     </div>
 
-                    <div>
-                      <FieldLabel required>Emergency Contact Number</FieldLabel>
-                      <TextInput
-                        {...register('parent.emergencyContact')}
-                        type="tel"
-                        placeholder="Alternate number to reach your family"
-                        inputMode="numeric"
-                        autoComplete="tel"
-                        hasError={!!errors.parent?.emergencyContact}
-                      />
-                      <FieldError message={errors.parent?.emergencyContact?.message} />
-                    </div>
                   </FormCard>
 
                   {/* Card 2 · Consent */}
@@ -1091,7 +1341,7 @@ export function Stage1Form({
                   </AnimatePresence>
 
                   {/* Submit CTA */}
-                  <CTAButton type="submit" loading={submitting}>
+                  <CTAButton type="submit" disabled={!step2Ready} loading={submitting}>
                     🚀 Submit Application
                   </CTAButton>
 

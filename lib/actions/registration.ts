@@ -16,10 +16,64 @@ import {
   generateReferralCode,
   upsertStudentPersonalInfo as dbUpsertPersonalInfo,
 } from '@/lib/db/queries/students'
-import { createParent, upsertParent } from '@/lib/db/queries/parents'
+import { createParent, upsertParent, getParentByStudentId } from '@/lib/db/queries/parents'
 import { createTeam, joinTeam, leaveTeam, getTeamWithMembers } from '@/lib/db/queries/teams'
 import type { BadgeId } from '@/lib/gamification/badges'
 import { CORRECT_ANSWERS, SHORT_ANSWER_MIN } from '@/lib/content/quizQuestions'
+import { sendEmail } from '@/lib/email/send'
+import { Redis }     from '@upstash/redis'
+import crypto        from 'crypto'
+import {
+  parentEmailVerificationTemplate,
+  applicationSubmittedStudentTemplate,
+  applicationSubmittedParentTemplate,
+  orientationCompleteParentTemplate,
+  quizPassedStudentTemplate,
+  quizFailedStudentTemplate,
+  quizResultParentTemplate,
+  ideaSubmittedStudentTemplate,
+  stageProgressParentTemplate,
+} from '@/lib/email/templates'
+
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://www.superbuilder.org'
+
+// Lazy Redis singleton — only created when emails are needed
+let _redis: Redis | null = null
+function getRedis(): Redis {
+  if (!_redis) {
+    _redis = new Redis({
+      url:   process.env.UPSTASH_REDIS_REST_URL!,
+      token: process.env.UPSTASH_REDIS_REST_TOKEN!,
+    })
+  }
+  return _redis
+}
+
+async function sendParentVerificationEmail(opts: {
+  studentId:   string
+  parentEmail: string
+  parentName:  string
+  studentName: string
+  grade:       string
+  city:        string
+}) {
+  const { studentId, parentEmail, parentName, studentName, grade, city } = opts
+  const token = crypto.randomBytes(32).toString('hex')
+  const redis = getRedis()
+  await redis.set(`parent_verify:${token}`, studentId, { ex: 86400 }) // 24h TTL
+
+  const magicLink = `${APP_URL}/api/email/verify-parent?token=${token}`
+  const tpl = parentEmailVerificationTemplate({ parentName, studentName, grade, city, magicLink })
+
+  sendEmail({
+    to:          parentEmail,
+    subject:     tpl.subject,
+    html:        tpl.html,
+    studentId,
+    studentName,
+    template:    'parent_email_verification',
+  }).catch(() => { /* fire-and-forget */ })
+}
 
 const VALID_DOMAINS = ['health','education','finance','environment','entertainment','social_impact'] as const
 
@@ -91,6 +145,20 @@ export async function completeOrientation(): Promise<{ success: boolean }> {
     .where(eq(students.id, student.id))
 
   revalidatePath('/dashboard')
+
+  // Notify parent that orientation is done (fire-and-forget)
+  const parent = await getParentByStudentId(student.id)
+  if (parent) {
+    const tpl = orientationCompleteParentTemplate({ parentName: parent.fullName, studentName: student.fullName })
+    sendEmail({
+      to:          parent.email,
+      subject:     tpl.subject,
+      html:        tpl.html,
+      studentId:   student.id,
+      studentName: student.fullName,
+      template:    'orientation_complete_parent',
+    }).catch(() => {})
+  }
 
   return { success: true }
 }
@@ -181,7 +249,6 @@ export async function submitStage1(data: unknown): Promise<{
       relationship:       form.parent.relationship,
       consentGiven:       form.parent.consentGiven as boolean,
       safetyAcknowledged: form.parent.safetyAcknowledged as boolean,
-      emergencyContact:   form.parent.emergencyContact,
     })
 
     // If badge was already awarded (stage >= 2), skip badge/stage logic
@@ -230,12 +297,57 @@ export async function submitStage1(data: unknown): Promise<{
     consentGiven:       form.parent.consentGiven as boolean,
     consentAt:          new Date(),
     safetyAcknowledged: form.parent.safetyAcknowledged as boolean,
-    emergencyContact:   form.parent.emergencyContact,
   })
 
   // Award Explorer badge + 50 XP, then advance to stage 2
   await addBadgeToStudent(student.id, 'explorer', 50)
   await updateStudentStage(student.id, '2')
+
+  // Fire-and-forget emails (do not await — never block the form response)
+  const updatedStudent = await getStudentByClerkId(userId)
+  const xpTotal = updatedStudent?.xpPoints ?? 50
+
+  // Student confirmation
+  const studentTpl = applicationSubmittedStudentTemplate({
+    studentName: form.fullName,
+    grade:       form.grade,
+    city:        form.city ?? '',
+    xpTotal,
+  })
+  sendEmail({
+    to:          email,
+    subject:     studentTpl.subject,
+    html:        studentTpl.html,
+    studentId:   student.id,
+    studentName: form.fullName,
+    template:    'application_submitted_student',
+  }).catch(() => {})
+
+  // Parent verification + confirmation (includes registration details)
+  sendParentVerificationEmail({
+    studentId:   student.id,
+    parentEmail: form.parent.parentEmail,
+    parentName:  form.parent.parentName,
+    studentName: form.fullName,
+    grade:       form.grade,
+    city:        form.city ?? '',
+  }).catch(() => {})
+
+  const parentTpl = applicationSubmittedParentTemplate({
+    parentName:   form.parent.parentName,
+    studentName:  form.fullName,
+    grade:        form.grade,
+    programmeUrl: APP_URL,
+  })
+  sendEmail({
+    to:          form.parent.parentEmail,
+    subject:     parentTpl.subject,
+    html:        parentTpl.html,
+    studentId:   student.id,
+    studentName: form.fullName,
+    template:    'application_submitted_parent',
+  }).catch(() => {})
+
   // NOTE: no revalidatePath here — it would trigger a page re-render that runs
   // getStudentOrRedirect(1), detects stage=2, and redirects before the badge
   // unlock + team selection screens can show. The /register layout is
@@ -304,11 +416,97 @@ export async function submitQuiz(data: unknown): Promise<{
     attemptNum,
   })
 
-  if (!passed) return { passed: false, score }
+  // Send email to student (and parent) about quiz result — fire-and-forget
+  const quizDomain  = (student.hackathonDomain ?? 'health') as string
+  const updatedStu  = await getStudentByClerkId(userId)
+  const parent      = await getParentByStudentId(student.id)
+
+  if (!passed) {
+    const failTpl = quizFailedStudentTemplate({
+      studentName:  student.fullName,
+      score,
+      domain:      quizDomain,
+      attemptsLeft: Math.max(0, 2 - attemptNum),
+    })
+    sendEmail({
+      to:          student.email,
+      subject:     failTpl.subject,
+      html:        failTpl.html,
+      studentId:   student.id,
+      studentName: student.fullName,
+      template:    'quiz_failed_student',
+    }).catch(() => {})
+
+    if (parent) {
+      const parentTpl = quizResultParentTemplate({
+        parentName:  parent.fullName,
+        studentName: student.fullName,
+        score,
+        domain:      quizDomain,
+        passed: false,
+      })
+      sendEmail({
+        to:          parent.email,
+        subject:     parentTpl.subject,
+        html:        parentTpl.html,
+        studentId:   student.id,
+        studentName: student.fullName,
+        template:    'quiz_result_parent',
+      }).catch(() => {})
+    }
+
+    return { passed: false, score }
+  }
 
   // Award AI_CURIOUS badge + 100 XP on first pass
   await addBadgeToStudent(student.id, 'ai_curious', 100)
-  
+
+  const xpTotal = (updatedStu?.xpPoints ?? 0) + 100
+
+  const passTpl = quizPassedStudentTemplate({ studentName: student.fullName, score, domain: quizDomain, xpTotal })
+  sendEmail({
+    to:          student.email,
+    subject:     passTpl.subject,
+    html:        passTpl.html,
+    studentId:   student.id,
+    studentName: student.fullName,
+    template:    'quiz_passed_student',
+  }).catch(() => {})
+
+  if (parent) {
+    const parentTpl = quizResultParentTemplate({
+      parentName:  parent.fullName,
+      studentName: student.fullName,
+      score,
+      domain:      quizDomain,
+      passed: true,
+    })
+    sendEmail({
+      to:          parent.email,
+      subject:     parentTpl.subject,
+      html:        parentTpl.html,
+      studentId:   student.id,
+      studentName: student.fullName,
+      template:    'quiz_result_parent',
+    }).catch(() => {})
+
+    // Stage progress report to parent
+    const progressTpl = stageProgressParentTemplate({
+      parentName:  parent.fullName,
+      studentName: student.fullName,
+      stage:       'quiz',
+      details: { 'Quiz Score': `${score}/10`, 'Domain': quizDomain, 'XP Earned': `${xpTotal} XP` },
+    })
+    sendEmail({
+      to:          parent.email,
+      subject:     progressTpl.subject,
+      html:        progressTpl.html,
+      studentId:   student.id,
+      studentName: student.fullName,
+      template:    'stage_progress_parent',
+    }).catch(() => {})
+  }
+
   // Force revalidate dashboard to reflect updated quiz completion
   revalidatePath('/dashboard')
 
@@ -380,7 +578,48 @@ export async function submitIdea(data: unknown): Promise<{
   // Award Idea Launcher badge + 75 XP, advance to stage 3
   await addBadgeToStudent(student.id, 'idea_launcher', 75)
   await updateStudentStage(student.id, '3')
-  
+
+  // Fire-and-forget emails
+  const updatedStu = await getStudentByClerkId(userId)
+  const xpTotal    = updatedStu?.xpPoints ?? 75
+  const parent     = await getParentByStudentId(student.id)
+
+  const ideaTpl = ideaSubmittedStudentTemplate({
+    studentName:      student.fullName,
+    problemStatement: form.problemStatement,
+    domain:           form.domain,
+    xpTotal,
+  })
+  sendEmail({
+    to:          student.email,
+    subject:     ideaTpl.subject,
+    html:        ideaTpl.html,
+    studentId:   student.id,
+    studentName: student.fullName,
+    template:    'idea_submitted_student',
+  }).catch(() => {})
+
+  if (parent) {
+    const progressTpl = stageProgressParentTemplate({
+      parentName:  parent.fullName,
+      studentName: student.fullName,
+      stage:       'idea',
+      details: {
+        'Domain':  form.domain,
+        'XP Total': `${xpTotal} XP`,
+        'Next Step': 'Payment',
+      },
+    })
+    sendEmail({
+      to:          parent.email,
+      subject:     progressTpl.subject,
+      html:        progressTpl.html,
+      studentId:   student.id,
+      studentName: student.fullName,
+      template:    'stage_progress_parent',
+    }).catch(() => {})
+  }
+
   revalidatePath('/dashboard')
 
   return { success: true, badgeAwarded: 'IDEA_LAUNCHER' }

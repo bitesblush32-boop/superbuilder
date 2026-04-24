@@ -1,6 +1,13 @@
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
 import { NextResponse } from 'next/server'
 
+// Fully public routes — no auth, no cookie check
+const isFullyPublic = createRouteMatcher([
+  '/verify-parent',
+  '/api/email/(.*)',
+  '/api/webhooks/resend',
+])
+
 // Admin auth routes — always public (no cookie check, no Clerk)
 const isAdminPublic = createRouteMatcher([
   '/admin/login',
@@ -16,6 +23,11 @@ const isProtected = createRouteMatcher([
 ])
 
 export default clerkMiddleware(async (auth, req) => {
+  // 0. Fully public — no auth at all
+  if (isFullyPublic(req)) {
+    return
+  }
+
   // 1. Admin public routes — let through immediately, no checks
   if (isAdminPublic(req)) {
     return
