@@ -13,9 +13,6 @@ const isAdminProtected = createRouteMatcher(['/admin(.*)'])
 // Student/user routes that require Clerk auth
 const isProtected = createRouteMatcher([
   '/dashboard(.*)',
-  '/register/stage-2(.*)',
-  '/register/stage-3(.*)',
-  '/register/success(.*)',
 ])
 
 export default clerkMiddleware(async (auth, req) => {

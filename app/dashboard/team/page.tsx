@@ -25,7 +25,7 @@ const DOMAIN_LABELS: Record<string, string> = {
 
 export default async function TeamPage() {
   const { student } = await getStudentOrRedirect(2)
-  if (!student) redirect('/register')
+  if (!student) redirect('/dashboard/apply')
 
   const [team, potentialTeammates] = await Promise.all([
     student.teamId ? getTeamWithMembers(student.teamId) : null,

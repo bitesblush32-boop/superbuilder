@@ -94,7 +94,7 @@ export function MobileStickyBar() {
                 className="flex-shrink-0"
               >
                 <Link
-                  href="/register/stage-1"
+                  href="/dashboard/apply"
                   className="flex items-center justify-center gap-1.5 h-[44px] px-5 rounded-[4px] font-heading font-bold text-[13px] tracking-[0.08em] uppercase text-black"
                   style={{
                     background: 'var(--brand)',

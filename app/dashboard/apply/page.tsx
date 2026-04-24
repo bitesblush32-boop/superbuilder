@@ -5,7 +5,7 @@ import { students } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
 import { checkStageLock } from '@/lib/auth/stageLock'
 import { StageLocked } from '@/components/stage/StageLocked'
-import { Stage1Form } from '@/app/register/stage-1/_components/Stage1Form'
+import { Stage1Form } from '@/app/dashboard/apply/_components/Stage1Form'
 import { getParentByStudentId } from '@/lib/db/queries/parents'
 import type { Stage1FormData } from '@/lib/validation/stage1'
 

@@ -234,7 +234,7 @@ export function PayPage({
           })
           const vData = await vRes.json()
           if (vData.success) {
-            router.push('/register/success')
+            router.push('/dashboard')
           } else {
             setError('Payment verification failed. Contact support if amount was deducted.')
             setLoading(false)

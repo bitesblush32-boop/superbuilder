@@ -248,7 +248,7 @@ export function QuizShell({ domain, attemptCount, isLocked, lastAttemptAt }: Qui
         <button
           className="rounded-xl px-8 py-3 font-heading font-semibold text-sm tracking-wide min-h-[44px] transition-all active:scale-95"
           style={{ background: 'var(--bg-float)', color: 'var(--text-2)', border: '1px solid var(--border-soft)' }}
-          onClick={() => router.push('/register')}
+          onClick={() => router.push('/dashboard')}
         >
           Back to Dashboard
         </button>
@@ -505,7 +505,7 @@ export function QuizShell({ domain, attemptCount, isLocked, lastAttemptAt }: Qui
               <button
                 className="w-full rounded-xl py-3 font-heading text-sm font-semibold tracking-wide min-h-[44px] transition-all active:scale-95"
                 style={{ background: 'var(--bg-float)', color: 'var(--text-2)', border: '1px solid var(--border-soft)' }}
-                onClick={() => router.push('/register')}
+                onClick={() => router.push('/dashboard')}
               >
                 Back to Dashboard
               </button>

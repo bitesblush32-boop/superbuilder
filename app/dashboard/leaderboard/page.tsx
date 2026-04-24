@@ -15,7 +15,7 @@ export const metadata = {
 export default async function LeaderboardPage() {
   // Stage 2+ can view the leaderboard (all registered students)
   const { student } = await getStudentOrRedirect(2)
-  if (!student) redirect('/register')
+  if (!student) redirect('/dashboard/apply')
 
   // CTE: best quiz score per student
   const bestScoresCTE = db.$with('best_scores').as(

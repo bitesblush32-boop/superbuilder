@@ -6,7 +6,7 @@ import { eq } from 'drizzle-orm'
 import { getTeamWithMembers } from '@/lib/db/queries/teams'
 import { checkStageLock } from '@/lib/auth/stageLock'
 import { StageLocked } from '@/components/stage/StageLocked'
-import { TeamManageClient } from '@/app/register/team/_components/TeamManageClient'
+import { TeamManageClient } from '@/app/dashboard/team-setup/_components/TeamManageClient'
 
 export const dynamic = 'force-dynamic'
 

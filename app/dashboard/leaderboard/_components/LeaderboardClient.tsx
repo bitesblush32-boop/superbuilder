@@ -476,7 +476,7 @@ function Podium({
 
 export function LeaderboardClient({ initialRows, myEntry }: Props) {
   const [rows, setRows]               = useState<LeaderboardEntry[]>(initialRows)
-  const [lastUpdated, setLastUpdated] = useState<Date>(new Date())
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null)
   const [isConnected, setIsConnected] = useState(false)
   const [selectedEntry, setSelectedEntry] = useState<LeaderboardEntry | null>(null)
 
@@ -488,10 +488,18 @@ export function LeaderboardClient({ initialRows, myEntry }: Props) {
       es.onopen = () => setIsConnected(true)
       es.onmessage = (e: MessageEvent) => {
         try {
-          const payload = JSON.parse(e.data) as { type: string; data: LeaderboardEntry[] }
+          const payload = JSON.parse(e.data) as { type: string; data: unknown }
           if (payload.type === 'init' || payload.type === 'update') {
-            setRows(payload.data)
-            setLastUpdated(new Date())
+            const data = payload.data
+            // Only accept data that is a properly shaped LeaderboardEntry array
+            if (
+              Array.isArray(data) &&
+              data.length > 0 &&
+              typeof (data[0] as LeaderboardEntry).xpPoints === 'number'
+            ) {
+              setRows(data as LeaderboardEntry[])
+              setLastUpdated(new Date())
+            }
           }
         } catch { /* ignore parse errors */ }
       }
@@ -766,7 +774,7 @@ export function LeaderboardClient({ initialRows, myEntry }: Props) {
           Top {rows.length} builders · {rows.length === 50 ? 'top 50 shown' : 'all shown'}
         </p>
         <p className="font-mono text-[10px]" style={{ color: 'var(--text-4)' }}>
-          {lastUpdated.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+          {lastUpdated ? lastUpdated.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) : ''}
         </p>
       </div>
 

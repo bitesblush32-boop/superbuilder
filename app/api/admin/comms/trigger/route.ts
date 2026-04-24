@@ -37,7 +37,7 @@ function getWhatsAppVars(
   city?: string | null,
   customMsg?: string,
 ): string[] {
-  const link = `${APP_URL}/register`
+  const link = `${APP_URL}/dashboard/apply`
   switch (triggerType) {
     case 'stage1_incomplete': return [firstName, link]
     case 'quiz_not_started': return [firstName, link]
@@ -68,7 +68,7 @@ function getEmailSubject(triggerType: string, firstName: string): string {
 }
 
 function getEmailBody(triggerType: string, firstName: string, customMsg?: string): string {
-  const link = `${APP_URL}/register`
+  const link = `${APP_URL}/dashboard/apply`
   const lines: Record<string, string> = {
     stage1_incomplete: `You started your Super Builders application but didn't finish. <a href="${link}">Complete it now</a> before spots fill up.`,
     quiz_not_started: `Your AI quiz is ready and waiting. <a href="${link}">Take it now</a> — score 6+ to unlock your spot.`,

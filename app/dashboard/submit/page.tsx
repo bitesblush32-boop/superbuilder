@@ -30,7 +30,7 @@ export default async function SubmitPage() {
   if (!isOpen) redirect('/dashboard')
 
   const { student } = await getStudentOrRedirect(4)
-  if (!student) redirect('/register')
+  if (!student) redirect('/dashboard/apply')
 
   const now           = new Date()
   const isBeforeHack  = now < HACKATHON_START

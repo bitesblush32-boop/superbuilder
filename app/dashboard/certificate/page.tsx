@@ -31,7 +31,7 @@ export default async function CertificatePage() {
   if (!isOpen) redirect('/dashboard')
 
   const { student } = await getStudentOrRedirect(4)
-  if (!student) redirect('/register')
+  if (!student) redirect('/dashboard/apply')
 
   const now        = new Date()
   const isBefore   = now < CERTS_LIVE

@@ -268,7 +268,7 @@ export function HeroSection({
               transition={{ type: 'spring', stiffness: 420, damping: 12 }}
             >
               <Link
-                href="/register/stage-1"
+                href="/dashboard/apply"
                 className="flex items-center justify-center gap-2 h-[54px] px-8 rounded-[4px] font-heading font-bold tracking-[0.1em] uppercase text-[14px] text-black w-full sm:w-auto transition-all duration-150 touch-manipulation active:opacity-70 active:scale-95"
                 style={{
                   background: 'var(--brand)',

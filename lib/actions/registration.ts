@@ -90,7 +90,6 @@ export async function completeOrientation(): Promise<{ success: boolean }> {
     .set({ orientationComplete: true, updatedAt: new Date() })
     .where(eq(students.id, student.id))
 
-  revalidatePath('/register')
   revalidatePath('/dashboard')
 
   return { success: true }
@@ -119,7 +118,6 @@ export async function selectDomain(domain: string): Promise<{ success: boolean; 
     .set({ hackathonDomain: domain as any, updatedAt: new Date() })
     .where(eq(students.id, student.id))
 
-  revalidatePath('/register')
   revalidatePath('/dashboard')
   return { success: true }
 }
@@ -383,7 +381,6 @@ export async function submitIdea(data: unknown): Promise<{
   await addBadgeToStudent(student.id, 'idea_launcher', 75)
   await updateStudentStage(student.id, '3')
   
-  revalidatePath('/register')
   revalidatePath('/dashboard')
 
   return { success: true, badgeAwarded: 'IDEA_LAUNCHER' }

@@ -10,7 +10,7 @@ export const metadata = {
 
 export default async function MentorsPage() {
   const { student } = await getStudentOrRedirect(4)
-  if (!student) redirect('/register')
+  if (!student) redirect('/dashboard/apply')
 
   return (
     <div className="max-w-2xl mx-auto pb-8">

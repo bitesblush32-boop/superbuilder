@@ -204,7 +204,7 @@ export default async function WorkshopsPage() {
   if (!isOpen) redirect('/dashboard')
 
   const { student } = await getStudentOrRedirect(4)
-  if (!student) redirect('/register')
+  if (!student) redirect('/dashboard/apply')
 
   const [allItems, attendanceRows] = await Promise.all([
     getScheduleItems('dashboard'),

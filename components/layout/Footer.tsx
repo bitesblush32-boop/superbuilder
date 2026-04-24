@@ -46,7 +46,7 @@ const COLUMNS = [
   {
     heading: 'Register',
     links: [
-      { label: 'Apply Now', href: '/register/stage-1' },
+      { label: 'Apply Now', href: '/dashboard/apply' },
       { label: 'Tiers & Pricing', href: '#tiers' },
       { label: 'FAQ', href: '#faq' },
       { label: 'For Parents', href: '#parents' },
