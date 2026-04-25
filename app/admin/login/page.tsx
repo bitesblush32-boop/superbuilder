@@ -14,9 +14,9 @@ export default function AdminLoginPage() {
       <div
         className="w-full max-w-sm rounded-2xl border p-8 flex flex-col gap-6"
         style={{
-          background:   'var(--bg-card)',
-          borderColor:  'var(--border-faint)',
-          boxShadow:    '0 0 40px rgba(255,184,0,0.06)',
+          background: 'var(--bg-card)',
+          borderColor: 'var(--border-faint)',
+          boxShadow: '0 0 40px rgba(255,184,0,0.06)',
         }}
       >
         {/* Logo */}
@@ -37,7 +37,7 @@ export default function AdminLoginPage() {
             className="text-xs text-center mt-1"
             style={{ color: 'var(--text-4)' }}
           >
-            Super Builders · Season 1 · 2025
+            Super Builders · Season 1 · 2026
           </p>
         </div>
 

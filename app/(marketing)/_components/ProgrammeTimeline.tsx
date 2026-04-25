@@ -6,7 +6,7 @@ import type { PhaseEntry, WorkshopEntry } from '@/lib/db/queries/config'
 import { BADGES } from '@/lib/gamification/badges'
 
 /* ─── Config ─────────────────────────────────────────────────────────────────── */
-// Phase 1 = Registration (currently open). Update as programme progresses.
+// Display Stage 1 = Apply & Prepare (currently open). Update as programme progresses.
 const ACTIVE_PHASE = 1
 
 const EASE_OUT = [0.16, 1, 0.3, 1] as const
@@ -30,6 +30,7 @@ const labelVariants: Variants = {
 const cardVariants: Variants = {
   hidden: { opacity: 0, y: 20 },
   show:   { opacity: 1, y: 0, transition: { duration: 0.5, ease: EASE_OUT } },
+  hover:  { y: -6, transition: { type: 'spring', stiffness: 280, damping: 20 } },
 }
 
 /* ─── Phase node colors ──────────────────────────────────────────────────────── */
@@ -274,18 +275,25 @@ function WorkshopCard({
   return (
     <motion.div
       variants={cardVariants}
-      whileHover={{
-        y: -6,
-        boxShadow: `0 0 0 1px rgba(255,184,0,0.5), 0 12px 40px rgba(255,184,0,0.12)`,
-        borderColor: 'rgba(255,184,0,0.45)',
-      }}
-      transition={{ type: 'spring', stiffness: 280, damping: 20 }}
-      className="relative overflow-hidden rounded-[4px] border p-6 cursor-default flex flex-col"
+      whileHover="hover"
+      className="relative rounded-[4px] border p-6 cursor-default flex flex-col"
       style={{
         background:  'var(--bg-card)',
         borderColor: 'var(--border-faint)',
       }}
     >
+      {/* Hover glow overlay — opacity-only animation, GPU composited */}
+      <motion.div
+        variants={{ hover: { opacity: 1 } }}
+        initial={{ opacity: 0 }}
+        transition={{ type: 'spring', stiffness: 280, damping: 20 }}
+        className="absolute inset-0 rounded-[4px] pointer-events-none"
+        style={{
+          boxShadow: '0 0 0 1px rgba(255,184,0,0.5), 0 12px 40px rgba(255,184,0,0.12)',
+          border:    '1px solid rgba(255,184,0,0.45)',
+        }}
+        aria-hidden="true"
+      />
       {/* Left accent strip */}
       <div
         className="absolute left-0 top-0 bottom-0 w-[3px] rounded-l-[4px]"

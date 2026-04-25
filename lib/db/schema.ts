@@ -31,7 +31,7 @@ export const teams = pgTable('teams', {
   name:        varchar('name', { length: 100 }).notNull(),
   code:        varchar('code', { length: 10 }).unique().notNull(), // e.g. "SB-X7K2"
   leaderId:    uuid('leader_id').notNull(),                        // FK added via ALTER after students
-  maxSize:     integer('max_size').default(4).notNull(),
+  maxSize:     integer('max_size').default(3).notNull(),
   memberCount: integer('member_count').default(1).notNull(),
   isLocked:    boolean('is_locked').default(false).notNull(),      // locked after reg deadline
   createdAt:   timestamp('created_at').defaultNow().notNull(),
@@ -69,7 +69,7 @@ export const students = pgTable('students', {
   // TODO: teamPreference can be dropped in next migration cycle once team system is live
   teamPreference:  varchar('team_preference', { length: 20 }),
   teamId:          uuid('team_id').references(() => teams.id, { onDelete: 'set null' }),
-  teamRole:        varchar('team_role', { length: 20 }), // 'leader' | 'member' | null
+  teamRole:        varchar('team_role', { length: 20 }), // 'leader' | 'member' | 'solo' | null
   availabilityHrs: varchar('availability_hrs', { length: 20 }),
   deviceAccess:    varchar('device_access', { length: 20 }),
   tshirtSize:      varchar('tshirt_size', { length: 5 }),
@@ -79,6 +79,7 @@ export const students = pgTable('students', {
   certificateUrl:       text('certificate_url'),
   engageAnswers:        jsonb('engage_answers'), // { goal: string, confidence: number, winBoast: string }
   orientationComplete:  boolean('orientation_complete').default(false).notNull(),
+  quizPerfect:          boolean('quiz_perfect').default(false).notNull(),
   hackathonDomain:      domainEnum('hackathon_domain'),
   createdAt:            timestamp('created_at').defaultNow().notNull(),
   updatedAt:       timestamp('updated_at').defaultNow().notNull(),
@@ -98,6 +99,7 @@ export const parents = pgTable('parents', {
   consentAt:          timestamp('consent_at'),
   safetyAcknowledged: boolean('safety_acknowledged').default(false).notNull(),
   emergencyContact:   varchar('emergency_contact', { length: 20 }),
+  emailVerified:      boolean('email_verified').default(false).notNull(),
   createdAt:          timestamp('created_at').defaultNow(),
 })
 
@@ -129,7 +131,7 @@ export const payments = pgTable('payments', {
   razorpayOrderId:   varchar('razorpay_order_id', { length: 100 }).unique(),
   razorpayPaymentId: varchar('razorpay_payment_id', { length: 100 }),
   amount:            integer('amount').notNull(), // paise (₹1 = 100 paise)
-  tier:              tierEnum('tier').notNull(),
+  tier:              tierEnum('tier'),       // nullable — legacy field, no longer required
   status:            statusEnum('status').default('pending').notNull(),
   isEmi:             boolean('is_emi').default(false),
   emiPhase:          integer('emi_phase').default(1),

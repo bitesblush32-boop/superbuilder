@@ -13,7 +13,9 @@ const indianPhone = z
   .regex(/^[6-9]\d{9}$/, 'Enter a valid 10-digit Indian mobile number')
 
 // Zod v4: custom messages use { error: "..." }, not { errorMap: () => ... }
-export const stage1Schema = z.object({
+// NOTE: superRefine is applied AFTER .omit() is derived — Zod v4 disallows
+// .omit() on refined schemas, so we keep the plain object separate.
+const stage1BaseSchema = z.object({
   // ── Student ──────────────────────────────────────────────────────────────
   fullName: z.string().min(2, 'Full name must be at least 2 characters'),
 
@@ -61,6 +63,7 @@ export const stage1Schema = z.object({
 
   instagramHandle: z.string().optional(),
   linkedinHandle:  z.string().optional(),
+  referralCode:    z.string().optional(),
 
   whyJoin: z
     .string()
@@ -90,9 +93,27 @@ export const stage1Schema = z.object({
     safetyAcknowledged: z.literal(true, {
       error: 'Safety acknowledgement is required to proceed',
     }),
-
-    emergencyContact: z.string().min(1, 'Emergency contact number is required'),
   }),
+})
+
+// Personal info only — used for Step 1 → Step 2 auto-save (no parent fields)
+// Must be derived from the base object BEFORE superRefine is applied
+export const personalInfoSchema = stage1BaseSchema.omit({ parent: true })
+export type PersonalInfoData = z.infer<typeof personalInfoSchema>
+
+// Full schema with cross-field phone validation
+export const stage1Schema = stage1BaseSchema.superRefine((data, ctx) => {
+  if (
+    data.phone &&
+    data.parent?.parentPhone &&
+    data.phone === data.parent.parentPhone
+  ) {
+    ctx.addIssue({
+      code: 'custom',
+      path: ['parent', 'parentPhone'],
+      message: "Parent's number must be different from your number",
+    })
+  }
 })
 
 export type Stage1FormData = z.infer<typeof stage1Schema>

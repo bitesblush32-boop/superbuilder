@@ -1,5 +1,6 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
+graphify-out
 # dependencies
 /node_modules
 /.pnp
@@ -21,7 +22,6 @@
 
 # production
 /build
-/design_system
 /documentation
 # misc
 .DS_Store
@@ -44,13 +44,13 @@ yarn-error.log*
 next-env.d.ts
 .clerk/.tmp/README.md
 .clerk/.tmp/keyless.json
-super-builders-design-system.html
+
 lib/db/migrations/meta/0001_snapshot.json
 lib/db/migrations/0001_marvelous_ben_parker.sql
 
 # clerk configuration (can include secrets)
 /.clerk/
-super-builders-design-system.html
+
 .claude/settings.local.json
 lib/db/migrations/0001_marvelous_ben_parker.sql
 lib/db/migrations/meta/_journal.json
@@ -58,3 +58,15 @@ lib/db/migrations/meta/0001_snapshot.json
 lib/db/migrations/meta/_journal.json
 lib/db/migrations/meta/_journal.json
 context files
+.graphify_ast.json
+.graphify_uncached.txt
+.graphify_cached.json
+.graphify_detect.json
+.graphify_extract.json
+.graphify_incremental.json
+.graphify_semantic.json
+.claude/settings.local.json
+.graphify_python
+.claude/BUG_FIX_DOMAIN_QUIZ_STUCK.md
+.gitignore
+.claude/BUG_FIX_SUMMARY.md

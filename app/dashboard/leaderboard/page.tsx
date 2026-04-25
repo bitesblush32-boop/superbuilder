@@ -1,3 +1,111 @@
-export default function LeaderboardPage() {
-  return <div>LeaderboardPage</div>
+import { redirect }             from 'next/navigation'
+import { desc, eq, sql }        from 'drizzle-orm'
+import { db }                   from '@/lib/db'
+import { students, quizAttempts } from '@/lib/db/schema'
+import { getStudentOrRedirect }  from '@/lib/auth/getStudentOrRedirect'
+import { LeaderboardClient }     from './_components/LeaderboardClient'
+import type { LeaderboardEntry } from './_components/LeaderboardClient'
+
+export const dynamic = 'force-dynamic'
+
+export const metadata = {
+  title: 'Leaderboard — Super Builders',
+}
+
+export default async function LeaderboardPage() {
+  // Stage 2+ can view the leaderboard (all registered students)
+  const { student } = await getStudentOrRedirect(2)
+  if (!student) redirect('/dashboard/apply')
+
+  // CTE: best quiz score per student
+  const bestScoresCTE = db.$with('best_scores').as(
+    db
+      .select({
+        studentId: quizAttempts.studentId,
+        best:      sql<number>`max(${quizAttempts.score})`.as('best'),
+      })
+      .from(quizAttempts)
+      .groupBy(quizAttempts.studentId),
+  )
+
+  // Fetch top 500 (enough to compute rank) with quiz scores joined
+  const allRanked = await db
+    .with(bestScoresCTE)
+    .select({
+      id:            students.id,
+      fullName:      students.fullName,
+      city:          students.city,
+      xpPoints:      students.xpPoints,
+      badges:        students.badges,
+      tier:          students.tier,
+      bestQuizScore: bestScoresCTE.best,
+    })
+    .from(students)
+    .leftJoin(bestScoresCTE, eq(students.id, bestScoresCTE.studentId))
+    .orderBy(desc(students.xpPoints))
+    .limit(500)
+
+  const myRankIndex = allRanked.findIndex(s => s.id === student.id)
+  const myRank      = myRankIndex === -1 ? allRanked.length + 1 : myRankIndex + 1
+  const myRanked    = myRankIndex !== -1 ? allRanked[myRankIndex] : null
+
+  const top50: LeaderboardEntry[] = allRanked.slice(0, 50).map((s, i) => ({
+    rank:          i + 1,
+    id:            s.id,
+    firstName:     s.fullName.split(' ')[0],
+    city:          s.city ?? null,
+    xpPoints:      s.xpPoints,
+    badges:        (s.badges as string[]) ?? [],
+    tier:          s.tier ?? null,
+    isYou:         s.id === student.id,
+    bestQuizScore: s.bestQuizScore ?? null,
+  }))
+
+  const myEntry: LeaderboardEntry = {
+    rank:          myRank,
+    id:            student.id,
+    firstName:     student.fullName.split(' ')[0],
+    city:          student.city ?? null,
+    xpPoints:      student.xpPoints,
+    badges:        (student.badges as string[]) ?? [],
+    tier:          student.tier ?? null,
+    isYou:         true,
+    bestQuizScore: myRanked?.bestQuizScore ?? null,
+  }
+
+  return (
+    <div className="max-w-2xl mx-auto pb-8">
+      {/* Page header */}
+      <div className="px-4 pt-5 pb-2 md:px-6 md:pt-6">
+        <p className="font-mono text-[11px] tracking-[0.2em] uppercase mb-1" style={{ color: 'var(--text-brand)' }}>
+          Rankings · {allRanked.length} builders
+        </p>
+        <h1 className="font-display text-[2rem] md:text-[2.5rem] leading-none tracking-wide" style={{ color: 'var(--text-1)' }}>
+          LEADERBOARD
+        </h1>
+        <p className="font-body text-sm mt-1" style={{ color: 'var(--text-4)' }}>
+          Updates every 10 seconds · Earn XP by completing stages, workshops &amp; submitting your project
+        </p>
+      </div>
+
+      <div className="px-4 md:px-6">
+        {top50.length === 0 ? (
+          <div
+            className="rounded-2xl border p-10 flex flex-col items-center gap-3 text-center"
+            style={{ background: 'var(--bg-card)', borderColor: 'var(--border-faint)' }}
+          >
+            <span className="text-4xl">🏆</span>
+            <p className="font-display text-xl tracking-wide" style={{ color: 'var(--text-2)' }}>
+              LEADERBOARD EMPTY
+            </p>
+            <p className="font-body text-sm" style={{ color: 'var(--text-4)' }}>
+              Be the first on the board. Earn XP by completing workshops and submitting your project.
+            </p>
+          </div>
+        ) : (
+          <LeaderboardClient initialRows={top50} myEntry={myEntry} />
+        )}
+      </div>
+    </div>
+  )
 }

@@ -1,21 +1,21 @@
 import type { Metadata } from 'next'
 import Script from 'next/script'
-import { getDatesConfig, getPricingConfig } from '@/lib/db/queries/config'
+import { getDatesConfig } from '@/lib/db/queries/config'
 
-import { Navbar }             from '@/components/layout/Navbar'
-import { Footer }             from '@/components/layout/Footer'
-import { MobileStickyBar }    from '@/components/layout/MobileStickyBar'
-import { HeroSection }        from './_components/HeroSection'
-import { StatsBar }           from './_components/StatsBar'
-import { ProgrammeTimeline }  from './_components/ProgrammeTimeline'
-import { TierComparison }     from './_components/TierComparison'
-import { BadgeWall }          from './_components/BadgeWall'
-import { DomainGrid }         from './_components/DomainGrid'
-import { ForParents }         from './_components/ForParents'
-import { JudgingCriteria }    from './_components/JudgingCriteria'
-import { FAQ }                from './_components/FAQ'
-import { JurySection }        from './_components/JurySection'
-import { FinalCTA }           from './_components/FinalCTA'
+import { Navbar } from '@/components/layout/Navbar'
+import { Footer } from '@/components/layout/Footer'
+import { MobileStickyBar } from '@/components/layout/MobileStickyBar'
+import { HeroSection } from './_components/HeroSection'
+import { StatsBar } from './_components/StatsBar'
+import { ProgrammeTimeline } from './_components/ProgrammeTimeline'
+import { TierComparison } from './_components/TierComparison'
+import { BadgeWall } from './_components/BadgeWall'
+import { DomainGrid } from './_components/DomainGrid'
+import { ForParents } from './_components/ForParents'
+import { JudgingCriteria } from './_components/JudgingCriteria'
+import { FAQ } from './_components/FAQ'
+import { JurySection } from './_components/JurySection'
+import { FinalCTA } from './_components/FinalCTA'
 
 /* ─── ISR — revalidate once per minute ──────────────────────────────────────── */
 export const revalidate = 60
@@ -24,10 +24,10 @@ export const revalidate = 60
 export const metadata: Metadata = {
   title: 'Super Builders — AI Hackathon for School Students | zer0.pro',
   description:
-    "India's #1 AI programme for Class 8–12 students. 3-week online programme + 24-hour hackathon. ₹1,00,000+ prizes. Register before May 25.",
+    "India's #1 AI programme for Class 8–12 students. 3-week online programme + 24-hour hackathon. ₹1,00,000+ prizes. Register before May 30.",
   keywords: [
     'AI hackathon India',
-    'school hackathon 2025',
+    'school hackathon 2026',
     'Class 8 12 coding',
     'zer0.pro',
     'online AI programme teens',
@@ -35,7 +35,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Super Builders — Build AI. Win ₹1 Lakh.',
     description:
-      'Online AI hackathon for Indian school students. Jun 7–8, 2025.',
+      'Online AI hackathon for Indian school students. Jun 7–8, 2026.',
     images: [{ url: '/og/super-builders.jpg', width: 1200, height: 630 }],
   },
   twitter: { card: 'summary_large_image' },
@@ -45,14 +45,17 @@ export const metadata: Metadata = {
 
 /* ─── Page ───────────────────────────────────────────────────────────────────── */
 export default async function LandingPage() {
-  const [dates, pricing] = await Promise.all([getDatesConfig(), getPricingConfig()])
+  const dates = await getDatesConfig()
+
+  const hackDate = new Date(dates.hackathonStartISO)
+  const hackathonStartDisplay = hackDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
 
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Event',
     name: 'Super Builders — School Edition',
     startDate: dates.hackathonStartISO,
-    endDate:   dates.hackathonEndISO,
+    endDate: dates.hackathonEndISO,
     eventStatus: 'https://schema.org/EventScheduled',
     eventAttendanceMode: 'https://schema.org/OnlineEventAttendanceMode',
     organizer: {
@@ -62,7 +65,7 @@ export default async function LandingPage() {
     },
     offers: {
       '@type': 'Offer',
-      price: String(pricing.pro.priceMin),
+      price: '2999',
       priceCurrency: 'INR',
       validThrough: dates.regDeadlineISO,
     },
@@ -78,11 +81,17 @@ export default async function LandingPage() {
       />
 
       {/* 1 — Sticky nav */}
-      <Navbar />
+      <Navbar
+        regDeadlineISO={dates.regDeadlineISO}
+        regDeadlineDisplay={dates.regDeadlineDisplay}
+      />
 
       <main className="pb-20 md:pb-0">
         {/* 2 — Hero */}
-        <HeroSection />
+        <HeroSection
+          hackathonStartISO={dates.hackathonStartISO}
+          regDeadlineISO={dates.regDeadlineISO}
+        />
 
         {/* 3 — Stats bar */}
         <StatsBar />
@@ -90,8 +99,8 @@ export default async function LandingPage() {
         {/* 4 — Programme timeline (phases + workshop cards) */}
         <ProgrammeTimeline phases={dates.phases} workshops={dates.workshops} />
 
-        {/* 5 — Tier comparison */}
-        <TierComparison pricing={pricing} />
+        {/* 5 — Pricing (solo vs team) */}
+        <TierComparison />
 
         {/* 6 — Badge wall */}
         <BadgeWall />

@@ -9,9 +9,6 @@ export async function createPendingPayment(data: {
   studentId:       string
   razorpayOrderId: string
   amount:          number
-  tier:            'pro' | 'premium'
-  isEmi:           boolean
-  discountPct?:    number
 }): Promise<Payment> {
   const [payment] = await db
     .insert(payments)
@@ -19,10 +16,7 @@ export async function createPendingPayment(data: {
       studentId:       data.studentId,
       razorpayOrderId: data.razorpayOrderId,
       amount:          data.amount,
-      tier:            data.tier,
       status:          'pending',
-      isEmi:           data.isEmi,
-      discountPct:     data.discountPct ?? 0,
     })
     .returning()
   return payment
@@ -55,13 +49,11 @@ export async function getPaymentByOrderId(orderId: string): Promise<Payment | nu
 
 export async function confirmStudentPayment(data: {
   studentId: string
-  tier:      'pro' | 'premium'
 }): Promise<void> {
   await db
     .update(students)
     .set({
       isPaid:       true,
-      tier:         data.tier,
       currentStage: '4',
       updatedAt:    new Date(),
     })

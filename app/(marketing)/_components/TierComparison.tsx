@@ -2,54 +2,48 @@
 
 import Link from 'next/link'
 import { motion, type Variants } from 'framer-motion'
-import type { PricingConfig } from '@/lib/db/queries/config'
 
 /* ─── constants ─────────────────────────────────────────────────────────────── */
 const EASE_OUT = [0.16, 1, 0.3, 1] as const
 
+const FEATURES = [
+  '3 live AI workshops',
+  'Group mentorship sessions',
+  '24-hour hackathon access',
+  'Participation certificate + digital badge',
+  '₹1,00,000+ prize pool',
+  'Leaderboard + XP system',
+  'Discord community access',
+]
+
 /* ─── variants ──────────────────────────────────────────────────────────────── */
-const proCard: Variants = {
+const soloCard: Variants = {
   hidden: { opacity: 0, x: -48 },
-  show:   { opacity: 1, x: 0, transition: { duration: 0.65, ease: EASE_OUT } },
+  show: { opacity: 1, x: 0, transition: { duration: 0.65, ease: EASE_OUT } },
 }
 
-const premiumCard: Variants = {
+const teamCard: Variants = {
   hidden: { opacity: 0, x: 48 },
-  show:   { opacity: 1, x: 0, transition: { duration: 0.65, ease: EASE_OUT } },
+  show: { opacity: 1, x: 0, transition: { duration: 0.65, ease: EASE_OUT } },
 }
 
 const headerAnim: Variants = {
   hidden: { opacity: 0, y: 20 },
-  show:   { opacity: 1, y: 0, transition: { duration: 0.55, ease: EASE_OUT } },
+  show: { opacity: 1, y: 0, transition: { duration: 0.55, ease: EASE_OUT } },
 }
 
 /* ─── FeatureRow ────────────────────────────────────────────────────────────── */
-function FeatureRow({
-  feature,
-  included,
-  accent,
-}: {
-  feature:  string
-  included: boolean
-  accent:   string
-}) {
+function FeatureRow({ feature, accent }: { feature: string; accent: string }) {
   return (
     <li className="flex items-start gap-3 py-2.5 border-b last:border-0" style={{ borderColor: 'var(--border-faint)' }}>
       <span
         className="mt-[1px] flex-shrink-0 w-4 h-4 rounded-full flex items-center justify-center text-[12px] font-bold"
-        style={
-          included
-            ? { background: `${accent}20`, color: accent }
-            : { background: 'rgba(255,255,255,0.04)', color: 'var(--text-4)' }
-        }
+        style={{ background: `${accent}20`, color: accent }}
         aria-hidden="true"
       >
-        {included ? '✓' : '—'}
+        ✓
       </span>
-      <span
-        className="font-body text-[13px] leading-snug"
-        style={{ color: included ? 'var(--text-2)' : 'var(--text-4)' }}
-      >
+      <span className="font-body text-[13px] leading-snug" style={{ color: 'var(--text-2)' }}>
         {feature}
       </span>
     </li>
@@ -57,19 +51,14 @@ function FeatureRow({
 }
 
 /* ─── TierComparison ────────────────────────────────────────────────────────── */
-export function TierComparison({ pricing }: { pricing: PricingConfig }) {
-  const proFeatureSet     = new Set(pricing.pro.features)
-  const premiumFeatureSet = new Set(pricing.premium.features)
-  const allFeaturesSet    = new Set([...pricing.pro.features, ...pricing.pro.missing, ...pricing.premium.features])
-  const ALL_FEATURES      = Array.from(allFeaturesSet)
-
+export function TierComparison() {
   return (
     <section
       className="relative py-20 sm:py-28 overflow-hidden"
-      id="tiers"
+      id="pricing"
       style={{ background: 'var(--bg-base)' }}
     >
-      {/* Diagonal brand gradient sweep — asymmetric background detail */}
+      {/* Radial background accent */}
       <div
         className="pointer-events-none absolute inset-0"
         aria-hidden="true"
@@ -93,134 +82,118 @@ export function TierComparison({ pricing }: { pricing: PricingConfig }) {
             className="font-mono text-[12px] tracking-[0.28em] uppercase mb-3"
             style={{ color: 'var(--text-brand)' }}
           >
-            Choose Your Path
+            Simple Pricing
           </p>
           <h2
             className="font-display leading-none tracking-tight"
             style={{ fontSize: 'clamp(36px, 6vw, 80px)', color: 'var(--text-1)' }}
           >
-            PRO VS{' '}
-            <span style={{ color: 'var(--text-brand)' }}>PREMIUM</span>
+            SOLO OR{' '}
+            <span style={{ color: 'var(--text-brand)' }}>TEAM</span>
           </h2>
           <p
             className="mt-4 font-body text-[15px] max-w-md mx-auto"
             style={{ color: 'var(--text-3)' }}
           >
-            Both get you into the arena. Premium gets you the edge.
+            Same programme, same prizes. Teams of 2–3 pay less per head.
           </p>
         </motion.div>
 
         {/* ── Cards ── */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:items-stretch">
 
-          {/* ── PRO card ── */}
+          {/* ── SOLO card ── */}
           <motion.div
-            variants={proCard}
+            variants={soloCard}
             initial="hidden"
             whileInView="show"
             viewport={{ once: true, margin: '-60px' }}
             className="relative rounded-[6px] border p-7 flex flex-col"
             style={{
-              background:  'var(--bg-card)',
+              background: 'var(--bg-card)',
               borderColor: 'var(--border-subtle)',
             }}
           >
-            {/* Tier label */}
             <p
               className="font-mono text-[9px] tracking-[0.22em] uppercase mb-2"
               style={{ color: 'var(--text-3)' }}
             >
-              Tier 01
+              Individual
             </p>
 
-            {/* Name */}
             <h3
               className="font-display leading-none mb-5"
               style={{ fontSize: 'clamp(40px, 5vw, 56px)', color: 'var(--text-1)' }}
             >
-              Pro
+              Solo
             </h3>
 
-            {/* Price */}
             <div className="mb-6">
               <span
                 className="font-heading font-extrabold"
                 style={{ fontSize: 'clamp(28px, 4vw, 36px)', color: 'var(--text-brand)' }}
               >
-                ₹{pricing.pro.priceMin.toLocaleString('en-IN')}
-              </span>
-              <span
-                className="font-heading font-medium text-lg ml-1"
-                style={{ color: 'var(--text-3)' }}
-              >
-                – ₹{pricing.pro.priceMax.toLocaleString('en-IN')}
+                ₹3,499
               </span>
               <p
                 className="font-mono text-[12px] mt-1 tracking-wide"
                 style={{ color: 'var(--text-4)' }}
               >
-                One-time · Early bird pricing
+                One-time · per student
               </p>
             </div>
 
-            {/* Features */}
             <ul className="mb-8 flex-1">
-              {ALL_FEATURES.map((f) => (
-                <FeatureRow
-                  key={f}
-                  feature={f}
-                  included={proFeatureSet.has(f)}
-                  accent="#22C55E"
-                />
+              {FEATURES.map((f) => (
+                <FeatureRow key={f} feature={f} accent="#22C55E" />
               ))}
             </ul>
 
-            {/* CTA */}
             <Link
-              href="/register/stage-1"
-              className="flex items-center justify-center h-[50px] rounded-[4px] border font-heading font-bold text-[13px] tracking-[0.1em] uppercase transition-all duration-150"
+              href="/dashboard/apply"
+              className="flex items-center justify-center h-[50px] rounded-[4px] border font-heading font-bold text-[13px] tracking-[0.1em] uppercase transition-all duration-150 touch-manipulation active:opacity-70 active:scale-95"
               style={{
                 borderColor: 'var(--border-soft)',
-                color:       'var(--text-2)',
+                color: 'var(--text-2)',
               }}
               onMouseEnter={(e) => {
                 const el = e.currentTarget as HTMLElement
                 el.style.borderColor = 'var(--border-brand)'
-                el.style.color       = 'var(--text-brand)'
+                el.style.color = 'var(--text-brand)'
               }}
               onMouseLeave={(e) => {
                 const el = e.currentTarget as HTMLElement
                 el.style.borderColor = 'var(--border-soft)'
-                el.style.color       = 'var(--text-2)'
+                el.style.color = 'var(--text-2)'
               }}
             >
-              Choose Pro
+              Register Solo
             </Link>
           </motion.div>
 
-          {/* ── PREMIUM card ── */}
+          {/* ── TEAM card ── */}
           <motion.div
-            variants={premiumCard}
+            variants={teamCard}
             initial="hidden"
             whileInView="show"
             viewport={{ once: true, margin: '-60px' }}
             className="relative rounded-[6px] border p-7 flex flex-col"
             style={{
-              background:  'var(--bg-float)',
+              background: 'var(--bg-float)',
               borderColor: 'rgba(255,184,0,0.45)',
-              boxShadow:   '0 0 0 1px rgba(255,184,0,0.15), 0 8px 48px rgba(255,184,0,0.12), inset 0 1px 0 rgba(255,184,0,0.1)',
+              boxShadow: '0 0 0 1px rgba(255,184,0,0.15), 0 8px 48px rgba(255,184,0,0.12), inset 0 1px 0 rgba(255,184,0,0.1)',
             }}
           >
-            {/* Most Popular pill */}
+            {/* Save badge */}
             <div
               className="absolute -top-3.5 left-1/2 -translate-x-1/2 inline-flex items-center gap-1.5 px-4 h-7 rounded-full border font-mono text-[12px] tracking-wider uppercase font-semibold whitespace-nowrap"
               style={{
-                background:  'var(--brand)',
+                background: 'var(--brand)',
                 borderColor: 'rgba(255,184,0,0.6)',
-                color:       '#000',
+                color: '#000',
               }}
             >
-              ⭐ Most Popular
+              💰 Save ₹500/head
             </div>
 
             {/* Corner glow accent */}
@@ -233,49 +206,46 @@ export function TierComparison({ pricing }: { pricing: PricingConfig }) {
               }}
             />
 
-            {/* Tier label */}
             <p
               className="font-mono text-[9px] tracking-[0.22em] uppercase mb-2"
               style={{ color: 'var(--text-brand)' }}
             >
-              Tier 02
+              Team of 2–3
             </p>
 
-            {/* Name */}
             <h3
               className="font-display leading-none mb-5"
               style={{ fontSize: 'clamp(40px, 5vw, 56px)', color: 'var(--text-brand)' }}
             >
-              Premium
+              Team
             </h3>
 
-            {/* Price */}
             <div className="mb-2">
               <span
                 className="font-heading font-extrabold"
                 style={{ fontSize: 'clamp(28px, 4vw, 36px)', color: 'var(--text-brand)' }}
               >
-                ₹{pricing.premium.priceMin.toLocaleString('en-IN')}
+                ₹2,999
               </span>
               <span
-                className="font-heading font-medium text-lg ml-1"
+                className="font-heading font-medium text-lg ml-1.5"
                 style={{ color: 'var(--text-3)' }}
               >
-                – ₹{pricing.premium.priceMax.toLocaleString('en-IN')}
+                /head
               </span>
               <p
                 className="font-mono text-[12px] mt-1 tracking-wide"
                 style={{ color: 'var(--text-4)' }}
               >
-                One-time · Early bird pricing
+                One-time · 2–3 members
               </p>
             </div>
 
-            {/* EMI highlight — prominent */}
+            {/* Savings callout */}
             <div
               className="mb-6 px-3.5 py-2.5 rounded-[4px] border"
               style={{
-                background:  'rgba(255,184,0,0.07)',
+                background: 'rgba(255,184,0,0.07)',
                 borderColor: 'rgba(255,184,0,0.25)',
               }}
             >
@@ -283,42 +253,35 @@ export function TierComparison({ pricing }: { pricing: PricingConfig }) {
                 className="font-mono text-[13px] font-semibold"
                 style={{ color: 'var(--text-brand)' }}
               >
-                Or pay ₹{pricing.premium.emiFirst} now + rest in 1 week
+                One person creates the team → share the code with your friends
               </p>
             </div>
 
-            {/* Features */}
             <ul className="mb-8 flex-1">
-              {ALL_FEATURES.map((f) => (
-                <FeatureRow
-                  key={f}
-                  feature={f}
-                  included={premiumFeatureSet.has(f)}
-                  accent="#FFB800"
-                />
+              {FEATURES.map((f) => (
+                <FeatureRow key={f} feature={f} accent="#FFB800" />
               ))}
             </ul>
 
-            {/* CTA */}
             <Link
-              href="/register/stage-1"
-              className="flex items-center justify-center gap-2 h-[50px] rounded-[4px] font-heading font-bold text-[13px] tracking-[0.1em] uppercase transition-all duration-150 text-black"
+              href="/dashboard/apply"
+              className="flex items-center justify-center gap-2 h-[50px] rounded-[4px] font-heading font-bold text-[13px] tracking-[0.1em] uppercase transition-all duration-150 touch-manipulation active:opacity-70 active:scale-95 text-black"
               style={{
                 background: 'var(--brand)',
-                boxShadow:  '0 0 0 1px rgba(255,184,0,0.4), 0 4px 24px rgba(255,184,0,0.3)',
+                boxShadow: '0 0 0 1px rgba(255,184,0,0.4), 0 4px 24px rgba(255,184,0,0.3)',
               }}
               onMouseEnter={(e) => {
                 const el = e.currentTarget as HTMLElement
                 el.style.background = 'var(--brand-bright)'
-                el.style.boxShadow  = '0 0 0 1px rgba(255,184,0,0.6), 0 6px 32px rgba(255,184,0,0.45)'
+                el.style.boxShadow = '0 0 0 1px rgba(255,184,0,0.6), 0 6px 32px rgba(255,184,0,0.45)'
               }}
               onMouseLeave={(e) => {
                 const el = e.currentTarget as HTMLElement
                 el.style.background = 'var(--brand)'
-                el.style.boxShadow  = '0 0 0 1px rgba(255,184,0,0.4), 0 4px 24px rgba(255,184,0,0.3)'
+                el.style.boxShadow = '0 0 0 1px rgba(255,184,0,0.4), 0 4px 24px rgba(255,184,0,0.3)'
               }}
             >
-              Choose Premium
+              Register as Team
             </Link>
           </motion.div>
         </div>

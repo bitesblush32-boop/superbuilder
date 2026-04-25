@@ -51,7 +51,7 @@ export function PaymentsTable({ payments, total, currentPage }: Props) {
           <table className="w-full text-sm border-collapse">
             <thead>
               <tr style={{ background: 'var(--bg-raised)' }}>
-                {['Student', 'Tier', 'Amount', 'Discount', 'Status', 'Razorpay ID', 'Date'].map(h => (
+                {['Student', 'Amount', 'Status', 'Razorpay ID', 'Date'].map(h => (
                   <th
                     key={h}
                     className="px-4 py-3 text-left text-xs uppercase tracking-wider font-medium whitespace-nowrap"
@@ -76,32 +76,8 @@ export function PaymentsTable({ payments, total, currentPage }: Props) {
                       <p style={{ color: 'var(--text-1)' }}>{p.studentName}</p>
                       <p className="text-xs font-mono" style={{ color: 'var(--text-4)' }}>{p.studentEmail}</p>
                     </td>
-                    <td className="px-4 py-3">
-                      <span
-                        className="text-xs px-2 py-0.5 rounded-full font-medium capitalize"
-                        style={{
-                          background: p.tier === 'premium' ? 'rgba(255,215,0,0.1)' : 'rgba(96,165,250,0.1)',
-                          color:      p.tier === 'premium' ? '#FFD700' : 'var(--blue)',
-                        }}
-                      >
-                        {p.tier === 'premium' ? '⭐ Premium' : 'Pro'}
-                      </span>
-                    </td>
                     <td className="px-4 py-3 font-mono font-medium" style={{ color: 'var(--text-brand)' }}>
                       {formatRupees(p.amount)}
-                      {p.isEmi && <span className="ml-1 text-xs" style={{ color: 'var(--text-4)' }}>EMI</span>}
-                    </td>
-                    <td className="px-4 py-3">
-                      {p.discountPct > 0 ? (
-                        <span
-                          className="font-mono text-xs px-2 py-0.5 rounded-full"
-                          style={{ background: 'rgba(34,197,94,0.1)', color: 'var(--green)' }}
-                        >
-                          {p.discountPct}% off
-                        </span>
-                      ) : (
-                        <span style={{ color: 'var(--text-4)' }}>—</span>
-                      )}
                     </td>
                     <td className="px-4 py-3">
                       <span
@@ -123,7 +99,7 @@ export function PaymentsTable({ payments, total, currentPage }: Props) {
                   {/* Expanded row */}
                   {expanded === p.id && (
                     <tr key={`${p.id}-expanded`} style={{ background: 'var(--bg-inset)' }}>
-                      <td colSpan={7} className="px-4 py-4">
+                      <td colSpan={5} className="px-4 py-4">
                         <div className="grid grid-cols-3 gap-4 text-xs">
                           <div>
                             <p style={{ color: 'var(--text-4)' }}>Order ID</p>

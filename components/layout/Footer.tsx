@@ -1,21 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-
-/* ─── zer0.pro geometric "0" mark (inline SVG — no shared import needed) ──── */
-function Zer0Mark({ size = 20 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 26 26" fill="none" aria-hidden="true">
-      <circle cx="13" cy="13" r="11.5" stroke="#FFB800" strokeWidth="1.5" />
-      <ellipse cx="13" cy="13" rx="4.5" ry="7" stroke="#FFB800" strokeWidth="1.5" />
-      <line
-        x1="9.5" y1="18.5"
-        x2="16.5" y2="7.5"
-        stroke="#FFB800" strokeWidth="1.5" strokeLinecap="round"
-      />
-    </svg>
-  )
-}
+import Image from 'next/image'
 
 /* ─── Discord SVG icon (not in Lucide) ────────────────────────────────────── */
 function DiscordIcon({ size = 14 }: { size?: number }) {
@@ -51,45 +37,45 @@ const COLUMNS = [
   {
     heading: 'Programme',
     links: [
-      { label: 'Timeline',  href: '#programme' },
+      { label: 'Timeline', href: '#programme' },
       { label: 'Workshops', href: '#workshops' },
-      { label: 'Prizes',    href: '#prizes'    },
-      { label: 'Domains',   href: '#domains'   },
+      { label: 'Prizes', href: '#prizes' },
+      { label: 'Domains', href: '#domains' },
     ],
   },
   {
     heading: 'Register',
     links: [
-      { label: 'Apply Now',   href: '/register/stage-1' },
-      { label: 'Tiers & Pricing', href: '#tiers'        },
-      { label: 'FAQ',         href: '#faq'              },
-      { label: 'For Parents', href: '#parents'          },
+      { label: 'Apply Now', href: '/dashboard/apply' },
+      { label: 'Tiers & Pricing', href: '#tiers' },
+      { label: 'FAQ', href: '#faq' },
+      { label: 'For Parents', href: '#parents' },
     ],
   },
   {
     heading: 'Community',
     links: [
-      { label: 'Discord Server',    href: '#discord'   },
-      { label: 'WhatsApp Group',    href: '#whatsapp'  },
-      { label: 'Instagram',         href: '#instagram' },
-      { label: 'Mentors',           href: '#mentors'   },
+      { label: 'Discord Server', href: '#discord' },
+      { label: 'WhatsApp Group', href: 'https://chat.whatsapp.com/Kn9WvBrBsXsJ4PWg1rJC56' },
+      { label: 'Instagram', href: '#instagram' },
+      { label: 'Mentors', href: '#mentors' },
     ],
   },
   {
     heading: 'Platform',
     links: [
-      { label: 'Dashboard',    href: '/dashboard'   },
-      { label: 'Leaderboard',  href: '/dashboard/leaderboard' },
-      { label: 'Certificate',  href: '/dashboard/certificate' },
-      { label: 'Verify Cert',  href: '/verify'      },
+      { label: 'Dashboard', href: '/dashboard' },
+      { label: 'Leaderboard', href: '/dashboard/leaderboard' },
+      { label: 'Certificate', href: '/dashboard/certificate' },
+      { label: 'Verify Cert', href: '/verify' },
     ],
   },
 ] as const
 
 /* ─── Social links ─────────────────────────────────────────────────────────── */
 const SOCIALS = [
-  { label: 'Discord',   href: '#discord',   Icon: DiscordIcon   },
-  { label: 'WhatsApp',  href: '#whatsapp',  Icon: WhatsAppIcon  },
+  { label: 'Discord', href: '#discord', Icon: DiscordIcon },
+  { label: 'WhatsApp', href: 'https://chat.whatsapp.com/Kn9WvBrBsXsJ4PWg1rJC56', Icon: WhatsAppIcon },
   { label: 'Instagram', href: '#instagram', Icon: InstagramIcon },
 ] as const
 
@@ -132,19 +118,25 @@ export function Footer() {
               className="flex items-center gap-2 w-fit"
               aria-label="Super Builders — home"
             >
-              <Zer0Mark size={20} />
+              <Image
+                src="/logo.png"
+                alt="zer0.pro logo"
+                width={100}
+                height={28}
+                className="h-6 w-auto object-contain"
+              />
               <span
                 className="font-heading font-extrabold text-[12px] tracking-[0.12em] uppercase"
-                style={{ color: 'var(--text-brand)' }}
+                style={{ color: 'var(--text-3)' }}
               >
-                SUPER BUILDERS
+                x Super Builders
               </span>
             </Link>
             <p
               className="font-mono text-[12px] leading-relaxed tracking-wide uppercase"
               style={{ color: 'var(--text-4)' }}
             >
-              School Edition · Season 01 · 2025
+              School Edition · Season 01 · 2026
               <br />
               An online AI hackathon by{' '}
               <a
@@ -184,7 +176,7 @@ export function Footer() {
                   color: 'var(--text-4)',
                 }}
               >
-                JUN 7–8, 2025
+                JUN 7–8, 2026
               </span>
             </div>
           </div>
@@ -257,19 +249,23 @@ export function Footer() {
         </div>
 
         {/* Bottom bar */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-5">
+        <div className="flex items-center justify-between gap-3 pt-5 flex-wrap">
           <p
             className="font-mono text-[9px] tracking-widest uppercase"
             style={{ color: 'var(--text-4)' }}
           >
-            © 2025 zer0.pro · All rights reserved
+            © 2026 zer0.pro · All rights reserved
           </p>
 
           <div className="flex items-center gap-4">
-            {(['Privacy Policy', 'Terms of Use', 'Refund Policy'] as const).map((item) => (
+            {([
+              { label: 'Privacy Policy', href: '/terms#privacy' },
+              { label: 'Terms of Use',   href: '/terms#terms'   },
+              { label: 'Refund Policy',  href: '/terms#refund'  },
+            ] as const).map(({ label, href }) => (
               <Link
-                key={item}
-                href="#"
+                key={label}
+                href={href}
                 className="font-mono text-[9px] tracking-wider uppercase transition-colors duration-150"
                 style={{ color: 'var(--text-4)' }}
                 onMouseEnter={(e) =>
@@ -279,7 +275,7 @@ export function Footer() {
                   ((e.currentTarget as HTMLElement).style.color = 'var(--text-4)')
                 }
               >
-                {item}
+                {label}
               </Link>
             ))}
           </div>

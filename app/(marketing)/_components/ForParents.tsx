@@ -214,7 +214,7 @@ export function ForParents() {
           {/* Parent info session CTA */}
           <a
             href="#"
-            className="w-full sm:w-1/2 inline-flex items-center justify-center sm:justify-start gap-2.5 h-[48px] px-6 rounded-[4px] border font-heading font-semibold text-[13px] tracking-[0.08em] uppercase transition-all duration-150"
+            className="w-full sm:w-1/2 inline-flex items-center justify-center sm:justify-start gap-2.5 h-[48px] px-6 rounded-[4px] border font-heading font-semibold text-[13px] tracking-[0.08em] uppercase transition-all duration-150 touch-manipulation active:opacity-70 active:scale-95"
             style={{
               borderColor: 'var(--border-soft)',
               color:       'var(--text-2)',

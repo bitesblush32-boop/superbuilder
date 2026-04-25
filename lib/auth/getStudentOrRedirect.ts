@@ -6,11 +6,13 @@ import { eq, and } from 'drizzle-orm'
 
 export type Student = typeof students.$inferSelect
 
-// Maps pipeline_stage enum values to the entry page of that stage
+// Maps pipeline_stage enum values to where a student lands after completing each stage.
+// Dashboard is now the central hub from stage 2 onward — registration sub-pages are
+// reached by clicking the stage items in the sidebar, not by automatic routing.
 const STAGE_ROUTES: Record<string, string> = {
-  '1': '/register/stage-1',
-  '2': '/register/stage-2/orientation',
-  '3': '/register/stage-3/engage',
+  '1': '/dashboard/apply',
+  '2': '/dashboard',
+  '3': '/dashboard',
   '4': '/dashboard',
   '5': '/dashboard',
 }
@@ -20,10 +22,10 @@ const STAGE_ROUTES: Record<string, string> = {
  * Does NOT check quiz attempts (requires a separate DB query — handled in register/page.tsx).
  */
 export function getStage2SubRoute(student: Student): string {
-  if (!student.orientationComplete) return '/register/stage-2/orientation'
-  if (!student.hackathonDomain)     return '/register/stage-2/domain'
+  if (!student.orientationComplete) return '/dashboard/intro'
+  if (!student.hackathonDomain)     return '/dashboard/domain'
   // quiz + idea sub-steps require extra queries — caller handles these
-  return '/register/stage-2/quiz'
+  return '/dashboard/quiz'
 }
 
 /**
@@ -97,18 +99,16 @@ export async function getStudentOrRedirect(requiredStage: number): Promise<{
 
   const studentStageNum = student ? parseInt(student.currentStage, 10) : 0
 
-  // Stage 1 — student may not exist yet (pre-registration)
+  // Stage 1 — student may not exist yet (pre-registration).
+  // Do NOT redirect forward here — allow backward navigation.
+  // The calling page (e.g. apply/page.tsx) controls its own access policy.
   if (requiredStage === 1) {
-    // If already past stage 1, send them to their current stage
-    if (student && studentStageNum > 1) {
-      redirect(STAGE_ROUTES[student.currentStage] ?? '/register')
-    }
     return { student: student ?? null, userId }
   }
 
   // Stage 2+ — student must exist and be at or past requiredStage
   if (!student) {
-    redirect('/register/stage-1')
+    redirect('/dashboard/apply')
   }
 
   if (studentStageNum < requiredStage) {
@@ -116,7 +116,7 @@ export async function getStudentOrRedirect(requiredStage: number): Promise<{
     if (student.currentStage === '2') {
       redirect(getStage2SubRoute(student))
     }
-    redirect(STAGE_ROUTES[student.currentStage] ?? '/register/stage-1')
+    redirect(STAGE_ROUTES[student.currentStage] ?? '/dashboard/apply')
   }
 
   return { student, userId }

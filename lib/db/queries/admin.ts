@@ -25,6 +25,10 @@ export interface AdminKPIs {
   quizPassRate:       number
   conversionRate:     number
   stageFunnel:        { stage: string; count: number }[]
+  // Display stage counts (DB 1+2+3 = Display S1, DB 4 = Display S2, DB 5 = Display S3)
+  stage1Count:        number
+  stage2Count:        number
+  stage3Count:        number
 }
 
 export async function getAdminKPIs(): Promise<AdminKPIs> {
@@ -82,10 +86,16 @@ export async function getAdminKPIs(): Promise<AdminKPIs> {
     count: stageResult.find(r => r.stage === stage)?.count ?? 0,
   }))
 
+  const stageCount = (s: string) => stageResult.find(r => r.stage === s)?.count ?? 0
+  const stage1Count = stageCount('1') + stageCount('2') + stageCount('3')
+  const stage2Count = stageCount('4')
+  const stage3Count = stageCount('5')
+
   return {
     totalStudents, paidStudents, premiumCount, proCount,
     totalRevenueRupees: Math.floor(totalRevenuePaise / 100),
     todayRegistrations, quizPassRate, conversionRate, stageFunnel,
+    stage1Count, stage2Count, stage3Count,
   }
 }
 

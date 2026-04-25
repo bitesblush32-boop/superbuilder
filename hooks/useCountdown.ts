@@ -37,7 +37,10 @@ export function useCountdown(target: Date): CountdownResult {
   const targetTime = target.getTime()
   const tick = useCallback(() => calculate(new Date(targetTime)), [targetTime])
 
-  const [countdown, setCountdown] = useState<CountdownResult>(tick)
+  // Initialize with zeroed state to ensure server/client HTML match identically during hydration
+  const [countdown, setCountdown] = useState<CountdownResult>({
+    days: 0, hours: 0, mins: 0, secs: 0, expired: false
+  })
 
   useEffect(() => {
     // Sync immediately in case of SSR/hydration delta

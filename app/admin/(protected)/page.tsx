@@ -51,11 +51,11 @@ function KPICard({ label, value, sub, accent }: KPICardProps) {
 }
 
 const STAGE_LABELS: Record<string, string> = {
-  '1': 'Stage 1 — Applied',
-  '2': 'Stage 2 — Quiz/Idea',
-  '3': 'Stage 3 — Pre-payment',
-  '4': 'Stage 4 — Paid',
-  '5': 'Stage 5 — Submitted',
+  '1': 'S1 · Applying',
+  '2': 'S1 · Quiz/Idea',
+  '3': 'S1 · Pre-pay',
+  '4': 'S2 · Workshops',
+  '5': 'S3 · Hackathon',
 }
 
 export default async function AdminPage() {
@@ -132,7 +132,30 @@ export default async function AdminPage() {
         />
       </div>
 
-      {/* Stage funnel */}
+      {/* Stage Overview — display-stage counts */}
+      <div className="grid grid-cols-3 gap-3">
+        {[
+          { label: 'Stage 1 — Apply & Prepare', sub: 'DB stages 1, 2, 3', count: kpis.stage1Count, color: '#A78BFA' },
+          { label: 'Stage 2 — Workshops',       sub: 'DB stage 4 · Jun 3–5', count: kpis.stage2Count, color: '#60A5FA' },
+          { label: 'Stage 3 — Hackathon',       sub: 'DB stage 5 · Jun 7–8', count: kpis.stage3Count, color: '#FB923C' },
+        ].map(({ label, sub, count, color }) => (
+          <div
+            key={label}
+            className="rounded-xl p-4 flex flex-col gap-1 border"
+            style={{ background: 'var(--bg-card)', borderColor: 'var(--border-faint)' }}
+          >
+            <p className="text-xs font-medium uppercase tracking-wider" style={{ color: 'var(--text-3)' }}>
+              {label}
+            </p>
+            <p className="font-display text-3xl leading-none" style={{ color }}>
+              {count.toLocaleString('en-IN')}
+            </p>
+            <p className="text-xs mt-0.5" style={{ color: 'var(--text-4)' }}>{sub}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* Participant Funnel */}
       <div
         className="rounded-xl p-4 md:p-5 border space-y-3"
         style={{
@@ -140,9 +163,14 @@ export default async function AdminPage() {
           borderColor: 'var(--border-faint)',
         }}
       >
-        <h3 className="text-sm font-semibold uppercase tracking-wider" style={{ color: 'var(--text-3)' }}>
-          Pipeline Funnel
-        </h3>
+        <div>
+          <h3 className="text-sm font-semibold uppercase tracking-wider" style={{ color: 'var(--text-3)' }}>
+            Participant Funnel
+          </h3>
+          <p className="text-xs mt-0.5" style={{ color: 'var(--text-4)' }}>
+            DB stages 1+2+3 = Display Stage 1 · DB 4 = Stage 2 · DB 5 = Stage 3
+          </p>
+        </div>
         <div className="space-y-2.5">
           {kpis.stageFunnel.map(({ stage, count }) => {
             const pct = maxStage > 0 ? Math.round((count / maxStage) * 100) : 0

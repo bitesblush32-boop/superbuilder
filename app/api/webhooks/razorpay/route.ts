@@ -8,7 +8,7 @@ export async function POST(req: Request) {
   const resend = new Resend(process.env.RESEND_API_KEY)
 
   // 1. Read raw body — must be text before JSON.parse for HMAC integrity
-  const rawBody  = await req.text()
+  const rawBody = await req.text()
   const sigHeader = req.headers.get('x-razorpay-signature') ?? ''
 
   // 2. Verify HMAC SHA256
@@ -35,19 +35,18 @@ export async function POST(req: Request) {
   }
 
   const razorpayPaymentId = event.payload?.payment?.entity?.id
-  const razorpayOrderId   = event.payload?.payment?.entity?.order_id
+  const razorpayOrderId = event.payload?.payment?.entity?.order_id
 
   if (!razorpayPaymentId || !razorpayOrderId) {
     return new Response('OK', { status: 200 })
   }
 
   // 5. Collect for post-transaction email
-  let studentEmail  = ''
-  let studentName   = ''
-  let studentId     = ''
-  let parentEmail   = ''
-  let parentName    = ''
-  let tierName      = ''
+  let studentEmail = ''
+  let studentName = ''
+  let studentId = ''
+  let parentEmail = ''
+  let parentName = ''
 
   try {
     await db.transaction(async (tx) => {
@@ -66,7 +65,7 @@ export async function POST(req: Request) {
         .update(payments)
         .set({
           razorpayPaymentId,
-          status:      'captured',
+          status: 'captured',
           confirmedAt: new Date(),
         })
         .where(eq(payments.id, payment.id))
@@ -83,15 +82,14 @@ export async function POST(req: Request) {
       // d. Generate referral code if not already set
       const referralCode = student.referralCode ?? generateReferralCode()
 
-      // e. Update student: isPaid, tier, stage, referralCode
+      // e. Update student: isPaid, stage, referralCode
       await tx
         .update(students)
         .set({
-          isPaid:       true,
-          tier:         payment.tier,
+          isPaid: true,
           currentStage: '4',
           referralCode,
-          updatedAt:    new Date(),
+          updatedAt: new Date(),
         })
         .where(eq(students.id, student.id))
 
@@ -99,8 +97,8 @@ export async function POST(req: Request) {
       await tx
         .update(students)
         .set({
-          xpPoints:  sql`xp_points + 200`,
-          badges:    sql`badges || '["builder"]'::jsonb`,
+          xpPoints: sql`xp_points + 200`,
+          badges: sql`badges || '["builder"]'::jsonb`,
           updatedAt: new Date(),
         })
         .where(eq(students.id, student.id))
@@ -137,11 +135,10 @@ export async function POST(req: Request) {
 
       // Collect data for email sending after transaction closes
       studentEmail = student.email
-      studentName  = student.fullName
-      studentId    = student.id
-      tierName     = payment.tier === 'premium' ? 'Premium' : 'Pro'
-      parentEmail  = parent?.email  ?? ''
-      parentName   = parent?.fullName ?? ''
+      studentName = student.fullName
+      studentId = student.id
+      parentEmail = parent?.email ?? ''
+      parentName = parent?.fullName ?? ''
     })
   } catch (err) {
     console.error('[razorpay-webhook] transaction failed:', err)
@@ -153,18 +150,18 @@ export async function POST(req: Request) {
     const firstName = studentName.split(' ')[0]
 
     resend.emails.send({
-      from:    'Super Builders <hello@superbuilder.org>',
-      to:      [studentEmail],
+      from: 'Super Builders <hello@superbuilder.org>',
+      to: [studentEmail],
       subject: `You're officially a Super Builder, ${firstName}! 🏆`,
-      html:    studentConfirmationEmail({ firstName, tier: tierName }),
+      html: studentConfirmationEmail({ firstName }),
     }).catch(e => console.error('[razorpay-webhook] student email:', e))
 
     if (parentEmail) {
       resend.emails.send({
-        from:    'Super Builders <hello@superbuilder.org>',
-        to:      [parentEmail],
-        subject: `${firstName} is registered for Super Builders ${tierName} ✅`,
-        html:    parentConfirmationEmail({ studentName, parentName, tier: tierName }),
+        from: 'Super Builders <hello@superbuilder.org>',
+        to: [parentEmail],
+        subject: `${firstName} is registered for Super Builders ✅`,
+        html: parentConfirmationEmail({ studentName, parentName }),
       }).catch(e => console.error('[razorpay-webhook] parent email:', e))
     }
   }
@@ -174,7 +171,7 @@ export async function POST(req: Request) {
 
 // ─── Email templates ──────────────────────────────────────────────────────────
 
-function studentConfirmationEmail({ firstName, tier }: { firstName: string; tier: string }) {
+function studentConfirmationEmail({ firstName }: { firstName: string }) {
   return `<!DOCTYPE html>
 <html>
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
@@ -193,17 +190,17 @@ function studentConfirmationEmail({ firstName, tier }: { firstName: string; tier
 
       <div style="background:#161616;border:1px solid rgba(255,255,255,0.09);border-radius:16px;padding:28px;margin-bottom:20px">
         <p style="margin:0 0 20px;font-size:15px;line-height:1.7;color:#FFFFFF">
-          Your <strong style="color:#FFB800">${tier}</strong> spot is locked in. You're officially a Super Builder. ⚡
+          Your spot is locked in. You're officially a Super Builder. ⚡
         </p>
         <div style="border-top:1px solid rgba(255,255,255,0.06);padding-top:20px;margin-bottom:20px">
           <p style="margin:0 0 10px;font-size:12px;color:#484848;letter-spacing:0.12em;text-transform:uppercase">What's next</p>
           <div style="display:flex;flex-direction:column;gap:12px">
             ${[
-              ['🎮', 'Join Discord', 'Your community is waiting. Link in your dashboard.'],
-              ['📅', 'Workshop 1 — May 26', 'AI Fundamentals + Tools · 90 minutes · Live'],
-              ['🔥', 'Build Phase — Jun 1–6', 'Apply everything you learn'],
-              ['🚀', 'Hackathon — Jun 7–8', '24 hours. One idea. Build it.'],
-            ].map(([icon, title, desc]) => `
+      ['🎮', 'Join Discord', 'Your community is waiting. Link in your dashboard.'],
+      ['📅', 'Workshop 1 — May 26', 'AI Fundamentals + Tools · 90 minutes · Live'],
+      ['🔥', 'Build Phase — Jun 1–6', 'Apply everything you learn'],
+      ['🚀', 'Hackathon — Jun 7–8', '24 hours. One idea. Build it.'],
+    ].map(([icon, title, desc]) => `
             <div style="display:flex;gap:12px;align-items:flex-start">
               <span style="font-size:18px;line-height:1;margin-top:2px">${icon}</span>
               <div>
@@ -221,7 +218,7 @@ function studentConfirmationEmail({ firstName, tier }: { firstName: string; tier
 
       <p style="text-align:center;font-size:12px;color:#484848;margin:0;line-height:1.8">
         Questions? Reply to this email or WhatsApp us.<br>
-        zer0.pro · 2025
+        zer0.pro · 2026
       </p>
     </td></tr>
   </table>
@@ -230,8 +227,8 @@ function studentConfirmationEmail({ firstName, tier }: { firstName: string; tier
 }
 
 function parentConfirmationEmail({
-  studentName, parentName, tier,
-}: { studentName: string; parentName: string; tier: string }) {
+  studentName, parentName,
+}: { studentName: string; parentName: string }) {
   const firstName = studentName.split(' ')[0]
   return `<!DOCTYPE html>
 <html>
@@ -243,25 +240,26 @@ function parentConfirmationEmail({
         <h1 style="margin:0 0 6px;font-size:22px;color:#FFFFFF;font-weight:700">
           ${firstName} is in! ✅
         </h1>
-        <p style="margin:0;font-size:13px;color:#808080">Super Builders ${tier} — Payment Confirmed</p>
+        <p style="margin:0;font-size:13px;color:#808080">Super Builders — Payment Confirmed</p>
       </div>
 
       <div style="background:#161616;border:1px solid rgba(255,255,255,0.09);border-radius:16px;padding:24px;margin-bottom:16px">
         <p style="margin:0 0 16px;font-size:14px;line-height:1.7">Dear ${parentName || 'Parent/Guardian'},</p>
         <p style="margin:0 0 16px;font-size:14px;line-height:1.7;color:#808080">
-          Payment for <strong style="color:#FFFFFF">${studentName}</strong>'s <strong style="color:#FFB800">${tier}</strong> registration is confirmed. Here's everything you need to know.
+          Payment for <strong style="color:#FFFFFF">${studentName}</strong>'s Super Builders registration is confirmed. Here's everything you need to know.
         </p>
 
         <div style="background:#111;border:1px solid rgba(255,255,255,0.05);border-radius:10px;padding:16px;margin-bottom:12px">
           <p style="margin:0 0 10px;font-size:11px;color:#484848;letter-spacing:0.12em;text-transform:uppercase">Programme Timeline</p>
           <table style="width:100%;border-collapse:collapse;font-size:13px">
             ${[
-              ['May 26–Jun 1', 'Workshop 1 — AI Fundamentals'],
-              ['Jun 1–3', 'Workshop 2 — Domain Deep-Dive'],
-              ['Jun 3–5', 'Workshop 3 — Build Sprint'],
-              ['Jun 7–8', '24-hour Hackathon'],
-              ['Jun 9–10', 'Results + Certificates'],
-            ].map(([date, desc]) => `
+      ['May 26–Jun 1', 'Workshop 1 — AI Fundamentals'],
+      ['Jun 1–3', 'Workshop 2 — Domain Deep-Dive'],
+      ['Jun 3–5', 'Workshop 3 — Build Sprint'],
+      ['Jun 7–8', '24-hour Hackathon'],
+      ['Jun 27', 'Demo Day — Results Announced'],
+      ['Jul 1', 'Certificates Go Live'],
+    ].map(([date, desc]) => `
             <tr>
               <td style="padding:6px 12px 6px 0;color:#FFB800;white-space:nowrap;font-size:12px">${date}</td>
               <td style="padding:6px 0;color:#C0C0C0">${desc}</td>
@@ -272,12 +270,12 @@ function parentConfirmationEmail({
         <div style="background:#111;border:1px solid rgba(255,255,255,0.05);border-radius:10px;padding:16px">
           <p style="margin:0 0 10px;font-size:11px;color:#484848;letter-spacing:0.12em;text-transform:uppercase">Safety & Your Assurance</p>
           ${[
-            ['🔐', 'All sessions are recorded and moderated'],
-            ['✅', 'zer0.pro is a verified organisation'],
-            ['💰', 'Full refund if programme doesn\'t start'],
-            ['📲', 'Parent WhatsApp group — updates and Q&A'],
-            ['🛡️', 'No direct student-mentor contact outside platform'],
-          ].map(([icon, text]) => `
+      ['🔐', 'All sessions are recorded and moderated'],
+      ['✅', 'zer0.pro is a verified organisation'],
+      ['💰', 'Full refund if programme doesn\'t start'],
+      ['📲', 'Parent WhatsApp group — updates and Q&A'],
+      ['🛡️', 'No direct student-mentor contact outside platform'],
+    ].map(([icon, text]) => `
           <div style="display:flex;gap:10px;margin-bottom:10px;align-items:flex-start">
             <span style="font-size:14px">${icon}</span>
             <span style="font-size:13px;color:#C0C0C0;line-height:1.5">${text}</span>
@@ -287,7 +285,7 @@ function parentConfirmationEmail({
 
       <p style="text-align:center;font-size:12px;color:#484848;margin:0;line-height:1.8">
         Reply to this email with any concerns. We're always available.<br>
-        zer0.pro · 2025
+        zer0.pro · 2026
       </p>
     </td></tr>
   </table>

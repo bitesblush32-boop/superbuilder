@@ -1,8 +1,8 @@
 import { ImageResponse } from 'next/og'
 
 export const runtime = 'edge'
-export const alt     = 'Super Builders — Build AI. Win ₹1 Lakh.'
-export const size    = { width: 1200, height: 630 }
+export const alt = 'Super Builders — Build AI. Win ₹1 Lakh.'
+export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
 
 export default function OGImage() {
@@ -74,7 +74,7 @@ export default function OGImage() {
               textTransform: 'uppercase',
             }}
           >
-            zer0.pro · Season 1 · 2025
+            zer0.pro · Season 1 · 2026
           </div>
         </div>
 
@@ -119,7 +119,7 @@ export default function OGImage() {
             marginBottom: '48px',
           }}
         >
-          School Edition · 100% Online · Jun 7–8, 2025
+          School Edition · 100% Online · Jun 7–8, 2026
         </div>
 
         {/* Stat pills */}
@@ -127,7 +127,7 @@ export default function OGImage() {
           {[
             { value: '₹1,00,000+', label: 'Prize Pool' },
             { value: 'Class 8–12', label: 'Eligible' },
-            { value: '65 Days',    label: 'Programme' },
+            { value: '65 Days', label: 'Programme' },
           ].map(({ value, label }) => (
             <div
               key={label}

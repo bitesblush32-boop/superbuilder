@@ -5,8 +5,8 @@ import { auth, currentUser } from '@clerk/nextjs/server'
 import { db } from '@/lib/db'
 import { students, quizAttempts, ideaSubmissions } from '@/lib/db/schema'
 import { eq, count } from 'drizzle-orm'
-import { stage1Schema }            from '@/lib/validation/stage1'
-import { quizSchema, ideaSchema }  from '@/lib/validation/stage2'
+import { stage1Schema, personalInfoSchema } from '@/lib/validation/stage1'
+import { quizSchema, ideaSchema }           from '@/lib/validation/stage2'
 import {
   getStudentByClerkId,
   createStudent,
@@ -14,16 +14,122 @@ import {
   updateStudentStage,
   updateStudentEngageAnswers,
   generateReferralCode,
+  upsertStudentPersonalInfo as dbUpsertPersonalInfo,
 } from '@/lib/db/queries/students'
-import { createParent } from '@/lib/db/queries/parents'
+import { createParent, upsertParent, getParentByStudentId } from '@/lib/db/queries/parents'
 import { createTeam, joinTeam, leaveTeam, getTeamWithMembers } from '@/lib/db/queries/teams'
 import type { BadgeId } from '@/lib/gamification/badges'
 import { CORRECT_ANSWERS, SHORT_ANSWER_MIN } from '@/lib/content/quizQuestions'
+import { sendEmail } from '@/lib/email/send'
+import { Redis }     from '@upstash/redis'
+import crypto        from 'crypto'
+import {
+  parentEmailVerificationTemplate,
+  applicationSubmittedStudentTemplate,
+  applicationSubmittedParentTemplate,
+  orientationCompleteParentTemplate,
+  quizPassedStudentTemplate,
+  quizFailedStudentTemplate,
+  quizResultParentTemplate,
+  ideaSubmittedStudentTemplate,
+  stageProgressParentTemplate,
+} from '@/lib/email/templates'
+
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://www.superbuilder.org'
+
+// Lazy Redis singleton — only created when emails are needed
+let _redis: Redis | null = null
+function getRedis(): Redis {
+  if (!_redis) {
+    _redis = new Redis({
+      url:   process.env.UPSTASH_REDIS_REST_URL!,
+      token: process.env.UPSTASH_REDIS_REST_TOKEN!,
+    })
+  }
+  return _redis
+}
+
+async function sendParentVerificationEmail(opts: {
+  studentId:   string
+  parentEmail: string
+  parentName:  string
+  studentName: string
+  grade:       string
+  city:        string
+}) {
+  const { studentId, parentEmail, parentName, studentName, grade, city } = opts
+  const token = crypto.randomBytes(32).toString('hex')
+  const redis = getRedis()
+  await redis.set(`parent_verify:${token}`, studentId, { ex: 86400 }) // 24h TTL
+
+  const magicLink = `${APP_URL}/api/email/verify-parent?token=${token}`
+  const tpl = parentEmailVerificationTemplate({ parentName, studentName, grade, city, magicLink })
+
+  sendEmail({
+    to:          parentEmail,
+    subject:     tpl.subject,
+    html:        tpl.html,
+    studentId,
+    studentName,
+    template:    'parent_email_verification',
+  }).catch(() => { /* fire-and-forget */ })
+}
 
 const VALID_DOMAINS = ['health','education','finance','environment','entertainment','social_impact'] as const
 
 // ─────────────────────────────────────────────────────────────────────────────
-// completeOrientation
+// upsertStudentPersonalInfo (NEW)
+// Called from Stage1Form when the user clicks "Next" on Step 1 → Step 2.
+// Saves personal info to DB without completing Stage 1 or awarding a badge.
+// Safe to call on a returning student — it simply updates their info.
+// ─────────────────────────────────────────────────────────────────────────────
+export async function upsertStudentPersonalInfo(data: unknown): Promise<{
+  success: boolean
+  error?: string
+}> {
+  const { userId } = await auth()
+  if (!userId) return { success: false, error: 'Not authenticated' }
+
+  const parsed = personalInfoSchema.safeParse(data)
+  if (!parsed.success) {
+    const first = parsed.error.issues[0]
+    return { success: false, error: first?.message ?? 'Validation error' }
+  }
+
+  const clerkUser = await currentUser()
+  const email     = clerkUser?.emailAddresses?.[0]?.emailAddress
+  if (!email) return { success: false, error: 'Unable to retrieve email from Clerk' }
+
+  // Use existing referral code or generate a fresh one for first-time saves
+  const existing     = await getStudentByClerkId(userId)
+  const referralCode = existing?.referralCode ?? generateReferralCode()
+  const referredBy   = existing?.referredBy   ?? parsed.data.referralCode ?? null
+
+  await dbUpsertPersonalInfo(userId, email, referralCode, {
+    fullName:        parsed.data.fullName,
+    dateOfBirth:     parsed.data.dateOfBirth,
+    gender:          parsed.data.gender,
+    grade:           parsed.data.grade,
+    schoolName:      parsed.data.schoolName,
+    city:            parsed.data.city,
+    state:           parsed.data.state,
+    phone:           parsed.data.phone,
+    codingExp:       parsed.data.codingExp,
+    interests:       parsed.data.interests,
+    availabilityHrs: parsed.data.availabilityHrs,
+    deviceAccess:    parsed.data.deviceAccess,
+    tshirtSize:      parsed.data.tshirtSize ?? null,
+    instagramHandle: parsed.data.instagramHandle ?? null,
+    linkedinHandle:  parsed.data.linkedinHandle  ?? null,
+    referredBy,
+  })
+
+  return { success: true }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// submitStage1
+// Creates student + parent records, awards Explorer badge, advances to stage 2
 // Marks orientationComplete = true on the student record
 // ─────────────────────────────────────────────────────────────────────────────
 export async function completeOrientation(): Promise<{ success: boolean }> {
@@ -38,7 +144,21 @@ export async function completeOrientation(): Promise<{ success: boolean }> {
     .set({ orientationComplete: true, updatedAt: new Date() })
     .where(eq(students.id, student.id))
 
-  revalidatePath('/register')
+  revalidatePath('/dashboard')
+
+  // Notify parent that orientation is done (fire-and-forget)
+  const parent = await getParentByStudentId(student.id)
+  if (parent) {
+    const tpl = orientationCompleteParentTemplate({ parentName: parent.fullName, studentName: student.fullName })
+    sendEmail({
+      to:          parent.email,
+      subject:     tpl.subject,
+      html:        tpl.html,
+      studentId:   student.id,
+      studentName: student.fullName,
+      template:    'orientation_complete_parent',
+    }).catch(() => {})
+  }
 
   return { success: true }
 }
@@ -66,7 +186,7 @@ export async function selectDomain(domain: string): Promise<{ success: boolean; 
     .set({ hackathonDomain: domain as any, updatedAt: new Date() })
     .where(eq(students.id, student.id))
 
-  revalidatePath('/register')
+  revalidatePath('/dashboard')
   return { success: true }
 }
 
@@ -91,21 +211,59 @@ export async function submitStage1(data: unknown): Promise<{
 
   const form = parsed.data
 
-  // Prevent duplicate submissions
-  const existing = await getStudentByClerkId(userId)
-  if (existing) {
-    return { success: false, error: 'Application already submitted' }
-  }
-
-  // Fetch verified email from Clerk
+  // Fetch verified email from Clerk (needed for both paths below)
   const clerkUser = await currentUser()
   const email     = clerkUser?.emailAddresses?.[0]?.emailAddress
   if (!email) return { success: false, error: 'Unable to retrieve your email from Clerk' }
 
-  // Generate unique referral code (collision unlikely; add DB retry loop for production)
-  const referralCode = generateReferralCode()
+  // Check if student already exists (returning user re-submitting Stage 1)
+  const existing = await getStudentByClerkId(userId)
 
-  // Insert student
+  if (existing) {
+    // Returning student — upsert personal info + upsert parent, then check stage
+    const referralCode = existing.referralCode ?? generateReferralCode()
+    await dbUpsertPersonalInfo(userId, email, referralCode, {
+      fullName:        form.fullName,
+      dateOfBirth:     form.dateOfBirth,
+      gender:          form.gender,
+      grade:           form.grade,
+      schoolName:      form.schoolName,
+      city:            form.city,
+      state:           form.state,
+      phone:           form.phone,
+      codingExp:       form.codingExp,
+      interests:       form.interests,
+      availabilityHrs: form.availabilityHrs,
+      deviceAccess:    form.deviceAccess,
+      tshirtSize:      form.tshirtSize ?? null,
+      instagramHandle: form.instagramHandle ?? null,
+      linkedinHandle:  form.linkedinHandle  ?? null,
+      referredBy:      existing.referredBy  ?? form.referralCode ?? null,
+    })
+
+    await upsertParent({
+      studentId:          existing.id,
+      fullName:           form.parent.parentName,
+      email:              form.parent.parentEmail,
+      phone:              form.parent.parentPhone,
+      relationship:       form.parent.relationship,
+      consentGiven:       form.parent.consentGiven as boolean,
+      safetyAcknowledged: form.parent.safetyAcknowledged as boolean,
+    })
+
+    // If badge was already awarded (stage >= 2), skip badge/stage logic
+    if (parseInt(existing.currentStage, 10) >= 2) {
+      return { success: true } // no badgeAwarded — form navigates silently
+    }
+
+    // First-time completion for a student who had a partial Stage 1 save
+    await addBadgeToStudent(existing.id, 'explorer', 50)
+    await updateStudentStage(existing.id, '2')
+    return { success: true, badgeAwarded: 'EXPLORER' }
+  }
+
+  // Brand-new student path
+  const referralCode = generateReferralCode()
   const student = await createStudent({
     clerkId:         userId,
     email,
@@ -139,12 +297,57 @@ export async function submitStage1(data: unknown): Promise<{
     consentGiven:       form.parent.consentGiven as boolean,
     consentAt:          new Date(),
     safetyAcknowledged: form.parent.safetyAcknowledged as boolean,
-    emergencyContact:   form.parent.emergencyContact,
   })
 
   // Award Explorer badge + 50 XP, then advance to stage 2
   await addBadgeToStudent(student.id, 'explorer', 50)
   await updateStudentStage(student.id, '2')
+
+  // Fire-and-forget emails (do not await — never block the form response)
+  const updatedStudent = await getStudentByClerkId(userId)
+  const xpTotal = updatedStudent?.xpPoints ?? 50
+
+  // Student confirmation
+  const studentTpl = applicationSubmittedStudentTemplate({
+    studentName: form.fullName,
+    grade:       form.grade,
+    city:        form.city ?? '',
+    xpTotal,
+  })
+  sendEmail({
+    to:          email,
+    subject:     studentTpl.subject,
+    html:        studentTpl.html,
+    studentId:   student.id,
+    studentName: form.fullName,
+    template:    'application_submitted_student',
+  }).catch(() => {})
+
+  // Parent verification + confirmation (includes registration details)
+  sendParentVerificationEmail({
+    studentId:   student.id,
+    parentEmail: form.parent.parentEmail,
+    parentName:  form.parent.parentName,
+    studentName: form.fullName,
+    grade:       form.grade,
+    city:        form.city ?? '',
+  }).catch(() => {})
+
+  const parentTpl = applicationSubmittedParentTemplate({
+    parentName:   form.parent.parentName,
+    studentName:  form.fullName,
+    grade:        form.grade,
+    programmeUrl: APP_URL,
+  })
+  sendEmail({
+    to:          form.parent.parentEmail,
+    subject:     parentTpl.subject,
+    html:        parentTpl.html,
+    studentId:   student.id,
+    studentName: form.fullName,
+    template:    'application_submitted_parent',
+  }).catch(() => {})
+
   // NOTE: no revalidatePath here — it would trigger a page re-render that runs
   // getStudentOrRedirect(1), detects stage=2, and redirects before the badge
   // unlock + team selection screens can show. The /register layout is
@@ -213,10 +416,99 @@ export async function submitQuiz(data: unknown): Promise<{
     attemptNum,
   })
 
-  if (!passed) return { passed: false, score }
+  // Send email to student (and parent) about quiz result — fire-and-forget
+  const quizDomain  = (student.hackathonDomain ?? 'health') as string
+  const updatedStu  = await getStudentByClerkId(userId)
+  const parent      = await getParentByStudentId(student.id)
+
+  if (!passed) {
+    const failTpl = quizFailedStudentTemplate({
+      studentName:  student.fullName,
+      score,
+      domain:      quizDomain,
+      attemptsLeft: Math.max(0, 2 - attemptNum),
+    })
+    sendEmail({
+      to:          student.email,
+      subject:     failTpl.subject,
+      html:        failTpl.html,
+      studentId:   student.id,
+      studentName: student.fullName,
+      template:    'quiz_failed_student',
+    }).catch(() => {})
+
+    if (parent) {
+      const parentTpl = quizResultParentTemplate({
+        parentName:  parent.fullName,
+        studentName: student.fullName,
+        score,
+        domain:      quizDomain,
+        passed: false,
+      })
+      sendEmail({
+        to:          parent.email,
+        subject:     parentTpl.subject,
+        html:        parentTpl.html,
+        studentId:   student.id,
+        studentName: student.fullName,
+        template:    'quiz_result_parent',
+      }).catch(() => {})
+    }
+
+    return { passed: false, score }
+  }
 
   // Award AI_CURIOUS badge + 100 XP on first pass
   await addBadgeToStudent(student.id, 'ai_curious', 100)
+
+  const xpTotal = (updatedStu?.xpPoints ?? 0) + 100
+
+  const passTpl = quizPassedStudentTemplate({ studentName: student.fullName, score, domain: quizDomain, xpTotal })
+  sendEmail({
+    to:          student.email,
+    subject:     passTpl.subject,
+    html:        passTpl.html,
+    studentId:   student.id,
+    studentName: student.fullName,
+    template:    'quiz_passed_student',
+  }).catch(() => {})
+
+  if (parent) {
+    const parentTpl = quizResultParentTemplate({
+      parentName:  parent.fullName,
+      studentName: student.fullName,
+      score,
+      domain:      quizDomain,
+      passed: true,
+    })
+    sendEmail({
+      to:          parent.email,
+      subject:     parentTpl.subject,
+      html:        parentTpl.html,
+      studentId:   student.id,
+      studentName: student.fullName,
+      template:    'quiz_result_parent',
+    }).catch(() => {})
+
+    // Stage progress report to parent
+    const progressTpl = stageProgressParentTemplate({
+      parentName:  parent.fullName,
+      studentName: student.fullName,
+      stage:       'quiz',
+      details: { 'Quiz Score': `${score}/10`, 'Domain': quizDomain, 'XP Earned': `${xpTotal} XP` },
+    })
+    sendEmail({
+      to:          parent.email,
+      subject:     progressTpl.subject,
+      html:        progressTpl.html,
+      studentId:   student.id,
+      studentName: student.fullName,
+      template:    'stage_progress_parent',
+    }).catch(() => {})
+  }
+
+  // Force revalidate dashboard to reflect updated quiz completion
+  revalidatePath('/dashboard')
 
   return { passed: true, score, badgeAwarded: 'AI_CURIOUS' }
 }
@@ -286,8 +578,49 @@ export async function submitIdea(data: unknown): Promise<{
   // Award Idea Launcher badge + 75 XP, advance to stage 3
   await addBadgeToStudent(student.id, 'idea_launcher', 75)
   await updateStudentStage(student.id, '3')
-  
-  revalidatePath('/register')
+
+  // Fire-and-forget emails
+  const updatedStu = await getStudentByClerkId(userId)
+  const xpTotal    = updatedStu?.xpPoints ?? 75
+  const parent     = await getParentByStudentId(student.id)
+
+  const ideaTpl = ideaSubmittedStudentTemplate({
+    studentName:      student.fullName,
+    problemStatement: form.problemStatement,
+    domain:           form.domain,
+    xpTotal,
+  })
+  sendEmail({
+    to:          student.email,
+    subject:     ideaTpl.subject,
+    html:        ideaTpl.html,
+    studentId:   student.id,
+    studentName: student.fullName,
+    template:    'idea_submitted_student',
+  }).catch(() => {})
+
+  if (parent) {
+    const progressTpl = stageProgressParentTemplate({
+      parentName:  parent.fullName,
+      studentName: student.fullName,
+      stage:       'idea',
+      details: {
+        'Domain':  form.domain,
+        'XP Total': `${xpTotal} XP`,
+        'Next Step': 'Payment',
+      },
+    })
+    sendEmail({
+      to:          parent.email,
+      subject:     progressTpl.subject,
+      html:        progressTpl.html,
+      studentId:   student.id,
+      studentName: student.fullName,
+      template:    'stage_progress_parent',
+    }).catch(() => {})
+  }
+
+  revalidatePath('/dashboard')
 
   return { success: true, badgeAwarded: 'IDEA_LAUNCHER' }
 }
@@ -311,6 +644,10 @@ export async function createStudentTeam(teamName: string): Promise<{
     return { success: false, error: 'Team name must be at least 2 characters' }
 
   const team = await createTeam(student.id, teamName)
+  
+  // Force revalidate dashboard to reflect updated teamRole
+  revalidatePath('/dashboard')
+  
   return { success: true, teamCode: team.code }
 }
 
@@ -332,11 +669,37 @@ export async function joinStudentTeam(code: string): Promise<{
 
   const result = await joinTeam(student.id, code)
   if (!result.success) return result
+  
+  // Force revalidate dashboard to reflect updated teamRole
+  revalidatePath('/dashboard')
+  
   return {
     success: true,
     teamName: result.team?.name,
     memberCount: result.team?.memberCount,
   }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// setTeamSolo
+// Called when student chooses "Go Solo" on the team step
+// ─────────────────────────────────────────────────────────────────────────────
+export async function setTeamSolo(): Promise<{ success: boolean }> {
+  const { userId } = await auth()
+  if (!userId) return { success: false }
+
+  const student = await getStudentByClerkId(userId)
+  if (!student) return { success: false }
+
+  await db
+    .update(students)
+    .set({ teamRole: 'solo', updatedAt: new Date() })
+    .where(eq(students.id, student.id))
+
+  // Force revalidate dashboard to reflect updated teamRole
+  revalidatePath('/dashboard')
+
+  return { success: true }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useRef, Suspense } from 'react'
+import { useMemo, useRef, useState, useEffect, Suspense } from 'react'
 import { Canvas, useFrame, extend } from '@react-three/fiber'
 import { OrbitControls, Effects, Svg, Text3D, Float, Center } from '@react-three/drei'
 import { UnrealBloomPass } from 'three-stdlib'
@@ -227,13 +227,23 @@ function BrandLogo() {
 }
 
 /* ─── Canvas wrapper ────────────────────────────────────────────────────────── */
-function ThreeHeroAnimation({ count, className }: { count: number; className?: string }) {
+function ThreeHeroAnimation({ count, tier, className }: { count: number; tier: 'mid' | 'high'; className?: string }) {
+  const [frameloop, setFrameloop] = useState<'always' | 'never'>('always')
+
+  useEffect(() => {
+    const handler = () => setFrameloop(document.hidden ? 'never' : 'always')
+    document.addEventListener('visibilitychange', handler)
+    return () => document.removeEventListener('visibilitychange', handler)
+  }, [])
+
   return (
     <div className={cn('cursor-grab active:cursor-grabbing', className)}>
       <Canvas
         camera={{ position: [0, 0, 65], fov: 60 }}
         gl={{ antialias: true, powerPreference: 'high-performance' }}
-        style={{ background: '#000' }}
+        dpr={[1, tier === 'high' ? 2 : 1.5]}
+        frameloop={frameloop}
+        style={{ background: 'var(--bg-void)' }}
       >
         <fog attach="fog" args={['#000000', 0.01]} />
         <ParticleSwarm count={count} />
@@ -259,5 +269,5 @@ function ThreeHeroAnimation({ count, className }: { count: number; className?: s
 export function HeroAnimation({ className }: { className?: string }) {
   const { tier } = useDeviceCapability()
   if (tier === 'low') return <CSSAtomFallback className={className} />
-  return <ThreeHeroAnimation count={tier === 'high' ? 20_000 : 8_000} className={className} />
+  return <ThreeHeroAnimation count={tier === 'high' ? 20_000 : 8_000} tier={tier} className={className} />
 }
