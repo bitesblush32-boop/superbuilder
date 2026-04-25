@@ -1,10 +1,10 @@
 'use client'
 
-import { useState }            from 'react'
-import { useRouter }           from 'next/navigation'
-import Script                  from 'next/script'
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import Script from 'next/script'
 import { motion, AnimatePresence } from 'framer-motion'
-import { setTeamSolo }         from '@/lib/actions/registration'
+import { setTeamSolo } from '@/lib/actions/registration'
 
 type Bez = [number, number, number, number]
 const EASE_OUT: Bez = [0.16, 1, 0.3, 1]
@@ -20,32 +20,32 @@ interface TeamData {
 }
 
 interface MemberReadinessStatus {
-  id:            string
-  name:          string
-  quizPassed:    boolean
+  id: string
+  name: string
+  quizPassed: boolean
   ideaSubmitted: boolean
 }
 
 interface TeamReadiness {
-  allReady:      boolean
+  allReady: boolean
   memberStatuses: MemberReadinessStatus[]
 }
 
 interface PayPageProps {
-  studentId:      string
-  fullName:       string
-  email:          string
-  phone:          string
-  teamData:       TeamData | null
-  memberCount:    number
-  priceSolo:      number       // ₹ rupees
-  priceTeam:      number       // ₹ rupees per head
-  priceRupees:    number       // final price after all discounts
+  studentId: string
+  fullName: string
+  email: string
+  phone: string
+  teamData: TeamData | null
+  memberCount: number
+  priceSolo: number       // ₹ rupees
+  priceTeam: number       // ₹ rupees per head
+  priceRupees: number       // final price after all discounts
   hasQuizPerfect?: boolean
-  quizDiscount?:  number       // ₹ rupees off for perfect score
-  teamReadiness:  TeamReadiness | null
-  isSoloInTeam:  boolean
-  soloTeamCode:  string | null // team code to share when isSoloInTeam
+  quizDiscount?: number       // ₹ rupees off for perfect score
+  teamReadiness: TeamReadiness | null
+  isSoloInTeam: boolean
+  soloTeamCode: string | null // team code to share when isSoloInTeam
 }
 
 declare global {
@@ -99,22 +99,22 @@ function MemberReadinessRow({ status }: { status: MemberReadinessStatus }) {
 
 // ─── Team status card (with optional readiness) ──────────────────────────────
 function TeamStatusCard({ teamData, memberCount, priceSolo, priceTeam, teamReadiness }: {
-  teamData:     TeamData
-  memberCount:  number
-  priceSolo:    number
-  priceTeam:    number
+  teamData: TeamData
+  memberCount: number
+  priceSolo: number
+  priceTeam: number
   teamReadiness: TeamReadiness | null
 }) {
   const isTeamRate = memberCount >= 2
-  const savedPer   = priceSolo - priceTeam
-  const paidCount  = teamData.members.filter(m => m.isPaid).length
+  const savedPer = priceSolo - priceTeam
+  const paidCount = teamData.members.filter(m => m.isPaid).length
 
   return (
     <div
       className="rounded-2xl p-4"
       style={{
         background: isTeamRate ? 'rgba(34,197,94,0.06)' : 'var(--bg-card)',
-        border:     isTeamRate ? '1px solid rgba(34,197,94,0.25)' : '1px solid var(--border-subtle)',
+        border: isTeamRate ? '1px solid rgba(34,197,94,0.25)' : '1px solid var(--border-subtle)',
       }}
     >
       {/* Team name + code + rate badge */}
@@ -175,15 +175,15 @@ export function PayPage({
 }: PayPageProps) {
   const router = useRouter()
 
-  const [loading, setLoading]           = useState(false)
-  const [scriptReady, setScriptReady]   = useState(false)
-  const [error, setError]               = useState<string | null>(null)
-  const [copied, setCopied]             = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [scriptReady, setScriptReady] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [copied, setCopied] = useState(false)
 
-  const isTeamRate     = memberCount >= 2
-  const savedAmount    = isTeamRate ? priceSolo - priceTeam : 0
+  const isTeamRate = memberCount >= 2
+  const savedAmount = isTeamRate ? priceSolo - priceTeam : 0
   const notReadyMembers = teamReadiness?.memberStatuses.filter(m => !m.quizPassed || !m.ideaSubmitted) ?? []
-  const isTeamBlocked  = !!teamReadiness && !teamReadiness.allReady
+  const isTeamBlocked = !!teamReadiness && !teamReadiness.allReady
 
   async function handleGoSolo() {
     setLoading(true)
@@ -218,19 +218,19 @@ export function PayPage({
       const { orderId, amount, keyId } = await res.json()
 
       const rzp = new window.Razorpay({
-        key:         keyId,
+        key: keyId,
         amount,
-        currency:    'INR',
-        order_id:    orderId,
-        name:        'Super Builders',
+        currency: 'INR',
+        order_id: orderId,
+        name: 'Super Builders',
         description: 'School Edition Season 1',
-        prefill:     { name: fullName, email, contact: phone },
-        theme:       { color: '#FFB800' },
+        prefill: { name: fullName, email, contact: phone },
+        theme: { color: '#FFB800' },
         handler: async ({ razorpay_order_id, razorpay_payment_id, razorpay_signature }) => {
-          const vRes  = await fetch('/api/payments/verify', {
-            method:  'POST',
+          const vRes = await fetch('/api/payments/verify', {
+            method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body:    JSON.stringify({ razorpay_order_id, razorpay_payment_id, razorpay_signature }),
+            body: JSON.stringify({ razorpay_order_id, razorpay_payment_id, razorpay_signature }),
           })
           const vData = await vRes.json()
           if (vData.success) {
@@ -267,7 +267,7 @@ export function PayPage({
             className="rounded-2xl p-4 flex flex-col gap-3"
             style={{
               background: 'var(--amber-bg)',
-              border:     '1px solid rgba(251,191,36,0.35)',
+              border: '1px solid rgba(251,191,36,0.35)',
             }}
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0, transition: { duration: 0.4, ease: EASE_OUT } }}
@@ -346,7 +346,7 @@ export function PayPage({
             className="rounded-2xl p-4 flex flex-col gap-3"
             style={{
               background: 'var(--red-bg)',
-              border:     '1px solid rgba(248,113,113,0.3)',
+              border: '1px solid rgba(248,113,113,0.3)',
             }}
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0, transition: { duration: 0.4, ease: EASE_OUT } }}
@@ -395,10 +395,10 @@ export function PayPage({
         <motion.div
           className="rounded-2xl p-5"
           style={{
-            background:  'var(--bg-card)',
-            border:      '2px solid rgba(255,184,0,0.4)',
-            boxShadow:   '0 0 32px rgba(255,184,0,0.08)',
-            opacity:     isTeamBlocked ? 0.5 : 1,
+            background: 'var(--bg-card)',
+            border: '2px solid rgba(255,184,0,0.4)',
+            boxShadow: '0 0 32px rgba(255,184,0,0.08)',
+            opacity: isTeamBlocked ? 0.5 : 1,
           }}
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: isTeamBlocked ? 0.5 : 1, y: 0, transition: { duration: 0.4, ease: EASE_OUT } }}
@@ -532,10 +532,10 @@ export function PayPage({
             For Parents
           </p>
           {[
-            { icon: '✅', title: 'zer0.pro Verified',        desc: 'Registered organisation with verified mentors and instructors.' },
-            { icon: '💰', title: 'Full refund guarantee',    desc: "If the programme is cancelled or doesn't start, you get 100% back." },
-            { icon: '🔐', title: 'Safe online environment',  desc: 'All sessions recorded. No direct student-mentor contact outside platform.' },
-            { icon: '📲', title: 'Parent WhatsApp group',    desc: 'Dedicated group for updates, schedules, and any concerns.' },
+            { icon: '✅', title: 'zer0.pro Verified', desc: 'Registered organisation with verified mentors and instructors.' },
+            { icon: '💰', title: 'Full refund guarantee', desc: "If the programme is cancelled or doesn't start, you get 100% back." },
+            { icon: '🔐', title: 'Safe online environment', desc: 'All sessions recorded. No direct student-mentor contact outside platform.' },
+            { icon: '📲', title: 'Parent WhatsApp group', desc: 'Dedicated group for updates, schedules, and any concerns.' },
           ].map(({ icon, title, desc }) => (
             <div key={title} className="flex gap-3 mb-4 last:mb-0">
               <span className="text-lg shrink-0 mt-0.5">{icon}</span>

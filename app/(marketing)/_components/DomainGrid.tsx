@@ -7,9 +7,9 @@ const EASE_OUT = [0.16, 1, 0.3, 1] as const
 
 const DOMAINS = [
   {
-    id:    'health',
-    name:  'Health',
-    desc:  'AI symptom checkers, mental wellness companions, medication reminders, and fitness trackers for underserved communities.',
+    id: 'health',
+    name: 'Health & Wellbeing',
+    desc: 'Sleep Optimization, AI symptom checkers, mental wellness companions, medication reminders, fitness trackers etc.',
     color: '#22C55E',
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6">
@@ -18,9 +18,9 @@ const DOMAINS = [
     ),
   },
   {
-    id:    'education',
-    name:  'Education',
-    desc:  'Personalised tutors, doubt-solving bots, vernacular language learning tools, and accessible study aids for every learner.',
+    id: 'education',
+    name: 'Future of Learning',
+    desc: 'Personalised tutors, doubt-solving bots, vernacular language learning tools, and accessible study aids for every learner.',
     color: '#60A5FA',
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6">
@@ -30,9 +30,9 @@ const DOMAINS = [
     ),
   },
   {
-    id:    'finance',
-    name:  'Finance',
-    desc:  'Smart budgeting apps, fraud detection alerts, loan eligibility advisors, and micro-savings tools for first-time earners.',
+    id: 'finance',
+    name: 'Gen Z Finance & Web3',
+    desc: 'Smart budgeting apps, fraud detection alerts, loan eligibility advisors, and micro-savings tools for first-time earners.',
     color: '#FFB800',
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6">
@@ -42,9 +42,9 @@ const DOMAINS = [
     ),
   },
   {
-    id:    'environment',
-    name:  'Environment',
-    desc:  'Air quality monitors, waste sorting assistants, crop disease detectors, and carbon footprint calculators for everyday use.',
+    id: 'environment',
+    name: 'Sustainability & Earth',
+    desc: 'Air quality monitors, waste sorting assistants, crop disease detectors, and carbon footprint calculators for everyday use.',
     color: '#34D399',
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6">
@@ -55,9 +55,9 @@ const DOMAINS = [
     ),
   },
   {
-    id:    'entertainment',
-    name:  'Entertainment',
-    desc:  'AI story generators, music recommendation engines, game difficulty adapters, and content moderation tools for creators.',
+    id: 'entertainment',
+    name: 'Gaming & Creative Media',
+    desc: 'AI story generators, music recommendation engines, game difficulty adapters, and content moderation tools for creators.',
     color: '#C084FC',
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6">
@@ -66,9 +66,9 @@ const DOMAINS = [
     ),
   },
   {
-    id:    'social_impact',
-    name:  'Social Impact',
-    desc:  'Accessibility tools for the differently-abled, disaster response coordinators, job-skill matchers, and civic grievance trackers.',
+    id: 'social_impact',
+    name: 'Social Good & Connection',
+    desc: 'Accessibility tools for the differently-abled, disaster response coordinators, job-skill matchers, and civic grievance trackers.',
     color: '#FB923C',
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6">
@@ -84,18 +84,18 @@ const DOMAINS = [
 /* ─── Variants ───────────────────────────────────────────────────────────────── */
 const gridVariants: Variants = {
   hidden: {},
-  show:   { transition: { staggerChildren: 0.08, delayChildren: 0.05 } },
+  show: { transition: { staggerChildren: 0.08, delayChildren: 0.05 } },
 }
 
 const cardVariants: Variants = {
   hidden: { opacity: 0, y: 24 },
-  show:   { opacity: 1, y: 0, transition: { duration: 0.5, ease: EASE_OUT } },
-  hover:  { y: -6, transition: { type: 'spring', stiffness: 300, damping: 20 } },
+  show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: EASE_OUT } },
+  hover: { y: -6, transition: { type: 'spring', stiffness: 300, damping: 20 } },
 }
 
 const headerVariants: Variants = {
   hidden: { opacity: 0, y: 20 },
-  show:   { opacity: 1, y: 0, transition: { duration: 0.55, ease: EASE_OUT } },
+  show: { opacity: 1, y: 0, transition: { duration: 0.55, ease: EASE_OUT } },
 }
 
 /* ─── DomainCard ─────────────────────────────────────────────────────────────── */
@@ -106,7 +106,7 @@ function DomainCard({ domain }: { domain: typeof DOMAINS[number] }) {
       whileHover="hover"
       className="relative rounded-[6px] border p-6 flex flex-col gap-4 cursor-default"
       style={{
-        background:  'var(--bg-card)',
+        background: 'var(--bg-card)',
         borderColor: 'var(--border-faint)',
       }}
     >
@@ -118,7 +118,7 @@ function DomainCard({ domain }: { domain: typeof DOMAINS[number] }) {
         className="absolute inset-0 rounded-[6px] pointer-events-none"
         style={{
           boxShadow: '0 0 0 1px rgba(255,184,0,0.2), 0 12px 40px rgba(255,184,0,0.1)',
-          border:    '1px solid rgba(255,184,0,0.5)',
+          border: '1px solid rgba(255,184,0,0.5)',
         }}
         aria-hidden="true"
       />
@@ -136,9 +136,9 @@ function DomainCard({ domain }: { domain: typeof DOMAINS[number] }) {
       <div
         className="w-10 h-10 rounded-lg flex items-center justify-center border flex-shrink-0"
         style={{
-          background:  `${domain.color}12`,
+          background: `${domain.color}12`,
           borderColor: `${domain.color}30`,
-          color:        domain.color,
+          color: domain.color,
         }}
         aria-hidden="true"
       >
@@ -166,9 +166,9 @@ function DomainCard({ domain }: { domain: typeof DOMAINS[number] }) {
         <span
           className="inline-flex items-center h-5 px-2.5 rounded-full font-mono text-[9px] tracking-wider uppercase border max-w-full truncate"
           style={{
-            color:       domain.color,
+            color: domain.color,
             borderColor: `${domain.color}35`,
-            background:  `${domain.color}0d`,
+            background: `${domain.color}0d`,
           }}
         >
           {domain.id.replace('_', ' ')}
@@ -210,7 +210,7 @@ export function DomainGrid() {
             className="font-mono text-[12px] tracking-[0.28em] uppercase mb-3"
             style={{ color: 'var(--text-brand)' }}
           >
-            Build In Any Domain
+            Quest Tracks
           </p>
           <h2
             className="font-display leading-none tracking-tight mb-4"
