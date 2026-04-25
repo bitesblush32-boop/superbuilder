@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
+import { getDatesConfig } from '@/lib/db/queries/config'
 
 export const metadata: Metadata = {
   title: 'Terms & Conditions | Super Builders — zer0.pro',
@@ -79,10 +80,15 @@ function Clause({ num, children }: { num: string; children: React.ReactNode }) {
 }
 
 /* ─── Page ────────────────────────────────────────────────────────────────── */
-export default function TermsPage() {
+export default async function TermsPage() {
+  const dates = await getDatesConfig()
+
   return (
     <>
-      <Navbar />
+      <Navbar
+        regDeadlineISO={dates.regDeadlineISO}
+        regDeadlineDisplay={dates.regDeadlineDisplay}
+      />
 
       <main
         className="min-h-screen pt-[72px] pb-20"

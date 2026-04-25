@@ -26,7 +26,8 @@ graphify-out
 # misc
 .DS_Store
 *.pem
-
+.env.local
+/.env.local
 # debug
 npm-debug.log*
 yarn-debug.log*
@@ -70,3 +71,4 @@ context files
 .claude/BUG_FIX_DOMAIN_QUIZ_STUCK.md
 .gitignore
 .claude/BUG_FIX_SUMMARY.md
+logs.1777136444948.log
