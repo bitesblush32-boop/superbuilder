@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 
 /* ─── Table of contents items ─────────────────────────────────────────────── */
 const TOC = [
-  { id: 'terms',   label: 'Part 1 — Terms & Conditions' },
+  { id: 'terms', label: 'Part 1 — Terms & Conditions' },
   { id: 'privacy', label: 'Part 2 — Privacy Policy' },
   { id: 'consent', label: 'Part 3 — Parental Consent Form' },
 ] as const
@@ -537,8 +537,8 @@ export default async function TermsPage() {
             <SectionHeading>1. Who We Are</SectionHeading>
             <P>
               This Privacy Policy is issued by <strong style={{ color: 'var(--text-1)' }}>Tech Zer0 Private
-              Limited</strong>, operating as <strong style={{ color: 'var(--text-1)' }}>Zer0 Pro (Zer0th
-              Protocol)</strong> (CIN: U62099KA2024PTC187319), registered in Bengaluru, Karnataka. We are the Data
+                Limited</strong>, operating as <strong style={{ color: 'var(--text-1)' }}>Zer0 Pro (Zer0th
+                  Protocol)</strong> (CIN: U62099KA2024PTC187319), registered in Bengaluru, Karnataka. We are the Data
               Fiduciary in respect of all personal data collected in connection with the Super Builders Origins –
               School Edition programme, and we are responsible for its lawful processing under the DPDP Act, 2023.
             </P>
@@ -585,7 +585,7 @@ export default async function TermsPage() {
             ]} />
             <P>
               <em>Note: Zer0 Pro does not store card numbers, bank account details, or UPI credentials. Payment
-              processing is handled exclusively by our authorised payment gateway partner.</em>
+                processing is handled exclusively by our authorised payment gateway partner.</em>
             </P>
 
             <SectionHeading>4. Why We Collect This Data</SectionHeading>

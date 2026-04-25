@@ -6,7 +6,7 @@ import { motion, type Variants } from 'framer-motion'
 /* ─── constants ─────────────────────────────────────────────────────────────── */
 const EASE_OUT = [0.16, 1, 0.3, 1] as const
 
-const FEATURES = [
+const SHARED_FEATURES = [
   '3 live AI workshops',
   'Group mentorship sessions',
   '24-hour hackathon access',
@@ -15,6 +15,16 @@ const FEATURES = [
   'Leaderboard + XP system',
   'Discord community access',
 ]
+
+const SOLO_FEATURES = [
+  ...SHARED_FEATURES,
+  'On-Chain Proof-of-Build: Skip the paper certificates. Get a blockchain-verified credential that proves you actually shipped code',
+  'Super Interns Fast-Pass: Instant Level-1 Verification on the Super Interns platform — skip the line for future tech internships',
+  'Governance XP: Earn voting power and "Junior Fellow" status to help shape the future of the Zer0th ecosystem',
+  'The "Resume Starter" Kit: A personalized Letter of Recommendation and digital badge designed to make your college applications stand out',
+]
+
+const TEAM_FEATURES = SHARED_FEATURES
 
 /* ─── variants ──────────────────────────────────────────────────────────────── */
 const soloCard: Variants = {
@@ -144,7 +154,7 @@ export function TierComparison() {
             </div>
 
             <ul className="mb-8 flex-1">
-              {FEATURES.map((f) => (
+              {SOLO_FEATURES.map((f) => (
                 <FeatureRow key={f} feature={f} accent="#22C55E" />
               ))}
             </ul>
@@ -258,7 +268,7 @@ export function TierComparison() {
             </div>
 
             <ul className="mb-8 flex-1">
-              {FEATURES.map((f) => (
+              {TEAM_FEATURES.map((f) => (
                 <FeatureRow key={f} feature={f} accent="#FFB800" />
               ))}
             </ul>
