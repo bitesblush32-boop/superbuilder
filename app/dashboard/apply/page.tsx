@@ -4,6 +4,7 @@ import { db } from '@/lib/db'
 import { students } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
 import { checkStageLock } from '@/lib/auth/stageLock'
+import { getStage2SubRoute } from '@/lib/auth/getStudentOrRedirect'
 import { StageLocked } from '@/components/stage/StageLocked'
 import { Stage1Form } from '@/app/dashboard/apply/_components/Stage1Form'
 import { getParentByStudentId } from '@/lib/db/queries/parents'
@@ -35,18 +36,15 @@ export default async function DashboardApplyPage({
     .limit(1)
 
   // ── Access policy ─────────────────────────────────────────────────────────
-  // Allow backward navigation as long as the student hasn't locked Stage 2.
-  // "Locked" = they have selected a hackathon domain (domain page commits them).
   // - No student record   → allow (fresh signup)
   // - currentStage === 1  → allow (never completed Stage 1)
-  // - currentStage === 2 AND no domain → allow (submitted Stage 1 but hasn't
-  //                         started Stage 2 sub-steps yet — safe to edit)
-  // - currentStage === 2 AND domain set → redirect (Stage 2 in progress)
-  // - currentStage >= 3  → redirect (paid / beyond)
+  // - currentStage === 2  → always redirect to the correct Stage 2 sub-step
+  //                         (prevents returning users landing on Stage 1 form)
+  // - currentStage >= 3  → redirect to dashboard (paid / beyond)
   if (student) {
     const stage = parseInt(student.currentStage, 10)
     if (stage >= 3) redirect('/dashboard')
-    if (stage === 2 && student.hackathonDomain) redirect('/dashboard')
+    if (stage === 2) redirect(getStage2SubRoute(student))
   }
 
   // ── Build initialData for form pre-fill ───────────────────────────────────
