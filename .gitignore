@@ -14,7 +14,7 @@
 
 # testing
 /coverage
-
+/graphify-out/*
 # next.js
 /.next/
 /out/
