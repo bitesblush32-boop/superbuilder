@@ -91,9 +91,8 @@ export const metadata: Metadata = {
   },
 
   verification: {
-    // Add these after verifying in Google Search Console + Bing Webmaster Tools
     google: 'REPLACE_WITH_GOOGLE_SITE_VERIFICATION_TOKEN',
-    // other: { 'msvalidate.01': 'REPLACE_WITH_BING_TOKEN' },
+    other:  { 'msvalidate.01': ['REPLACE_WITH_BING_TOKEN'] },
   },
 }
 
