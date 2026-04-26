@@ -35,9 +35,21 @@ const jetbrains = JetBrains_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://superbuilder.org"),
-  title: "Super Builders — AI Hackathon for School Students | zer0.pro",
+  title: {
+    default:  "Super Builders — AI Hackathon for School Students | zer0.pro",
+    template: "%s | Super Builders",
+  },
   description:
-    "India's #1 AI programme for Class 8–12 students. 3-week online programme + 24-hour hackathon. ₹1,00,000+ prizes. Register before May 25.",
+    "India's biggest AI hackathon for school students (Class 8–12). 3-week programme + 24-hour build sprint. ₹1,00,000+ prize pool. Register before May 30, 2026.",
+  icons: {
+    icon:        [
+      { url: "/favicon.ico",                sizes: "any" },
+      { url: "/icon.svg",   type: "image/svg+xml" },
+    ],
+    apple:       "/apple-touch-icon.png",
+    shortcut:    "/favicon.ico",
+  },
+  manifest: "/site.webmanifest",
 };
 
 export default function RootLayout({
