@@ -34,7 +34,7 @@ const jetbrains = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://superbuilder.org"),
+  metadataBase: new URL("https://www.superbuilder.org"),
   title: {
     default:  "Super Builders — AI Hackathon for School Students | zer0.pro",
     template: "%s | Super Builders",

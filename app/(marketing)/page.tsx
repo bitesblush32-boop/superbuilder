@@ -22,8 +22,8 @@ export const revalidate = 60
 
 /* ─── SEO Metadata ───────────────────────────────────────────────────────────── */
 export const metadata: Metadata = {
-  metadataBase: new URL('https://superbuilder.org'),
-  alternates:   { canonical: 'https://superbuilder.org' },
+  metadataBase: new URL('https://www.superbuilder.org'),
+  alternates:   { canonical: 'https://www.superbuilder.org' },
 
   title: {
     default:  'Super Builders — AI Hackathon for School Students | zer0.pro',
@@ -60,9 +60,9 @@ export const metadata: Metadata = {
     siteName:    'Super Builders by zer0.pro',
     title:       'Super Builders — Build AI. Win ₹1 Lakh.',
     description: "India's biggest AI hackathon for school students. Register before May 30, 2026. ₹1,00,000+ prizes.",
-    url:         'https://superbuilder.org',
+    url:         'https://www.superbuilder.org',
     images: [{
-      url:    'https://superbuilder.org/og/super-builders.jpg',
+      url:    'https://www.superbuilder.org/og/super-builders.jpg',
       width:  1200,
       height: 630,
       alt:    'Super Builders — AI Hackathon for Indian School Students',
@@ -75,7 +75,7 @@ export const metadata: Metadata = {
     site:        '@zer0pro',
     title:       'Super Builders — AI Hackathon for School Students',
     description: "India's biggest AI hackathon. Class 8–12. ₹1 Lakh+ prizes. Jun 7–8, 2026.",
-    images:      ['https://superbuilder.org/og/super-builders.jpg'],
+    images:      ['https://www.superbuilder.org/og/super-builders.jpg'],
   },
 
   robots: {
@@ -115,9 +115,9 @@ export default async function LandingPage() {
     eventAttendanceMode: 'https://schema.org/OnlineEventAttendanceMode',
     location: {
       '@type': 'VirtualLocation',
-      url: 'https://superbuilder.org',
+      url: 'https://www.superbuilder.org',
     },
-    image: 'https://superbuilder.org/og/super-builders.jpg',
+    image: 'https://www.superbuilder.org/og/super-builders.jpg',
     organizer: {
       '@type': 'Organization',
       name: 'zer0.pro',
@@ -130,7 +130,7 @@ export default async function LandingPage() {
         price: '3499',
         priceCurrency: 'INR',
         validThrough: dates.regDeadlineISO,
-        url: 'https://superbuilder.org/dashboard/apply',
+        url: 'https://www.superbuilder.org/dashboard/apply',
         availability: 'https://schema.org/InStock',
       },
       {
@@ -139,7 +139,7 @@ export default async function LandingPage() {
         price: '2999',
         priceCurrency: 'INR',
         validThrough: dates.regDeadlineISO,
-        url: 'https://superbuilder.org/dashboard/apply',
+        url: 'https://www.superbuilder.org/dashboard/apply',
         availability: 'https://schema.org/InStock',
       },
     ],
@@ -155,7 +155,7 @@ export default async function LandingPage() {
     '@type': 'Organization',
     name: 'zer0.pro',
     url: 'https://zer0.pro',
-    logo: 'https://superbuilder.org/logo.png',
+    logo: 'https://www.superbuilder.org/logo.png',
     sameAs: [
       'https://instagram.com/zer0pro',
       'https://linkedin.com/company/zer0pro',

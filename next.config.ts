@@ -3,14 +3,14 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   reactStrictMode: true,
 
-  // 301 redirect www → non-www so Google only indexes one canonical version
+  // 301 redirect non-www → www so Google only indexes one canonical version
   async redirects() {
     return [
       {
         source:      '/:path*',
-        has:         [{ type: 'host', value: 'www.superbuilder.org' }],
-        destination: 'https://superbuilder.org/:path*',
-        permanent:   true,   // 301 — tells Google to transfer all link equity
+        has:         [{ type: 'host', value: 'superbuilder.org' }],
+        destination: 'https://www.superbuilder.org/:path*',
+        permanent:   true,
       },
     ]
   },

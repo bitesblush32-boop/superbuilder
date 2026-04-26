@@ -16,7 +16,7 @@ export default function robots(): MetadataRoute.Robots {
         ],
       },
     ],
-    sitemap: 'https://superbuilder.org/sitemap.xml',
-    host:    'https://superbuilder.org',
+    sitemap: 'https://www.superbuilder.org/sitemap.xml',
+    host:    'https://www.superbuilder.org',
   }
 }

@@ -1,6 +1,6 @@
 import type { MetadataRoute } from 'next'
 
-const BASE = 'https://superbuilder.org'
+const BASE = 'https://www.superbuilder.org'
 
 export default function sitemap(): MetadataRoute.Sitemap {
   return [
