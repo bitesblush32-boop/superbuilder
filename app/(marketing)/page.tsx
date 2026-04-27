@@ -23,76 +23,110 @@ export const revalidate = 60
 /* ─── SEO Metadata ───────────────────────────────────────────────────────────── */
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.superbuilder.org'),
-  alternates:   { canonical: 'https://www.superbuilder.org' },
+  alternates: { canonical: 'https://www.superbuilder.org' },
 
   title: {
-    default:  'Super Builders — AI Hackathon for School Students | zer0.pro',
+    default: 'Super Builders — AI Hackathon for School Students in India | zer0.pro',
     template: '%s | Super Builders',
   },
   description:
-    "India's biggest AI hackathon for school students (Class 8–12). 3-week online programme, 24-hour build sprint, ₹1,00,000+ prize pool. Register before May 30, 2026.",
+    "India's #1 AI hackathon for school students (Class 8–12) from Bangalore, Mumbai, Delhi, Hyderabad & across India. Online programme + 24-hour build sprint. ₹1,00,000+ prize pool. Register before May 30, 2026.",
 
   keywords: [
-    // Primary intent
+    // Brand
+    'Super Builders',
+    'superbuilders',
+    'superbuilder hackathon',
+    'Super Builders hackathon 2026',
+    'zer0.pro',
+    'superbuilder.org',
+    // Primary — generic
+    'hackathon',
+    'AI hackathon',
+    'hackathon 2026',
+    'hackathon India',
+    'AI hackathon India',
     'AI hackathon India 2026',
+    // School / students
+    'hackathon for school students',
     'hackathon for school students India',
+    'hackathon for students India',
     'online hackathon Class 8 9 10 11 12',
-    'coding competition for teens India',
+    'coding competition for school students India',
     'AI competition for students 2026',
-    // Long-tail
     'hackathon for 13 14 15 16 17 18 year olds India',
     'school coding hackathon online 2026',
     'AI programme for school students',
-    'build AI project win prize India',
     'summer hackathon students 2026',
-    // Brand
-    'Super Builders hackathon',
-    'zer0.pro',
-    'superbuilder.org',
+    'student hackathon India 2026',
+    // Bangalore / city specific
+    'hackathon in Bangalore',
+    'hackathon in Bangalore 2026',
+    'AI hackathon in Bangalore',
+    'AI hackathon Bangalore 2026',
+    'hackathon for school students Bangalore',
+    'coding competition Bangalore school students',
+    'student hackathon Bangalore',
+    'hackathon in Mumbai',
+    'hackathon in Delhi',
+    'hackathon in Hyderabad',
+    'hackathon in Chennai',
+    'hackathon in Pune',
+    'hackathon in Kolkata',
+    'online hackathon India cities',
     // Parent queries
     'safe online hackathon for kids India',
     'coding programme Class 10 11 12 India',
-    'AI internship school students',
+    'AI internship school students India',
+    'online AI programme teens India',
+    'build AI project win prize India',
   ],
 
   openGraph: {
-    type:        'website',
-    siteName:    'Super Builders by zer0.pro',
-    title:       'Super Builders — Build AI. Win ₹1 Lakh.',
-    description: "India's biggest AI hackathon for school students. Register before May 30, 2026. ₹1,00,000+ prizes.",
-    url:         'https://www.superbuilder.org',
+    type: 'website',
+    siteName: 'Super Builders by zer0.pro',
+    title: 'Super Builders — AI Hackathon for School Students | Win ₹1 Lakh',
+    description: "India's #1 AI hackathon for school students from Bangalore, Mumbai, Delhi & across India. ₹1,00,000+ prizes. Jun 7–8, 2026.",
+    url: 'https://www.superbuilder.org',
     images: [{
-      url:    'https://www.superbuilder.org/og/super-builders.jpg',
-      width:  1200,
+      url: 'https://www.superbuilder.org/og/super-builders.jpg',
+      width: 1200,
       height: 630,
-      alt:    'Super Builders — AI Hackathon for Indian School Students',
+      alt: 'Super Builders — AI Hackathon for Indian School Students 2026',
     }],
     locale: 'en_IN',
   },
 
   twitter: {
-    card:        'summary_large_image',
-    site:        '@zer0pro',
-    title:       'Super Builders — AI Hackathon for School Students',
-    description: "India's biggest AI hackathon. Class 8–12. ₹1 Lakh+ prizes. Jun 7–8, 2026.",
-    images:      ['https://www.superbuilder.org/og/super-builders.jpg'],
+    card: 'summary_large_image',
+    site: '@zer0pro',
+    title: 'Super Builders — AI Hackathon for School Students in India',
+    description: "India's #1 AI hackathon. Class 8–12. Students from Bangalore, Mumbai, Delhi & all cities. ₹1L+ prizes. Jun 7–8, 2026.",
+    images: ['https://www.superbuilder.org/og/super-builders.jpg'],
   },
 
   robots: {
-    index:               true,
-    follow:              true,
+    index: true,
+    follow: true,
     googleBot: {
-      index:             true,
-      follow:            true,
+      index: true,
+      follow: true,
       'max-video-preview': -1,
       'max-image-preview': 'large',
-      'max-snippet':     -1,
+      'max-snippet': -1,
     },
   },
 
-  verification: {
-    google: 'REPLACE_WITH_GOOGLE_SITE_VERIFICATION_TOKEN',
-    other:  { 'msvalidate.01': ['REPLACE_WITH_BING_TOKEN'] },
+  // Geo targeting — India
+  other: {
+    'geo.region': 'IN',
+    'geo.country': 'India',
+    'geo.placename': 'India',
+    'DC.language': 'en-IN',
+    'application-name': 'Super Builders',
+    // ⚠️ Replace these with real tokens from Google Search Console and Bing Webmaster Tools
+    'google-site-verification': 'google-site-verification=O2Flp4DTUco40Sih8OFiKAEdQlbpjQM-V_Aok_f5C-8',
+    'msvalidate.01': 'REPLACE_WITH_BING_TOKEN',
   },
 }
 
@@ -146,6 +180,51 @@ export default async function LandingPage() {
     audience: {
       '@type': 'EducationalAudience',
       educationalRole: 'student',
+    },
+  }
+
+  // ── JSON-LD: EducationalOccupationalProgram ────────────────────────────────
+  // Helps rank for "AI course for school students", "AI programme India" etc.
+  const eduJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'EducationalOccupationalProgram',
+    name: 'Super Builders — AI Hackathon Programme for School Students',
+    description: "India's #1 AI learning programme and hackathon for school students (Class 8–12). 3 weeks of live AI workshops followed by a 24-hour national hackathon. Open to students from Bangalore, Mumbai, Delhi, Hyderabad, Chennai, Pune, Kolkata and all cities across India.",
+    url: 'https://www.superbuilder.org',
+    provider: {
+      '@type': 'Organization',
+      name: 'zer0.pro',
+      url: 'https://zer0.pro',
+    },
+    educationalProgramMode: 'online',
+    timeToComplete: 'P3W',
+    startDate: dates.hackathonStartISO.split('T')[0],
+    occupationalCategory: 'Artificial Intelligence, Software Development',
+    applicationStartDate: new Date().toISOString().split('T')[0],
+    applicationDeadline: dates.regDeadlineISO.split('T')[0],
+    offers: {
+      '@type': 'Offer',
+      price: '3499',
+      priceCurrency: 'INR',
+      availability: 'https://schema.org/InStock',
+      validThrough: dates.regDeadlineISO,
+    },
+    audience: {
+      '@type': 'EducationalAudience',
+      educationalRole: 'student',
+      audienceType: 'School students Class 8–12, age 13–18, India',
+    },
+    teaches: [
+      'Artificial Intelligence fundamentals',
+      'Prompt engineering',
+      'AI product building',
+      'Problem framing',
+      'Prototype development',
+    ],
+    inLanguage: 'en-IN',
+    location: {
+      '@type': 'VirtualLocation',
+      url: 'https://www.superbuilder.org',
     },
   }
 
@@ -237,11 +316,49 @@ export default async function LandingPage() {
           text: 'All participants get: 3 live AI workshops, group mentorship sessions, 24-hour hackathon access, a participation certificate with digital badge, access to the ₹1,00,000+ prize pool, XP leaderboard, and Discord community. Solo participants also receive an on-chain credential, Super Interns fast-pass, and a personalised letter of recommendation.',
         },
       },
+      {
+        '@type': 'Question',
+        name: 'Is Super Builders available for students in Bangalore?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'Yes! Super Builders is fully online and open to school students (Class 8–12) from Bangalore, Bengaluru, and all cities across India. Students from Bangalore have already signed up and will compete on the same national leaderboard. You only need a smartphone or laptop with internet — no travel required.',
+        },
+      },
+      {
+        '@type': 'Question',
+        name: 'Is there an AI hackathon for school students in Bangalore in 2026?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'Super Builders is the leading online AI hackathon for school students in India in 2026, open to all students in Bangalore and across the country. The hackathon runs June 7–8, 2026 (24 hours, fully online). Students from Bangalore can participate from home. Register at superbuilder.org before May 30, 2026.',
+        },
+      },
+      {
+        '@type': 'Question',
+        name: 'What is Super Builders?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'Super Builders (superbuilder.org) is India\'s biggest online AI hackathon and learning programme for school students in Class 8–12. Organised by zer0.pro, it is a 3-week programme followed by a 24-hour hackathon on June 7–8, 2026. Students learn to build AI-powered products, compete for a ₹1,00,000+ prize pool, and earn verified certificates. Students from Bangalore, Mumbai, Delhi, Hyderabad, Chennai, Pune, and all cities across India participate.',
+        },
+      },
+      {
+        '@type': 'Question',
+        name: 'How is Super Builders different from other hackathons?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'Super Builders is built specifically for school students with zero prior coding experience. Unlike college hackathons, it includes 3 weeks of structured AI workshops before the build sprint. Students earn XP, unlock badges, and build real AI projects they can show on their LinkedIn and college applications. It is 100% online, accessible from any city in India, with a ₹1,00,000+ prize pool.',
+        },
+      },
     ],
   }
 
   return (
     <>
+      {/* JSON-LD — Educational Programme */}
+      <Script
+        id="jsonld-edu"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(eduJsonLd) }}
+      />
       {/* JSON-LD — Event */}
       <Script
         id="jsonld-event"

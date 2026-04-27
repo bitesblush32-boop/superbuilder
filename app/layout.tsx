@@ -60,7 +60,7 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="en"
+      lang="en-IN"
       className={`${bebasNeue.variable} ${exo2.variable} ${plusJakarta.variable} ${jetbrains.variable} h-full antialiased`}
       data-scroll-behavior="smooth"
       suppressHydrationWarning
