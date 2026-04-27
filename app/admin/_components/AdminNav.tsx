@@ -16,6 +16,7 @@ const NAV_ITEMS = [
   { href: '/admin/comms', label: 'Comms', emoji: '📢' },
   { href: '/admin/schedule', label: 'Schedule', emoji: '📅' },
   { href: '/admin/settings', label: 'Pricing', emoji: '💰' },
+  { href: '/admin/analytics', label: 'Analytics', emoji: '📈' },
 ]
 
 function NavItem({ href, label, emoji, onClick }: {

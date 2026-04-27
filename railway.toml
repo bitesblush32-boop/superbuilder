@@ -6,3 +6,8 @@ buildCommand = "pnpm install && pnpm build"
 startCommand = "node scripts/migrate.mjs && pnpm start"
 restartPolicyType = "ON_FAILURE"
 restartPolicyMaxRetries = 3
+
+[[crons]]
+name    = "retention-emails"
+schedule = "0 */12 * * *"
+command = "curl -s -o /dev/null -w '%{http_code}' -H 'Authorization: Bearer $CRON_SECRET' $NEXT_PUBLIC_APP_URL/api/cron/retention-emails"

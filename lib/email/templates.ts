@@ -24,6 +24,12 @@ function wrap(body: string, preheader = ''): string {
     a { color: #FFB800; text-decoration: none; }
     a:hover { text-decoration: underline; }
     .preheader { display: none; max-height: 0; max-width: 0; opacity: 0; overflow: hidden; }
+    @media only screen and (max-width: 480px) {
+      .mob-outer { padding: 20px 10px 40px !important; }
+      .mob-card  { padding: 24px 18px 28px !important; }
+      .mob-h1    { font-size: 28px !important; }
+      .mob-cta a { padding: 14px 20px !important; font-size: 13px !important; display: block !important; text-align: center !important; }
+    }
   </style>
 </head>
 <body style="margin:0;padding:0;background:#080808;font-family:'Exo 2',Helvetica,Arial,sans-serif;">
@@ -33,7 +39,7 @@ function wrap(body: string, preheader = ''): string {
   <!-- Outer wrapper -->
   <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#080808;min-height:100vh;">
     <tr>
-      <td align="center" style="padding:32px 16px 48px;">
+      <td align="center" class="mob-outer" style="padding:32px 16px 48px;">
         <table width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:580px;">
 
           <!-- ══ LOGO HEADER ══ -->
@@ -41,18 +47,13 @@ function wrap(body: string, preheader = ''): string {
             <td style="padding-bottom:28px;">
               <table width="100%" cellpadding="0" cellspacing="0" border="0">
                 <tr>
-                  <td>
-                    <!-- Wordmark -->
-                    <table cellpadding="0" cellspacing="0" border="0">
-                      <tr>
-                        <td style="background:rgba(255,184,0,0.1);border:1px solid rgba(255,184,0,0.25);border-radius:8px;padding:6px 12px;">
-                          <span style="font-family:'Exo 2',Impact,Helvetica,sans-serif;font-size:11px;font-weight:900;letter-spacing:0.25em;text-transform:uppercase;color:#FFB800;">
-                            SUPER BUILDERS
-                          </span>
-                        </td>
-                      </tr>
-                    </table>
-                    <div style="margin-top:4px;font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:#484848;font-family:'Exo 2',Helvetica,sans-serif;">
+                  <td style="vertical-align:middle;">
+                    <!-- Logo image — falls back to text wordmark in clients that block images -->
+                    <a href="${APP_URL}" style="display:inline-block;text-decoration:none;">
+                      <img src="${APP_URL}/logo.png" alt="Super Builders" width="160" height="46"
+                           style="display:block;height:46px;width:auto;max-width:160px;border:0;outline:none;" />
+                    </a>
+                    <div style="margin-top:5px;font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:#484848;font-family:'Exo 2',Helvetica,sans-serif;">
                       by zer0.pro &nbsp;·&nbsp; School Edition S1 &nbsp;·&nbsp; 2026
                     </div>
                   </td>
@@ -80,7 +81,7 @@ function wrap(body: string, preheader = ''): string {
               <!-- Body content -->
               <table width="100%" cellpadding="0" cellspacing="0" border="0">
                 <tr>
-                  <td style="padding:36px 32px 40px;">
+                  <td class="mob-card" style="padding:36px 32px 40px;">
                     ${body}
                   </td>
                 </tr>
@@ -127,7 +128,7 @@ function para(text: string, muted = false) {
 
 function ctaButton(label: string, href: string) {
   return `
-  <table cellpadding="0" cellspacing="0" border="0" style="margin:20px 0;">
+  <table class="mob-cta" cellpadding="0" cellspacing="0" border="0" style="margin:20px 0;width:100%;">
     <tr>
       <td style="background:linear-gradient(135deg,#FFB800,#FFCF40);border-radius:12px;box-shadow:0 0 32px rgba(255,184,0,0.25);">
         <a href="${href}" style="display:inline-block;padding:16px 32px;font-family:'Exo 2',Helvetica,sans-serif;font-size:14px;font-weight:900;color:#000000;text-decoration:none;letter-spacing:0.1em;text-transform:uppercase;">
@@ -224,10 +225,10 @@ export function parentEmailVerificationTemplate(opts: {
         <tbody>
           ${timelineStep('1', 'Domain Quiz', 'Online — 10 questions')}
           ${timelineStep('2', 'Idea Submission', 'Problem + AI approach')}
-          ${timelineStep('3', 'Payment', '₹1,499–₹2,499 (no payment yet)')}
-          ${timelineStep('4', '3 Live Workshops', 'May 26 – Jun 5')}
+          ${timelineStep('3', 'Payment', '₹3,499 Solo / ₹2,999 per head (Team)')}
+          ${timelineStep('4', '3 Live Workshops', 'Jun 3–5, 2026')}
           ${timelineStep('5', '24-Hour Hackathon', 'Jun 7–8, 2026')}
-          ${timelineStep('6', 'Results & Certificates', 'Jun 9–10, 2026')}
+          ${timelineStep('6', 'Demo Day + Certificates', 'Jun 27 / Jul 1, 2026')}
         </tbody>
       </table>
       ${infoBox(`
@@ -307,8 +308,8 @@ export function applicationSubmittedParentTemplate(opts: {
         <tbody>
           ${timelineStep('1', 'Domain Quiz', 'Online — 10 questions')}
           ${timelineStep('2', 'Idea Submission', 'Problem statement + AI approach')}
-          ${timelineStep('3', 'Registration Fee', '₹1,499 (Pro) or ₹2,499 (Premium)')}
-          ${timelineStep('4', '3 Live Workshops', 'May 26 – Jun 5, 2026')}
+          ${timelineStep('3', 'Registration Fee', '₹3,499 Solo / ₹2,999 per head (Team)')}
+          ${timelineStep('4', '3 Live Workshops', 'Jun 3–5, 2026')}
           ${timelineStep('5', '24-Hour Hackathon', 'Jun 7–8, 2026')}
         </tbody>
       </table>
@@ -497,8 +498,8 @@ export function ideaSubmittedStudentTemplate(opts: {
       ])}
       ${divider()}
       ${subheading('Final Step — Lock Your Spot')}
-      ${para('Select Pro (₹1,499) or Premium (₹2,499) and complete payment to unlock your workshops and hackathon access.')}
-      ${ctaButton('Choose My Tier', `${APP_URL}/dashboard`)}
+      ${para('Register Solo (₹3,499) or as a Team of 2–3 (₹2,999/head) and complete payment to unlock your workshops and hackathon access.')}
+      ${ctaButton('Confirm My Spot', `${APP_URL}/dashboard`)}
     `, `Idea locked in — ${firstName} is almost a confirmed builder`),
   }
 }
@@ -550,7 +551,225 @@ export function parentOtpTemplate(opts: {
   }
 }
 
-// ── 10. Stage progress report — parent ───────────────────────────────────────
+// ── 10. Quiz-passed parent retention — payment nudge (12-hour sequence) ──────
+//
+// Send attempt 1 immediately after quiz pass, then every 12h.
+// attempt: 1 | 2 | 3 | 4 | 5  (stop after 5 — do not spam beyond 48h)
+//
+// Tone strategy:
+//   1 → Celebrate achievement, zero pressure
+//   2 → Value/ROI — what the fee actually buys
+//   3 → Social proof — peers from same city are confirming
+//   4 → Countdown urgency — workshops start Jun 3
+//   5 → Final, respectful — won't email again, full refund policy visible
+
+export function quizPassedParentRetentionTemplate(opts: {
+  parentName:  string
+  studentName: string
+  score:       number
+  domain:      string
+  city:        string
+  attempt:     1 | 2 | 3 | 4 | 5
+}): { subject: string; html: string } {
+  const { parentName, studentName, score, domain, city, attempt } = opts
+  const pFirst = parentName.split(' ')[0]
+  const sFirst = studentName.split(' ')[0]
+  const domainLabel = domain.replace('_', ' ')
+
+  // ── Attempt 1 — Achievement + gentle intro ─────────────────────────────────
+  if (attempt === 1) {
+    return {
+      subject: `${sFirst} scored ${score}/10 on their AI Quiz 🎉 — here's what's next`,
+      html: wrap(`
+        ${badge('Quiz Passed — AI Curious Badge Earned 🧠', '#60A5FA')}
+        ${displayH(`${sFirst} Proved\nThey've Got It!`, 36)}
+        ${para(`Hi ${pFirst},`)}
+        ${para(`We just wanted to share some great news — <strong style="color:#FFFFFF;">${studentName}</strong> scored <strong style="color:#FFB800;">${score}/10</strong> on the <strong style="color:#FFFFFF;">${domainLabel}</strong> AI Quiz and earned the <strong style="color:#60A5FA;">AI Curious 🧠</strong> badge.`)}
+        ${para(`That's not a participation score. That's a real test of AI literacy — and ${sFirst} passed it on their own initiative. You should be proud.`)}
+        ${divider()}
+        ${subheading("One Step to Unlock Everything")}
+        ${infoBox(`
+          <p style="margin:0 0 10px;font-family:'Exo 2',Helvetica,sans-serif;font-size:13px;color:#B0B0B0;line-height:1.7;">
+            ${sFirst} has completed the quiz and submitted their idea. The only step remaining is payment — which unlocks:
+          </p>
+          <table width="100%" cellpadding="0" cellspacing="0" border="0">
+            ${[
+              ['🎓', '3 Live Workshops', 'Jun 3, 4 & 5 — AI tools, domain deep-dive, prototype sprint'],
+              ['🧑‍💻', '24-Hour Hackathon', 'Jun 7–8 — build and submit a real AI project'],
+              ['📜', 'Verified Certificate', 'Shareable on LinkedIn, backed by zer0.pro'],
+              ['🏆', '₹1,00,000+ Prize Pool', 'Top projects win real prizes'],
+            ].map(([emoji, title, desc]) => `
+              <tr>
+                <td style="padding:6px 0;vertical-align:top;width:28px;font-size:16px;">${emoji}</td>
+                <td style="padding:6px 0 6px 8px;vertical-align:top;">
+                  <span style="font-family:'Exo 2',Helvetica,sans-serif;font-size:13px;font-weight:700;color:#FFFFFF;">${title}</span>
+                  <span style="font-family:'Exo 2',Helvetica,sans-serif;font-size:12px;color:#606060;display:block;margin-top:2px;">${desc}</span>
+                </td>
+              </tr>`).join('')}
+          </table>
+        `)}
+        ${statsTable([
+          ['Registration Fee', '₹3,499 (Solo)  ·  ₹2,999/head (Team of 2–3)'],
+          ['Workshops',        'Jun 3, 4 & 5 — 100% online, recorded'],
+          ['Hackathon',        'Jun 7–8, 2026 · 24 hours'],
+          ['Mode',             'Fully online — no travel required'],
+          ['Refund Policy',    'Full refund if we cancel before Jun 3'],
+        ])}
+        ${ctaButton('Complete Registration', `${APP_URL}/dashboard`)}
+        ${para(`No pressure — take your time. If you have any questions, reply to this email or WhatsApp us. We're here.`, true)}
+      `, `${sFirst} passed the AI Quiz — one step left to confirm their spot`),
+    }
+  }
+
+  // ── Attempt 2 — Value / ROI breakdown ─────────────────────────────────────
+  if (attempt === 2) {
+    return {
+      subject: `What ₹3,499 actually buys ${sFirst} — the honest breakdown`,
+      html: wrap(`
+        ${displayH('The Honest\nBreakdown', 36)}
+        ${para(`Hi ${pFirst},`)}
+        ${para(`${sFirst} is still one step away from confirming their spot. We thought it might help to break down exactly what the registration fee covers.`)}
+        ${divider()}
+        ${subheading('What ₹3,499 Gets You')}
+        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:20px;">
+          <tbody>
+            ${[
+              ['3 Live Workshops (Jun 3–5)', 'Taught by working AI engineers. 90-min sessions, recorded, with Q&A.', '#FFB800'],
+              ['24-Hour Hackathon (Jun 7–8)', 'A real build challenge — not a school project. Ships something people can use.', '#60A5FA'],
+              ['Mentorship Access', 'Direct access to mentors during the hackathon window.', '#34D399'],
+              ['Verified Certificate', 'zer0.pro-backed, shareable on LinkedIn. Colleges notice this.', '#A78BFA'],
+              ['₹1,00,000+ Prize Pool', 'Top projects win real prize money — not vouchers.', '#FB923C'],
+              ['Discord Community', 'A permanent network of 2,000+ young builders.', '#E879F9'],
+            ].map(([title, desc, color]) => `
+              <tr>
+                <td style="padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.05);">
+                  <p style="margin:0 0 3px;font-family:'Exo 2',Helvetica,sans-serif;font-size:13px;font-weight:700;color:${color};">${title}</p>
+                  <p style="margin:0;font-family:'Exo 2',Helvetica,sans-serif;font-size:12px;color:#606060;line-height:1.6;">${desc}</p>
+                </td>
+              </tr>`).join('')}
+          </tbody>
+        </table>
+        ${infoBox(`
+          <p style="margin:0 0 4px;font-family:'Exo 2',Helvetica,sans-serif;font-size:11px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:#FFB800;">For context</p>
+          <p style="margin:0;font-family:'Exo 2',Helvetica,sans-serif;font-size:13px;color:#B0B0B0;line-height:1.7;">
+            A single coding coaching session in most cities costs ₹800–₹1,500. ${sFirst} gets 3 expert-led workshops, a hackathon, mentorship, a certificate, and a real project in their portfolio — for less than two months of tuition.
+          </p>
+        `)}
+        ${ctaButton('Confirm Their Spot', `${APP_URL}/dashboard`)}
+        ${para(`Team discount: if ${sFirst} registers with 2–3 friends, it's just ₹2,999/head. They can create or join a team from the dashboard.`, true)}
+      `, `The honest breakdown of what ${sFirst}'s registration covers`),
+    }
+  }
+
+  // ── Attempt 3 — Social proof + city traction ───────────────────────────────
+  if (attempt === 3) {
+    const cityLabel = city || 'across India'
+    return {
+      subject: `Students from ${cityLabel} are confirming their spots — ${sFirst}'s is still open`,
+      html: wrap(`
+        ${badge('Spots Filling Up', '#FB923C')}
+        ${displayH(`${sFirst}'s Spot\nIs Still Open`, 36)}
+        ${para(`Hi ${pFirst},`)}
+        ${para(`We're seeing a big wave of confirmations from students${city ? ` in <strong style="color:#FFFFFF;">${city}</strong>` : ' across India'} right now. ${sFirst}'s quiz result and idea are already in the system — they just need payment to lock in.`)}
+        ${divider()}
+        ${subheading("Why This Matters")}
+        ${infoBox(`
+          <p style="margin:0 0 10px;font-family:'Exo 2',Helvetica,sans-serif;font-size:13px;color:#B0B0B0;line-height:1.7;">
+            Hackathon teams are formed from confirmed participants. The earlier ${sFirst} confirms, the more time they have to find teammates, plan their project, and attend all 3 workshops before Jun 7.
+          </p>
+          <p style="margin:0;font-family:'Exo 2',Helvetica,sans-serif;font-size:13px;color:#B0B0B0;line-height:1.7;">
+            Students who attend all 3 workshops <strong style="color:#FFFFFF;">consistently rank higher</strong> in judging — and the workshops start <strong style="color:#FFB800;">Jun 3</strong>.
+          </p>
+        `, '#FB923C')}
+        ${statsTable([
+          ['Quiz Score',     `${score}/10 ✓ (${sFirst} is ready)`],
+          ['Domain',         domainLabel],
+          ['Workshops',      'Jun 3, 4 & 5 — confirms access'],
+          ['Hackathon',      'Jun 7–8, 2026'],
+          ['Registration',   '₹3,499 Solo  ·  ₹2,999/head (Team)'],
+          ['Deadline',       'May 30, 2026'],
+        ])}
+        ${ctaButton('Lock In Their Spot', `${APP_URL}/dashboard`)}
+        ${para(`Safe and secure — all payments via Razorpay. Full refund if we cancel before Jun 3.`, true)}
+      `, `${sFirst}'s spot is still available — confirm before it fills`),
+    }
+  }
+
+  // ── Attempt 4 — Countdown urgency (workshops near) ────────────────────────
+  if (attempt === 4) {
+    return {
+      subject: `Workshops start Jun 3 — ${sFirst} needs to be in before then`,
+      html: wrap(`
+        ${badge('Workshops Start Jun 3', '#FBBF24')}
+        ${displayH('Time Is\nRunning Out', 36)}
+        ${para(`Hi ${pFirst},`)}
+        ${para(`The 3 Super Builders workshops start on <strong style="color:#FFB800;">Jun 3</strong> — that's very soon. Students who haven't confirmed by then will miss Workshop 1 and the head start it gives.`)}
+        ${divider()}
+        ${subheading('The 3 Workshops — What ${sFirst} Would Miss')}
+        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:20px;">
+          <tbody>
+            ${[
+              ['Jun 3', 'WS 1 — AI Fundamentals', 'Learn to use AI tools confidently. Essential foundation for the hackathon.'],
+              ['Jun 4', 'WS 2 — Domain Deep-Dive', 'Refine the problem statement. Mentors help shape the idea.'],
+              ['Jun 5', 'WS 3 — Build Sprint', 'Build the first working prototype. Most teams ship something real here.'],
+            ].map(([date, title, desc]) => `
+              <tr>
+                <td style="padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.05);">
+                  <p style="margin:0 0 2px;">
+                    <span style="font-family:'Exo 2',Helvetica,sans-serif;font-size:11px;font-weight:700;color:#FFB800;letter-spacing:0.1em;">${date}</span>
+                    <span style="font-family:'Exo 2',Helvetica,sans-serif;font-size:13px;font-weight:700;color:#FFFFFF;margin-left:8px;">${title}</span>
+                  </p>
+                  <p style="margin:0;font-family:'Exo 2',Helvetica,sans-serif;font-size:12px;color:#606060;line-height:1.6;">${desc}</p>
+                </td>
+              </tr>`).join('')}
+          </tbody>
+        </table>
+        ${infoBox(`
+          <p style="margin:0;font-family:'Exo 2',Helvetica,sans-serif;font-size:13px;color:#B0B0B0;line-height:1.7;">
+            <strong style="color:#FFFFFF;">${sFirst} already passed the quiz.</strong> Their ${domainLabel} idea is ready. The only thing standing between them and the hackathon is completing payment — which takes 2 minutes.
+          </p>
+        `, '#FBBF24')}
+        ${ctaButton('Complete Payment Now', `${APP_URL}/dashboard`)}
+        ${para(`Registration deadline: <strong style="color:#FFFFFF;">May 30, 2026.</strong> Payment via Razorpay — UPI, cards, netbanking all accepted.`, true)}
+      `, `Workshops start Jun 3 — ${sFirst} needs to confirm before then`),
+    }
+  }
+
+  // ── Attempt 5 — Final, respectful, refund prominent ───────────────────────
+  return {
+    subject: `Our last message about ${sFirst}'s Super Builders spot`,
+    html: wrap(`
+      ${displayH('One Last\nNote', 36)}
+      ${para(`Hi ${pFirst},`)}
+      ${para(`We've sent a few emails about ${sFirst}'s Super Builders registration. This is the last one — we don't want to crowd your inbox.`)}
+      ${para(`${sFirst} passed the AI Quiz (<strong style="color:#FFB800;">${score}/10</strong>) and submitted their idea. Their spot is still open, but the registration deadline is <strong style="color:#FFFFFF;">May 30</strong>.`)}
+      ${divider()}
+      ${subheading('If you have concerns, we can help')}
+      ${infoBox(`
+        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+          ${[
+            ['💬', 'WhatsApp us', 'Reply to this email or message us — we respond within the hour.'],
+            ['💳', 'Pay in minutes', 'UPI, cards, netbanking — via Razorpay. Takes 2 minutes.'],
+            ['🔒', 'Refund policy', 'Full refund if we cancel before Jun 3. No questions asked.'],
+            ['👨‍👩‍👧', 'Parent WhatsApp group', 'Join 200+ parents already in our community group.'],
+          ].map(([emoji, title, desc]) => `
+            <tr>
+              <td style="padding:6px 0;vertical-align:top;width:28px;font-size:16px;">${emoji}</td>
+              <td style="padding:6px 0 6px 8px;vertical-align:top;">
+                <span style="font-family:'Exo 2',Helvetica,sans-serif;font-size:13px;font-weight:700;color:#FFFFFF;">${title}</span>
+                <span style="font-family:'Exo 2',Helvetica,sans-serif;font-size:12px;color:#606060;display:block;margin-top:2px;">${desc}</span>
+              </td>
+            </tr>`).join('')}
+        </table>
+      `)}
+      ${ctaButton('Complete Registration', `${APP_URL}/dashboard`)}
+      ${para(`If you choose not to proceed, no problem — ${sFirst}'s quiz result and idea will remain on file for future seasons.`, true)}
+      ${para(`Wishing ${sFirst} all the best, whatever they decide.`, true)}
+    `, `Final note about ${sFirst}'s Super Builders spot — deadline May 30`),
+  }
+}
+
+// ── 11. Stage progress report — parent (generic) ─────────────────────────────
 
 export function stageProgressParentTemplate(opts: {
   parentName:  string
