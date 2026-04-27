@@ -157,7 +157,7 @@ export default async function LandingPage() {
     url: 'https://zer0.pro',
     logo: 'https://www.superbuilder.org/logo.png',
     sameAs: [
-      'https://instagram.com/zer0pro',
+      'https://www.instagram.com/superbuilder2k26?utm_source=qr&igsh=bXV2ajRubXFhNmV5',
       'https://linkedin.com/company/zer0pro',
     ],
     contactPoint: {

@@ -57,7 +57,7 @@ const COLUMNS = [
     links: [
       { label: 'Discord Server', href: '#discord' },
       { label: 'WhatsApp Group', href: 'https://chat.whatsapp.com/Kn9WvBrBsXsJ4PWg1rJC56' },
-      { label: 'Instagram', href: '#instagram' },
+      { label: 'Instagram', href: 'https://www.instagram.com/superbuilder2k26?utm_source=qr&igsh=bXV2ajRubXFhNmV5' },
       { label: 'Mentors', href: '#mentors' },
     ],
   },
@@ -76,7 +76,7 @@ const COLUMNS = [
 const SOCIALS = [
   { label: 'Discord', href: '#discord', Icon: DiscordIcon },
   { label: 'WhatsApp', href: 'https://chat.whatsapp.com/Kn9WvBrBsXsJ4PWg1rJC56', Icon: WhatsAppIcon },
-  { label: 'Instagram', href: '#instagram', Icon: InstagramIcon },
+  { label: 'Instagram', href: 'https://www.instagram.com/superbuilder2k26?utm_source=qr&igsh=bXV2ajRubXFhNmV5', Icon: InstagramIcon },
 ] as const
 
 /* ─── Footer ───────────────────────────────────────────────────────────────── */
